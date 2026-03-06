@@ -7,7 +7,7 @@
 
 English | [简体中文](#简体中文)
 
-## Features
+## Features\n\n### ECC v1.8.0 Improvements (2026-03-06)\n\n- **Hook Runtime Controls** - Environment-based hook configuration\n- **Session Recovery** - Validate and recover corrupted sessions\n- **5 New Commands** - harness-audit, loop-start, loop-status, quality-gate, model-route\n- **Code Quality** - Prettier config and Plankton skill\n- **Test Infrastructure** - Jest setup for unit testing\n\n
 
 ### 🤖 13 Specialized Agents
 
