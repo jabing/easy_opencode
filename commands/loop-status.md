@@ -1,14 +1,1 @@
-# Loop Status Command
-
-View status of autonomous loops.
-
-## Usage
-
-/loop-status                # Show current loop status
-
-## Output
-
-- Active loops
-- Completed iterations
-- Current task
-- Next scheduled run
+# Loop Status Command\n\nView status of autonomous loops.\n\n## Usage\n\n/loop-status                # Show current loop status\n\n## Implementation\n\nRuns: node scripts/loop-status.js\n
