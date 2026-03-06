@@ -215,6 +215,10 @@
     "plankton": {
       "description": "Code quality check",
       "template": "{file:./commands/plankton.md}\\n\\n$ARGUMENTS"
+    },
+    "env-check": {
+      "description": "Check environment and OS",
+      "template": "{file:./commands/env-check.md}\\n\\n$ARGUMENTS"
     }
   },
   "permission": {
