@@ -46,11 +46,120 @@
         "edit": false
       }
     },
-    "eoc_code-reviewer": {
-      "description": "Expert code review specialist",
-      "mode": "primary",
-      "model": "zhipuai-coding-plan/glm-5",
-      "prompt": "{file:./prompts/agents/code-reviewer.txt}",
+    "tdd-guide": {
+      "description": "TDD specialist - write tests first, 80%+ coverage",
+      "hidden": true,
+      "prompt": "{file:./prompts/agents/tdd-guide.md}",
+      "tools": {
+        "read": true,
+        "write": true,
+        "edit": true,
+        "bash": true
+      }
+    },
+    "security-reviewer": {
+      "description": "Security vulnerability detection and audit",
+      "hidden": true,
+      "prompt": "{file:./prompts/agents/security-reviewer.md}",
+      "tools": {
+        "read": true,
+        "bash": true,
+        "write": false,
+        "edit": false
+      }
+    },
+    "build-error-resolver": {
+      "description": "Fix build and TypeScript errors",
+      "hidden": true,
+      "prompt": "{file:./prompts/agents/build-error-resolver.md}",
+      "tools": {
+        "read": true,
+        "write": true,
+        "edit": true,
+        "bash": true
+      }
+    },
+    "e2e-runner": {
+      "description": "End-to-end Playwright testing",
+      "hidden": true,
+      "prompt": "{file:./prompts/agents/e2e-runner.md}",
+      "tools": {
+        "read": true,
+        "write": true,
+        "edit": true,
+        "bash": true
+      }
+    },
+    "refactor-cleaner": {
+      "description": "Remove dead code and consolidate duplicates",
+      "hidden": true,
+      "prompt": "{file:./prompts/agents/refactor-cleaner.md}",
+      "tools": {
+        "read": true,
+        "write": true,
+        "edit": true,
+        "bash": true
+      }
+    },
+    "doc-updater": {
+      "description": "Documentation and codemaps",
+      "hidden": true,
+      "prompt": "{file:./prompts/agents/doc-updater.md}",
+      "tools": {
+        "read": true,
+        "write": true,
+        "edit": true,
+        "bash": true
+      }
+    },
+    "go-reviewer": {
+      "description": "Go code review specialist",
+      "hidden": true,
+      "prompt": "{file:./prompts/agents/go-reviewer.md}",
+      "tools": {
+        "read": true,
+        "bash": true,
+        "write": false,
+        "edit": false
+      }
+    },
+    "go-build-resolver": {
+      "description": "Fix Go build errors",
+      "hidden": true,
+      "prompt": "{file:./prompts/agents/go-build-resolver.md}",
+      "tools": {
+        "read": true,
+        "write": true,
+        "edit": true,
+        "bash": true
+      }
+    },
+    "database-reviewer": {
+      "description": "PostgreSQL/Supabase schema and query optimization",
+      "hidden": true,
+      "prompt": "{file:./prompts/agents/database-reviewer.md}",
+      "tools": {
+        "read": true,
+        "bash": true,
+        "write": false,
+        "edit": false
+      }
+    },
+    "architect": {
+      "description": "System design and scalability decisions",
+      "hidden": true,
+      "prompt": "{file:./prompts/agents/architect.md}",
+      "tools": {
+        "read": true,
+        "bash": true,
+        "write": false,
+        "edit": false
+      }
+    },
+    "python-reviewer": {
+      "description": "Python code review specialist",
+      "hidden": true,
+      "prompt": "{file:./prompts/agents/python-reviewer.md}",
       "tools": {
         "read": true,
         "bash": true,
