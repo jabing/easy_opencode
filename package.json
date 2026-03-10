@@ -1,6 +1,6 @@
 {
   "name": "easy-opencode",
-  "version": "1.9.1",
+  "version": "1.9.2",
   "description": "Production-ready AI coding plugin for OpenCode with 14 specialized agents, 50+ skills, 34 commands, and automated hook workflows.",
   "main": "index.js",
   "bin": {
@@ -41,6 +41,8 @@
     "AGENTS.md",
     "scripts/",
     "bin/",
+    "docs/",
+    "diagnose-eoc.ps1",
     "logo.svg",
     "favicon.ico",
     "logo-monochrome.svg"
