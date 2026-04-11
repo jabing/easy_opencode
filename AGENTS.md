@@ -1,6 +1,6 @@
 # Easy OpenCode - Agent Instructions
 
-Easy OpenCode is an OpenCode plugin with 14 specialized agents, 50+ skills, 44 commands, and optional hook automation.
+Easy OpenCode is an OpenCode plugin with 15 specialized agents, 50+ skills, 53 commands, and optional hook automation.
 
 ## Installation
 
@@ -76,6 +76,7 @@ Hidden specialist agents:
 - `database-reviewer`
 - `architect`
 - `python-reviewer`
+- `vue-bigscreen-designer`
 
 ## Security Baseline
 

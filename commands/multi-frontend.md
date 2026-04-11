@@ -8,6 +8,12 @@ Frontend-focused workflow (Research → Ideation → Plan → Execute → Optimi
 /frontend <UI task description>
 ```
 
+For Vue command-center/large-screen delivery, prefer:
+
+```bash
+/vue-bigscreen <task description>
+```
+
 ## Context
 
 - Frontend task: $ARGUMENTS

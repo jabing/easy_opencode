@@ -250,6 +250,12 @@ function buildAgents(assetPrefix) {
       prompt: getPromptPath(assetPrefix, 'python-reviewer.md'),
       tools: { read: true, bash: true, write: false, edit: false },
     },
+    'vue-bigscreen-designer': {
+      description: 'Vue bigscreen UI design and implementation specialist',
+      hidden: true,
+      prompt: getPromptPath(assetPrefix, 'vue-bigscreen-designer.md'),
+      tools: { read: true, bash: true, write: true, edit: true },
+    },
   }
 }
 
@@ -281,6 +287,8 @@ function buildCommandConfig(commandsDir, assetPrefix) {
     'eoc-start': 'eoc_planner',
     'eoc-parallel': 'eoc_planner',
     'eoc-metrics': 'eoc_planner',
+    'vue-bigscreen': 'vue-bigscreen-designer',
+    'vue-bigscreen-init': 'vue-bigscreen-designer',
   }
 
   const commandFiles = fs
@@ -330,6 +338,7 @@ function buildEocConfig(assetPrefix, commandsDir) {
     `${assetPrefix}/skills/openspec-workflow/SKILL.md`,
     `${assetPrefix}/skills/superpowers-workflow/SKILL.md`,
     `${assetPrefix}/skills/claude-public-tooling/SKILL.md`,
+    `${assetPrefix}/skills/vue-bigscreen-elite/SKILL.md`,
   ]
 
   return {

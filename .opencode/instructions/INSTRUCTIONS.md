@@ -221,6 +221,7 @@ For requests entering through the default build agent:
 | go-reviewer | Go code review | Go projects |
 | go-build-resolver | Go build errors | Go build failures |
 | database-reviewer | Database optimization | SQL, schema design |
+| vue-bigscreen-designer | Vue large-screen UI specialist | Data dashboards, command-center screens, high-fidelity UI delivery |
 
 ### Immediate Agent Usage
 
@@ -339,6 +340,8 @@ Use these commands in OpenCode:
 - `/e2e` - Generate E2E tests
 - `/refactor-clean` - Remove dead code
 - `/orchestrate` - Multi-agent workflow
+- `/vue-bigscreen` - Vue bigscreen elite design + implementation workflow
+- `/vue-bigscreen-init` - Generate Vue bigscreen scaffold structure
 
 ---
 
