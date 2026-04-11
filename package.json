@@ -1,9 +1,9 @@
 {
   "name": "easy-opencode",
-  "version": "1.9.9",
+  "version": "1.9.10",
   "description": "Production-ready AI coding plugin for OpenCode with 14 specialized agents, 50+ skills, 44 commands, and automated hook workflows.",
   "bin": {
-    "eoc-install": "./bin/eoc-install.js"
+    "eoc-install": "bin/eoc-install.js"
   },
   "scripts": {
     "install": "node scripts/npm-install.js",
@@ -22,7 +22,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/jabing/easy_opencode.git"
+    "url": "git+https://github.com/jabing/easy_opencode.git"
   },
   "bugs": {
     "url": "https://github.com/jabing/easy_opencode/issues"
