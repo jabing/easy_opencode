@@ -14,7 +14,8 @@ Create a detailed implementation plan for: $ARGUMENTS
 2. **Define Scope** - Explicitly list in-scope and out-of-scope
 3. **Identify Risks** - Surface blockers, dependencies, and rollback concerns
 4. **Create Step Plan** - Break down implementation into milestones with validation steps
-5. **Wait for Confirmation** - MUST receive user approval before proceeding
+5. **Emit Execution Packet** - Provide machine-readable DAG task graph for `/eoc-parallel`
+6. **Wait for Confirmation** - MUST receive user approval before proceeding
 
 ## Output Format
 
@@ -50,6 +51,9 @@ Create a detailed implementation plan for: $ARGUMENTS
 Plan Status: READY | NEEDS_CLARIFICATION
 Blocking Questions: [if any]
 First Execution Step: [single concrete action]
+
+### Execution Packet (JSON)
+[Must include objective, recommended_concurrency, fast_fail, and task list with id/deps/priority/validation]
 
 **WAITING FOR CONFIRMATION**: Proceed with this plan? (yes/no/modify)
 

@@ -13,5 +13,5 @@ node scripts/eoc-metrics.js <run-id>
 - Scheduler status
 - Concurrency
 - Total run duration
-- Success/failure/retry/timeout counts
+- Success/failure/skipped/retry/timeout counts
 - Per-task attempts and durations

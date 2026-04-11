@@ -11,6 +11,7 @@ Production-ready OpenCode plugin with multi-agent workflows, reusable skills, sl
 - Gate-controlled delivery flow via `/eoc-start`
 - DAG concurrency orchestration via `/eoc-parallel`
 - Run observability via `/eoc-metrics`
+- Quality guardrails with fast/full modes via `/quality-gate`
 - OpenSpec-style spec-first commands (`/openspec-proposal`, `/openspec-apply`, `/openspec-archive`)
 - Superpowers-style execution commands (`/superpowers-brainstorm`, `/superpowers-plan`, `/superpowers-execute`)
 
@@ -91,6 +92,7 @@ scripts/    Installer, uninstaller, diagnostics
 - The installer isolates assets under `easy-opencode` to avoid clobbering user-owned OpenCode files.
 - Command/agent registration is generated from repository assets to reduce drift.
 - External tooling parity is implemented from public/official sources only.
+- `/eoc-parallel` supports priority scheduling, cycle detection, dependency-failure propagation, and fast-fail mode.
 
 ## License
 

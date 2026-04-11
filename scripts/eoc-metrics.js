@@ -34,7 +34,7 @@ function main() {
     console.log(`Started: ${sch.started_at || '(not started)'}`);
     console.log(`Ended: ${sch.ended_at || '(not ended)'}`);
     console.log(`DurationMs: ${totalDuration === null ? '(running)' : totalDuration}`);
-    console.log(`Metrics: total=${sch.metrics.total} success=${sch.metrics.success} failed=${sch.metrics.failed} retried=${sch.metrics.retried} timeout=${sch.metrics.timed_out}`);
+    console.log(`Metrics: total=${sch.metrics.total} success=${sch.metrics.success} failed=${sch.metrics.failed} skipped=${sch.metrics.skipped || 0} retried=${sch.metrics.retried} timeout=${sch.metrics.timed_out}`);
 
     const tasks = Object.values(sch.tasks || {});
     for (const t of tasks) {

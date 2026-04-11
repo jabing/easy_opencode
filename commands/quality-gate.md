@@ -1,1 +1,38 @@
-# Quality Gate Command\n\nRun quality gate checks before commit.\n\n## Usage\n\n/quality-gate               # Full quality check\n\n## Checks\n\n- package.json exists\n- .gitignore exists\n- No console.log in src\n\n## Implementation\n\nRuns: node scripts/quality-gate.js\n
+# Quality Gate Command
+
+Run production-focused quality checks before merge/commit.
+
+## Usage
+
+```bash
+# Fast mode (default): structural + static checks
+node scripts/quality-gate.js
+
+# Full mode: include lint/test/build/typecheck scripts when present
+node scripts/quality-gate.js --full
+
+# Strict mode: warnings also fail the gate
+node scripts/quality-gate.js --strict
+
+# JSON output for CI aggregation
+node scripts/quality-gate.js --json
+```
+
+## Checks
+
+- Required files (`package.json`, `.gitignore`)
+- `package.json` parse validity
+- Static scan for risky patterns:
+  - `debugger`
+  - test `.only(...)`
+  - possible hardcoded credentials
+  - debug traces / TODO/FIXME (warning by default)
+- Optional full script checks:
+  - `npm run lint`
+  - `npm run typecheck`
+  - `npm test`
+  - `npm run build`
+
+## Goal
+
+Use fast mode during inner loop; use `--full` before commit/PR for stronger confidence.

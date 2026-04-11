@@ -51,6 +51,7 @@ End with a strict handoff block:
 - `Plan Status: READY | NEEDS_CLARIFICATION`
 - `Blocking Questions` (if any)
 - `First Execution Step` (single, concrete action)
+- `Execution Packet` (machine-readable task graph)
 
 ## Best Practices
 
@@ -62,6 +63,8 @@ End with a strict handoff block:
 6. **Think Incrementally**: Each step should be verifiable
 7. **Document Decisions**: Explain why, not just what
 8. **No Code in Planning**: Never produce implementation patches in this mode
+9. **Optimize for Throughput**: Identify tasks that can run in parallel safely
+10. **Codex-style Pragmatism**: Prefer shortest correct path, explicit tradeoffs, and deterministic validations
 
 ## Required Plan Format
 
@@ -72,3 +75,32 @@ End with a strict handoff block:
 ### 5. Validation Plan
 ### 6. Risks & Mitigations
 ### 7. Execution Gate
+
+## Execution Packet (Required)
+
+After section 7, output a fenced JSON block with this schema:
+
+```json
+{
+  "objective": "string",
+  "recommended_concurrency": 2,
+  "fast_fail": false,
+  "tasks": [
+    {
+      "id": "short-kebab-id",
+      "goal": "what this task produces",
+      "deps": [],
+      "priority": 100,
+      "owner_hint": "backend|frontend|fullstack|qa|docs",
+      "validation": "single deterministic check"
+    }
+  ]
+}
+```
+
+Rules:
+- `tasks` must be a DAG (no cyclic deps).
+- `priority` range: 1-200, higher means earlier scheduling.
+- Include at least one independent task pair when safe.
+- Keep total tasks between 3 and 12.
+- `validation` must be directly executable where possible (command/file assertion).
