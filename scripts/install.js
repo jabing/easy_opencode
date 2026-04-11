@@ -271,6 +271,16 @@ function buildCommandConfig(commandsDir, assetPrefix) {
     'update-codemaps': 'doc-updater',
     'go-review': 'go-reviewer',
     'go-build': 'go-build-resolver',
+    'openspec-proposal': 'eoc_planner',
+    'openspec-apply': 'tdd-guide',
+    'openspec-archive': 'doc-updater',
+    'superpowers-brainstorm': 'eoc_planner',
+    'superpowers-plan': 'eoc_planner',
+    'superpowers-execute': 'tdd-guide',
+    'tooling-parity': 'eoc_planner',
+    'eoc-start': 'eoc_planner',
+    'eoc-parallel': 'eoc_planner',
+    'eoc-metrics': 'eoc_planner',
   }
 
   const commandFiles = fs
@@ -317,6 +327,9 @@ function buildEocConfig(assetPrefix, commandsDir) {
     `${assetPrefix}/skills/api-design/SKILL.md`,
     `${assetPrefix}/skills/strategic-compact/SKILL.md`,
     `${assetPrefix}/skills/eval-harness/SKILL.md`,
+    `${assetPrefix}/skills/openspec-workflow/SKILL.md`,
+    `${assetPrefix}/skills/superpowers-workflow/SKILL.md`,
+    `${assetPrefix}/skills/claude-public-tooling/SKILL.md`,
   ]
 
   return {

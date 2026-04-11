@@ -493,3 +493,31 @@ Before ANY production deployment:
 ---
 
 **Remember**: Security is not optional. One vulnerability can compromise the entire platform. When in doubt, err on the side of caution.
+
+## Open-Source Benchmarks
+
+Reference projects for `security-review` optimization:
+
+- [OWASP/CheatSheetSeries](https://github.com/OWASP/CheatSheetSeries) - Practical baseline controls for web and API security.
+- [aquasecurity/trivy](https://github.com/aquasecurity/trivy) - Dependency, image, and IaC vulnerability scanning.
+
+### Optimization Guidance
+- Translate checklist items into enforceable CI checks.
+- Prefer deny-by-default patterns for authz and network boundaries.
+- Add concrete remediation snippets for common findings.
+
+## Acceptance Criteria
+
+- Inputs: Clear task scope, target files/systems, and explicit constraints.
+- Outputs: Concrete artifact (code/doc/config/decision) aligned with this skill domain.
+- Validation: At least one executable check or deterministic review step is defined and run.
+- Done: Result is actionable, non-contradictory with adjacent skills, and mapped to user intent.
+
+## Skill Metadata
+
+- Owner: `easy-opencode-team`
+- Version: `1.0.0`
+- Last Reviewed: `2026-04-11`
+- Stability: `stable`
+- Overlap Domain: `security`
+

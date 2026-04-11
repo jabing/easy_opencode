@@ -333,3 +333,31 @@ Day 7: Migration drops old status column
 | Inline index on large table | Blocks writes during build | CREATE INDEX CONCURRENTLY |
 | Schema + data in one migration | Hard to rollback, long transactions | Separate migrations |
 | Dropping column before removing code | Application errors on missing column | Remove code first, drop column next deploy |
+
+## Open-Source Benchmarks
+
+Reference projects for `database-migrations` optimization:
+
+- [postgres/postgres](https://github.com/postgres/postgres) - Canonical SQL behavior and indexing semantics.
+- [liquibase/liquibase](https://github.com/liquibase/liquibase) - Versioned migration workflow and rollback practices.
+
+### Optimization Guidance
+- Make migration steps idempotent and rollback-aware.
+- Include index strategy guidance with query examples.
+- Separate OLTP and analytics query patterns clearly.
+
+## Acceptance Criteria
+
+- Inputs: Clear task scope, target files/systems, and explicit constraints.
+- Outputs: Concrete artifact (code/doc/config/decision) aligned with this skill domain.
+- Validation: At least one executable check or deterministic review step is defined and run.
+- Done: Result is actionable, non-contradictory with adjacent skills, and mapped to user intent.
+
+## Skill Metadata
+
+- Owner: `easy-opencode-team`
+- Version: `1.0.0`
+- Last Reviewed: `2026-04-11`
+- Stability: `stable`
+- Overlap Domain: `database`
+

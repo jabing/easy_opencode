@@ -4,6 +4,12 @@ This document consolidates the core rules and guidelines from the Claude Code co
 
 ## Security Guidelines (CRITICAL)
 
+## Source Integrity Policy
+
+- Use only public, authorized sources when referencing external tool capabilities.
+- Do not use leaked, private, or non-consensually disclosed code or documentation.
+- When parity with external tools is requested, implement behavior from official docs and public release notes only.
+
 ### Mandatory Security Checks
 
 Before ANY commit:
@@ -185,6 +191,15 @@ When creating PRs:
 4. **Commit & Push**
    - Detailed commit messages
    - Follow conventional commits format
+
+### Default Build-Agent Workflow (eoc_build)
+
+For requests entering through the default build agent:
+1. Clarify objective and constraints
+2. Trigger planner workflow for non-trivial tasks
+3. Implement in small verifiable increments
+4. Run verification after each milestone
+5. Route to specialized reviewers (code/security/testing) before finalization
 
 ---
 

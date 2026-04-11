@@ -437,3 +437,31 @@ pgClient.on('notification', async (msg) => {
 - Review slow query log
 
 **Remember**: ClickHouse excels at analytical workloads. Design tables for your query patterns, batch inserts, and leverage materialized views for real-time aggregations.
+
+## Open-Source Benchmarks
+
+Reference projects for `clickhouse-io` optimization:
+
+- [ClickHouse/ClickHouse](https://github.com/ClickHouse/ClickHouse) - Reference for columnar modeling and query tuning.
+- [Altinity/clickhouse-operator](https://github.com/Altinity/clickhouse-operator) - Operational patterns for production clusters.
+
+### Optimization Guidance
+- Prefer engine-specific schema guidance over generic SQL advice.
+- Document partitioning and TTL defaults with examples.
+- Add workload-driven ingestion vs query tuning playbooks.
+
+## Acceptance Criteria
+
+- Inputs: Clear task scope, target files/systems, and explicit constraints.
+- Outputs: Concrete artifact (code/doc/config/decision) aligned with this skill domain.
+- Validation: At least one executable check or deterministic review step is defined and run.
+- Done: Result is actionable, non-contradictory with adjacent skills, and mapped to user intent.
+
+## Skill Metadata
+
+- Owner: `easy-opencode-team`
+- Version: `1.0.0`
+- Last Reviewed: `2026-04-11`
+- Stability: `stable`
+- Overlap Domain: `data`
+

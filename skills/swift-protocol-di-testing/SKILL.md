@@ -188,3 +188,31 @@ func testReadError() async {
 - Testing error handling paths that are hard to trigger in real environments
 - Building modules that need to work in app, test, and SwiftUI preview contexts
 - Apps using Swift concurrency (actors, structured concurrency) that need testable architecture
+
+## Open-Source Benchmarks
+
+Reference projects for `swift-protocol-di-testing` optimization:
+
+- [apple/swift](https://github.com/apple/swift) - Language concurrency and memory model reference.
+- [pointfreeco/swift-composable-architecture](https://github.com/pointfreeco/swift-composable-architecture) - State management and testable architecture patterns.
+
+### Optimization Guidance
+- Codify actor isolation and Sendable boundaries.
+- Document deterministic async testing strategies.
+- Prefer protocol-driven abstractions for dependency injection.
+
+## Acceptance Criteria
+
+- Inputs: Clear task scope, target files/systems, and explicit constraints.
+- Outputs: Concrete artifact (code/doc/config/decision) aligned with this skill domain.
+- Validation: At least one executable check or deterministic review step is defined and run.
+- Done: Result is actionable, non-contradictory with adjacent skills, and mapped to user intent.
+
+## Skill Metadata
+
+- Owner: `easy-opencode-team`
+- Version: `1.0.0`
+- Last Reviewed: `2026-04-11`
+- Stability: `stable`
+- Overlap Domain: `swift-testing`
+

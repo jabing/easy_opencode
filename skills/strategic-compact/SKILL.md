@@ -101,3 +101,31 @@ Understanding what persists helps you compact with confidence:
 - [The Longform Guide](https://x.com/affaanmustafa/status/2014040193557471352) — Token optimization section
 - Memory persistence hooks — For state that survives compaction
 - `continuous-learning` skill — Extracts patterns before session ends
+
+## Open-Source Benchmarks
+
+Reference projects for `strategic-compact` optimization:
+
+- [BerriAI/litellm](https://github.com/BerriAI/litellm) - Provider routing, fallback, and usage tracking patterns.
+- [promptfoo/promptfoo](https://github.com/promptfoo/promptfoo) - Prompt/version regression testing and eval automation.
+
+### Optimization Guidance
+- Attach model routing decisions to measurable SLOs.
+- Version prompts and eval datasets together.
+- Capture token and latency budgets in acceptance criteria.
+
+## Acceptance Criteria
+
+- Inputs: Clear task scope, target files/systems, and explicit constraints.
+- Outputs: Concrete artifact (code/doc/config/decision) aligned with this skill domain.
+- Validation: At least one executable check or deterministic review step is defined and run.
+- Done: Result is actionable, non-contradictory with adjacent skills, and mapped to user intent.
+
+## Skill Metadata
+
+- Owner: `easy-opencode-team`
+- Version: `1.0.0`
+- Last Reviewed: `2026-04-11`
+- Stability: `stable`
+- Overlap Domain: `llm-ops`
+

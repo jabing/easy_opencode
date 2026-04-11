@@ -1,3 +1,9 @@
+## When to Activate
+
+- Trigger this skill when the request clearly matches this skill's domain.
+- Use this skill before writing implementation details outside its scope.
+- If multiple skills overlap, follow `skills/ROUTING_GUIDE.md` precedence rules.
+
 ---
 name: visa-doc-translate
 description: Translate visa application documents (images) to English and create a bilingual PDF with original and translation
@@ -115,3 +121,31 @@ The skill will:
    - Page 2: Professional English translation
 
 Perfect for visa applications to Australia, USA, Canada, UK, and other countries requiring translated documents.
+
+## Open-Source Benchmarks
+
+Reference projects for `visa-doc-translate` optimization:
+
+- [rust-lang/mdBook](https://github.com/rust-lang/mdBook) - Structured, versioned technical documentation workflow.
+- [conventional-changelog/commitlint](https://github.com/conventional-changelog/commitlint) - Consistent change semantics for docs and releases.
+
+### Optimization Guidance
+- Define canonical document templates per artifact type.
+- Automate stale-doc and broken-link checks in CI.
+- Tie examples to runnable snippets where possible.
+
+## Acceptance Criteria
+
+- Inputs: Clear task scope, target files/systems, and explicit constraints.
+- Outputs: Concrete artifact (code/doc/config/decision) aligned with this skill domain.
+- Validation: At least one executable check or deterministic review step is defined and run.
+- Done: Result is actionable, non-contradictory with adjacent skills, and mapped to user intent.
+
+## Skill Metadata
+
+- Owner: `easy-opencode-team`
+- Version: `1.0.0`
+- Last Reviewed: `2026-04-11`
+- Stability: `stable`
+- Overlap Domain: `document-processing`
+

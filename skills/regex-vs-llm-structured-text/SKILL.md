@@ -218,3 +218,31 @@ From a production quiz parsing pipeline (410 items):
 - Invoice/receipt processing
 - Document structure parsing (headers, sections, tables)
 - Any structured text with repeating patterns where cost matters
+
+## Open-Source Benchmarks
+
+Reference projects for `regex-vs-llm-structured-text` optimization:
+
+- [deepset-ai/haystack](https://github.com/deepset-ai/haystack) - Composable retrieval pipelines and evaluation patterns.
+- [langchain-ai/langchain](https://github.com/langchain-ai/langchain) - Tooling abstractions for retrieval orchestration.
+
+### Optimization Guidance
+- Separate retrieval, reranking, and answer synthesis concerns.
+- Track recall/latency/cost metrics per retrieval stage.
+- Add fallback plans for sparse and hybrid search modes.
+
+## Acceptance Criteria
+
+- Inputs: Clear task scope, target files/systems, and explicit constraints.
+- Outputs: Concrete artifact (code/doc/config/decision) aligned with this skill domain.
+- Validation: At least one executable check or deterministic review step is defined and run.
+- Done: Result is actionable, non-contradictory with adjacent skills, and mapped to user intent.
+
+## Skill Metadata
+
+- Owner: `easy-opencode-team`
+- Version: `1.0.0`
+- Last Reviewed: `2026-04-11`
+- Stability: `stable`
+- Overlap Domain: `retrieval`
+

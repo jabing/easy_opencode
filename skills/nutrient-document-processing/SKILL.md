@@ -6,6 +6,13 @@ origin: EOC
 
 # Nutrient Document Processing
 
+## When to Activate
+
+- Trigger this skill when the request clearly matches this skill's domain.
+- Use this skill before writing implementation details outside its scope.
+- If multiple skills overlap, follow `skills/ROUTING_GUIDE.md` precedence rules.
+
+
 Process documents with the [Nutrient DWS Processor API](https://www.nutrient.io/api/). Convert formats, extract text and tables, OCR scanned documents, redact PII, add watermarks, digitally sign, and fill PDF forms.
 
 ## Setup
@@ -163,3 +170,31 @@ For native tool integration, use the MCP server instead of curl:
 - [API Playground](https://dashboard.nutrient.io/processor-api/playground/)
 - [Full API Docs](https://www.nutrient.io/guides/dws-processor/)
 - [npm MCP Server](https://www.npmjs.com/package/@nutrient-sdk/dws-mcp-server)
+
+## Open-Source Benchmarks
+
+Reference projects for `nutrient-document-processing` optimization:
+
+- [rust-lang/mdBook](https://github.com/rust-lang/mdBook) - Structured, versioned technical documentation workflow.
+- [conventional-changelog/commitlint](https://github.com/conventional-changelog/commitlint) - Consistent change semantics for docs and releases.
+
+### Optimization Guidance
+- Define canonical document templates per artifact type.
+- Automate stale-doc and broken-link checks in CI.
+- Tie examples to runnable snippets where possible.
+
+## Acceptance Criteria
+
+- Inputs: Clear task scope, target files/systems, and explicit constraints.
+- Outputs: Concrete artifact (code/doc/config/decision) aligned with this skill domain.
+- Validation: At least one executable check or deterministic review step is defined and run.
+- Done: Result is actionable, non-contradictory with adjacent skills, and mapped to user intent.
+
+## Skill Metadata
+
+- Owner: `easy-opencode-team`
+- Version: `1.0.0`
+- Last Reviewed: `2026-04-11`
+- Stability: `stable`
+- Overlap Domain: `document-processing`
+

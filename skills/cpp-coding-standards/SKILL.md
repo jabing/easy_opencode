@@ -6,6 +6,13 @@ origin: EOC
 
 # C++ Coding Standards (C++ Core Guidelines)
 
+## When to Activate
+
+- Trigger this skill when the request clearly matches this skill's domain.
+- Use this skill before writing implementation details outside its scope.
+- If multiple skills overlap, follow `skills/ROUTING_GUIDE.md` precedence rules.
+
+
 Comprehensive coding standards for modern C++ (C++17/20/23) derived from the [C++ Core Guidelines](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines). Enforces type safety, resource safety, immutability, and clarity.
 
 ## When to Use
@@ -721,3 +728,31 @@ Before marking C++ work complete:
 - [ ] Exceptions are custom types, thrown by value, caught by reference (E.14, E.15)
 - [ ] `'\n'` instead of `std::endl` (SL.io.50)
 - [ ] No magic numbers (ES.45)
+
+## Open-Source Benchmarks
+
+Reference projects for `cpp-coding-standards` optimization:
+
+- [fastapi/fastapi](https://github.com/fastapi/fastapi) - Clear API contracts, validation-first handlers.
+- [prisma/prisma](https://github.com/prisma/prisma) - Strong schema modeling and migration discipline.
+
+### Optimization Guidance
+- Keep contract-first endpoint specs close to implementation.
+- Use explicit error envelopes and typed validation boundaries.
+- Document performance and consistency trade-offs per pattern.
+
+## Acceptance Criteria
+
+- Inputs: Clear task scope, target files/systems, and explicit constraints.
+- Outputs: Concrete artifact (code/doc/config/decision) aligned with this skill domain.
+- Validation: At least one executable check or deterministic review step is defined and run.
+- Done: Result is actionable, non-contradictory with adjacent skills, and mapped to user intent.
+
+## Skill Metadata
+
+- Owner: `easy-opencode-team`
+- Version: `1.0.0`
+- Last Reviewed: `2026-04-11`
+- Stability: `stable`
+- Overlap Domain: `cpp`
+

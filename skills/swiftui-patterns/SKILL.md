@@ -257,3 +257,31 @@ Use `#Preview` macro with inline mock data for fast iteration:
 
 See skill: `swift-actor-persistence` for actor-based persistence patterns.
 See skill: `swift-protocol-di-testing` for protocol-based DI and testing with Swift Testing.
+
+## Open-Source Benchmarks
+
+Reference projects for `swiftui-patterns` optimization:
+
+- [apple/swift](https://github.com/apple/swift) - Language concurrency and memory model reference.
+- [pointfreeco/swift-composable-architecture](https://github.com/pointfreeco/swift-composable-architecture) - State management and testable architecture patterns.
+
+### Optimization Guidance
+- Codify actor isolation and Sendable boundaries.
+- Document deterministic async testing strategies.
+- Prefer protocol-driven abstractions for dependency injection.
+
+## Acceptance Criteria
+
+- Inputs: Clear task scope, target files/systems, and explicit constraints.
+- Outputs: Concrete artifact (code/doc/config/decision) aligned with this skill domain.
+- Validation: At least one executable check or deterministic review step is defined and run.
+- Done: Result is actionable, non-contradictory with adjacent skills, and mapped to user intent.
+
+## Skill Metadata
+
+- Owner: `easy-opencode-team`
+- Version: `1.0.0`
+- Last Reviewed: `2026-04-11`
+- Stability: `stable`
+- Overlap Domain: `swiftui`
+

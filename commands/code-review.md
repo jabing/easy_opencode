@@ -10,10 +10,11 @@ Review code changes for quality, security, and maintainability: $ARGUMENTS
 
 ## Your Task
 
-1. **Get changed files**: Run `git diff --name-only HEAD`
-2. **Analyze each file** for issues
-3. **Generate structured report**
-4. **Provide actionable recommendations**
+1. **Gather full diff context**: `git diff --staged` + `git diff`
+2. **Map impacted scope**: changed files and behavioral surface
+3. **Analyze each file** with surrounding context
+4. **Generate structured report** with severity and impact
+5. **Return explicit verdict**: APPROVE / APPROVE_WITH_WARNINGS / BLOCK
 
 ## Check Categories
 
@@ -49,19 +50,27 @@ Review code changes for quality, security, and maintainability: $ARGUMENTS
 
 ## Report Format
 
-For each issue found:
+For each issue found (high confidence only):
 
 ```
 **[SEVERITY]** file.ts:123
 Issue: [Description]
+Impact: [Why it matters]
 Fix: [How to fix]
 ```
 
-## Decision
+## Decision Rules
 
 - **CRITICAL or HIGH issues**: Block commit, require fixes
 - **MEDIUM issues**: Recommend fixes before merge
 - **LOW issues**: Optional improvements
+
+Final output must include:
+
+```
+Verdict: APPROVE | APPROVE_WITH_WARNINGS | BLOCK
+Reason: [One paragraph]
+```
 
 ---
 

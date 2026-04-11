@@ -5,6 +5,13 @@ origin: EOC
 
 # skill-stocktake
 
+## When to Activate
+
+- Trigger this skill when the request clearly matches this skill's domain.
+- Use this skill before writing implementation details outside its scope.
+- If multiple skills overlap, follow `skills/ROUTING_GUIDE.md` precedence rules.
+
+
 Slash command (`/skill-stocktake`) that audits all Claude skills and commands using a quality checklist + AI holistic judgment. Supports two modes: Quick Scan for recently changed skills, and Full Stocktake for a complete review.
 
 ## Scope
@@ -174,3 +181,31 @@ Obtain via Bash: `date -u +%Y-%m-%dT%H:%M:%SZ`. Never use a date-only approximat
 - Evaluation is blind: the same checklist applies to all skills regardless of origin (EOC, self-authored, auto-extracted)
 - Archive / delete operations always require explicit user confirmation
 - No verdict branching by skill origin
+
+## Open-Source Benchmarks
+
+Reference projects for `skill-stocktake` optimization:
+
+- [rust-lang/mdBook](https://github.com/rust-lang/mdBook) - Structured, versioned technical documentation workflow.
+- [conventional-changelog/commitlint](https://github.com/conventional-changelog/commitlint) - Consistent change semantics for docs and releases.
+
+### Optimization Guidance
+- Define canonical document templates per artifact type.
+- Automate stale-doc and broken-link checks in CI.
+- Tie examples to runnable snippets where possible.
+
+## Acceptance Criteria
+
+- Inputs: Clear task scope, target files/systems, and explicit constraints.
+- Outputs: Concrete artifact (code/doc/config/decision) aligned with this skill domain.
+- Validation: At least one executable check or deterministic review step is defined and run.
+- Done: Result is actionable, non-contradictory with adjacent skills, and mapped to user intent.
+
+## Skill Metadata
+
+- Owner: `easy-opencode-team`
+- Version: `1.0.0`
+- Last Reviewed: `2026-04-11`
+- Stability: `stable`
+- Overlap Domain: `governance`
+

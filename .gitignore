@@ -40,3 +40,4 @@ tests/coverage/
 *.tgz
 opencode.json
 .opencode/easy-opencode/
+.opencode/eoc-run/

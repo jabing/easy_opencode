@@ -6,6 +6,13 @@ origin: EOC
 
 # E2E Testing Patterns
 
+## When to Activate
+
+- Trigger this skill when the request clearly matches this skill's domain.
+- Use this skill before writing implementation details outside its scope.
+- If multiple skills overlap, follow `skills/ROUTING_GUIDE.md` precedence rules.
+
+
 Comprehensive Playwright patterns for building stable, fast, and maintainable E2E test suites.
 
 ## Test File Organization
@@ -324,3 +331,31 @@ test('trade execution', async ({ page }) => {
   await expect(page.locator('[data-testid="trade-success"]')).toBeVisible()
 })
 ```
+
+## Open-Source Benchmarks
+
+Reference projects for `e2e-testing` optimization:
+
+- [pytest-dev/pytest](https://github.com/pytest-dev/pytest) - Mature test ergonomics and fixture patterns.
+- [microsoft/playwright](https://github.com/microsoft/playwright) - Robust, cross-browser E2E automation.
+
+### Optimization Guidance
+- Adopt table-driven and parameterized test styles.
+- Standardize fixture lifecycles and test data factories.
+- Separate fast unit gates from slower integration/E2E gates.
+
+## Acceptance Criteria
+
+- Inputs: Clear task scope, target files/systems, and explicit constraints.
+- Outputs: Concrete artifact (code/doc/config/decision) aligned with this skill domain.
+- Validation: At least one executable check or deterministic review step is defined and run.
+- Done: Result is actionable, non-contradictory with adjacent skills, and mapped to user intent.
+
+## Skill Metadata
+
+- Owner: `easy-opencode-team`
+- Version: `1.0.0`
+- Last Reviewed: `2026-04-11`
+- Stability: `stable`
+- Overlap Domain: `testing`
+

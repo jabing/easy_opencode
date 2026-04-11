@@ -11,9 +11,10 @@ Create a detailed implementation plan for: $ARGUMENTS
 ## Your Task
 
 1. **Restate Requirements** - Clarify what needs to be built
-2. **Identify Risks** - Surface potential issues, blockers, and dependencies
-3. **Create Step Plan** - Break down implementation into phases
-4. **Wait for Confirmation** - MUST receive user approval before proceeding
+2. **Define Scope** - Explicitly list in-scope and out-of-scope
+3. **Identify Risks** - Surface blockers, dependencies, and rollback concerns
+4. **Create Step Plan** - Break down implementation into milestones with validation steps
+5. **Wait for Confirmation** - MUST receive user approval before proceeding
 
 ## Output Format
 
@@ -34,6 +35,9 @@ Create a detailed implementation plan for: $ARGUMENTS
 ### Dependencies
 [List external dependencies, APIs, services needed]
 
+### Validation Plan
+[How each milestone will be verified]
+
 ### Risks
 - HIGH: [Critical risks that could block implementation]
 - MEDIUM: [Moderate risks to address]
@@ -41,6 +45,11 @@ Create a detailed implementation plan for: $ARGUMENTS
 
 ### Estimated Complexity
 [HIGH/MEDIUM/LOW with time estimates]
+
+### Execution Gate
+Plan Status: READY | NEEDS_CLARIFICATION
+Blocking Questions: [if any]
+First Execution Step: [single concrete action]
 
 **WAITING FOR CONFIRMATION**: Proceed with this plan? (yes/no/modify)
 

@@ -6,8 +6,13 @@ Production-ready OpenCode plugin with multi-agent workflows, reusable skills, sl
 
 - 14 specialized agents (3 primary + hidden specialists)
 - 50+ skills
-- 44 commands
+- 51 commands
 - Hook plugin for formatting, checks, and guardrails
+- Gate-controlled delivery flow via `/eoc-start`
+- DAG concurrency orchestration via `/eoc-parallel`
+- Run observability via `/eoc-metrics`
+- OpenSpec-style spec-first commands (`/openspec-proposal`, `/openspec-apply`, `/openspec-archive`)
+- Superpowers-style execution commands (`/superpowers-brainstorm`, `/superpowers-plan`, `/superpowers-execute`)
 
 ## Install
 
@@ -85,6 +90,7 @@ scripts/    Installer, uninstaller, diagnostics
 
 - The installer isolates assets under `easy-opencode` to avoid clobbering user-owned OpenCode files.
 - Command/agent registration is generated from repository assets to reduce drift.
+- External tooling parity is implemented from public/official sources only.
 
 ## License
 

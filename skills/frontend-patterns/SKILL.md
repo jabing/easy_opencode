@@ -640,3 +640,31 @@ export function Modal({ isOpen, onClose, children }: ModalProps) {
 ```
 
 **Remember**: Modern frontend patterns enable maintainable, performant user interfaces. Choose patterns that fit your project complexity.
+
+## Open-Source Benchmarks
+
+Reference projects for `frontend-patterns` optimization:
+
+- [vercel/next.js](https://github.com/vercel/next.js) - Modern frontend architecture and rendering strategies.
+- [tailwindlabs/tailwindcss](https://github.com/tailwindlabs/tailwindcss) - Scalable design-token driven styling patterns.
+
+### Optimization Guidance
+- Document state boundaries (server/client/cache) explicitly.
+- Promote accessibility checks as first-class acceptance criteria.
+- Include performance budgets for bundle and runtime metrics.
+
+## Acceptance Criteria
+
+- Inputs: Clear task scope, target files/systems, and explicit constraints.
+- Outputs: Concrete artifact (code/doc/config/decision) aligned with this skill domain.
+- Validation: At least one executable check or deterministic review step is defined and run.
+- Done: Result is actionable, non-contradictory with adjacent skills, and mapped to user intent.
+
+## Skill Metadata
+
+- Owner: `easy-opencode-team`
+- Version: `1.0.0`
+- Last Reviewed: `2026-04-11`
+- Stability: `stable`
+- Overlap Domain: `frontend`
+

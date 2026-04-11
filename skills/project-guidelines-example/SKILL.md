@@ -6,6 +6,13 @@ origin: EOC
 
 # Project Guidelines Skill (Example)
 
+## When to Activate
+
+- Trigger this skill when the request clearly matches this skill's domain.
+- Use this skill before writing implementation details outside its scope.
+- If multiple skills overlap, follow `skills/ROUTING_GUIDE.md` precedence rules.
+
+
 This is an example of a project-specific skill. Use this as a template for your own projects.
 
 Based on a real production application: [Zenith](https://zenith.chat) - AI-powered customer discovery platform.
@@ -347,3 +354,31 @@ SUPABASE_KEY=eyJ...
 - `backend-patterns.md` - API and database patterns
 - `frontend-patterns.md` - React and Next.js patterns
 - `tdd-workflow/` - Test-driven development methodology
+
+## Open-Source Benchmarks
+
+Reference projects for `project-guidelines-example` optimization:
+
+- [rust-lang/mdBook](https://github.com/rust-lang/mdBook) - Structured, versioned technical documentation workflow.
+- [conventional-changelog/commitlint](https://github.com/conventional-changelog/commitlint) - Consistent change semantics for docs and releases.
+
+### Optimization Guidance
+- Define canonical document templates per artifact type.
+- Automate stale-doc and broken-link checks in CI.
+- Tie examples to runnable snippets where possible.
+
+## Acceptance Criteria
+
+- Inputs: Clear task scope, target files/systems, and explicit constraints.
+- Outputs: Concrete artifact (code/doc/config/decision) aligned with this skill domain.
+- Validation: At least one executable check or deterministic review step is defined and run.
+- Done: Result is actionable, non-contradictory with adjacent skills, and mapped to user intent.
+
+## Skill Metadata
+
+- Owner: `easy-opencode-team`
+- Version: `1.0.0`
+- Last Reviewed: `2026-04-11`
+- Stability: `stable`
+- Overlap Domain: `governance`
+

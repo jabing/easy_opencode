@@ -732,3 +732,31 @@ Product.objects.filter(stock=0).delete()
 | Middleware | Request/response processing |
 
 Remember: Django provides many shortcuts, but for production applications, structure and organization matter more than concise code. Build for maintainability.
+
+## Open-Source Benchmarks
+
+Reference projects for `django-patterns` optimization:
+
+- [django/django](https://github.com/django/django) - Canonical framework patterns and security defaults.
+- [jazzband/django-debug-toolbar](https://github.com/jazzband/django-debug-toolbar) - Performance and query introspection practices.
+
+### Optimization Guidance
+- Align ORM, view, and form patterns with framework defaults.
+- Add guidance for middleware ordering and security settings.
+- Provide migration and test matrix examples for apps at scale.
+
+## Acceptance Criteria
+
+- Inputs: Clear task scope, target files/systems, and explicit constraints.
+- Outputs: Concrete artifact (code/doc/config/decision) aligned with this skill domain.
+- Validation: At least one executable check or deterministic review step is defined and run.
+- Done: Result is actionable, non-contradictory with adjacent skills, and mapped to user intent.
+
+## Skill Metadata
+
+- Owner: `easy-opencode-team`
+- Version: `1.0.0`
+- Last Reviewed: `2026-04-11`
+- Stability: `stable`
+- Overlap Domain: `django`
+

@@ -528,3 +528,31 @@ setTimeout(callback, DEBOUNCE_DELAY_MS)
 ```
 
 **Remember**: Code quality is not negotiable. Clear, maintainable code enables rapid development and confident refactoring.
+
+## Open-Source Benchmarks
+
+Reference projects for `coding-standards` optimization:
+
+- [fastapi/fastapi](https://github.com/fastapi/fastapi) - Clear API contracts, validation-first handlers.
+- [prisma/prisma](https://github.com/prisma/prisma) - Strong schema modeling and migration discipline.
+
+### Optimization Guidance
+- Keep contract-first endpoint specs close to implementation.
+- Use explicit error envelopes and typed validation boundaries.
+- Document performance and consistency trade-offs per pattern.
+
+## Acceptance Criteria
+
+- Inputs: Clear task scope, target files/systems, and explicit constraints.
+- Outputs: Concrete artifact (code/doc/config/decision) aligned with this skill domain.
+- Validation: At least one executable check or deterministic review step is defined and run.
+- Done: Result is actionable, non-contradictory with adjacent skills, and mapped to user intent.
+
+## Skill Metadata
+
+- Owner: `easy-opencode-team`
+- Version: `1.0.0`
+- Last Reviewed: `2026-04-11`
+- Stability: `stable`
+- Overlap Domain: `engineering-standards`
+

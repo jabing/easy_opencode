@@ -30,6 +30,31 @@ Supported installer flags:
 4. Prefer immutable data updates
 5. Plan before implementation for large changes
 
+## Entry Workflows
+
+### eoc_build (Default Build Agent)
+
+1. Clarify request and constraints
+2. If change is non-trivial, invoke planner-first path
+3. Implement in minimal safe increments
+4. Run validation checks after each milestone
+5. Route to code-review/security/tdd agents when risk is medium/high
+6. Return final summary with residual risks
+
+### eoc_planner
+
+1. Scope and assumptions
+2. Dependency and risk analysis
+3. Milestone plan with validation per milestone
+4. Stop at execution gate and wait for confirmation
+
+### eoc_code_reviewer
+
+1. Diff context collection
+2. Scope mapping and deep read
+3. Severity-based findings
+4. Explicit merge verdict
+
 ## Agent Set
 
 Primary agents:

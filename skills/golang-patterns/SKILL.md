@@ -672,3 +672,31 @@ func (c *Counter) Increment() { c.n++ }        // Pointer receiver
 ```
 
 **Remember**: Go code should be boring in the best way - predictable, consistent, and easy to understand. When in doubt, keep it simple.
+
+## Open-Source Benchmarks
+
+Reference projects for `golang-patterns` optimization:
+
+- [golang/go](https://github.com/golang/go) - Idiomatic language and standard library patterns.
+- [stretchr/testify](https://github.com/stretchr/testify) - Pragmatic assertions and mocking patterns.
+
+### Optimization Guidance
+- Use table-driven tests and explicit error handling conventions.
+- Keep package boundaries narrow and dependency direction clear.
+- Include benchmarking guidance for hot paths.
+
+## Acceptance Criteria
+
+- Inputs: Clear task scope, target files/systems, and explicit constraints.
+- Outputs: Concrete artifact (code/doc/config/decision) aligned with this skill domain.
+- Validation: At least one executable check or deterministic review step is defined and run.
+- Done: Result is actionable, non-contradictory with adjacent skills, and mapped to user intent.
+
+## Skill Metadata
+
+- Owner: `easy-opencode-team`
+- Version: `1.0.0`
+- Last Reviewed: `2026-04-11`
+- Stability: `stable`
+- Overlap Domain: `go`
+

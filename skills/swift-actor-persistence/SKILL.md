@@ -141,3 +141,31 @@ final class QuestionListViewModel {
 - Offline-first architectures that sync to a server later
 - Any shared mutable state that multiple parts of the app access concurrently
 - Replacing legacy `DispatchQueue`-based thread safety with modern Swift concurrency
+
+## Open-Source Benchmarks
+
+Reference projects for `swift-actor-persistence` optimization:
+
+- [apple/swift](https://github.com/apple/swift) - Language concurrency and memory model reference.
+- [pointfreeco/swift-composable-architecture](https://github.com/pointfreeco/swift-composable-architecture) - State management and testable architecture patterns.
+
+### Optimization Guidance
+- Codify actor isolation and Sendable boundaries.
+- Document deterministic async testing strategies.
+- Prefer protocol-driven abstractions for dependency injection.
+
+## Acceptance Criteria
+
+- Inputs: Clear task scope, target files/systems, and explicit constraints.
+- Outputs: Concrete artifact (code/doc/config/decision) aligned with this skill domain.
+- Validation: At least one executable check or deterministic review step is defined and run.
+- Done: Result is actionable, non-contradictory with adjacent skills, and mapped to user intent.
+
+## Skill Metadata
+
+- Owner: `easy-opencode-team`
+- Version: `1.0.0`
+- Last Reviewed: `2026-04-11`
+- Stability: `stable`
+- Overlap Domain: `swift`
+
