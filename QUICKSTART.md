@@ -1,88 +1,52 @@
 # Quick Start: Easy OpenCode
 
-Get started with EOC in 3 minutes! 🚀
-
-## Prerequisites
-
-Make sure you have OpenCode installed:
+## 1) Prerequisites
 
 ```bash
-# Install OpenCode
 brew install opencode
 # or
 npm install -g opencode
-
-# Verify
 opencode --version
 ```
 
-## Installation (30 seconds)
+## 2) Install Plugin
 
 ```bash
-# Install EOC via npm
 npm install -g easy-opencode
-
-# Or use npx (no global install needed)
-npx easy-opencode install
 ```
 
-## Setup in Your Project (1 minute)
+## 3) Install into a Project
 
 ```bash
 cd your-project
-eoc-install
+eoc-install --project --yes
 ```
 
-Choose option **1** (Project-level) for most cases.
+Or install globally:
 
-## Start Using (30 seconds)
+```bash
+eoc-install --global --yes
+```
+
+## 4) Verify in OpenCode
 
 ```bash
 opencode
 ```
 
-That's it! You now have access to:
+Inside OpenCode run:
 
-- 🤖 **14 specialized agents** (planner, architect, tdd-guide, etc.)
-- 📚 **50+ skills** (TDD, security, coding standards, etc.)
-- 🛠️ **33 commands** (/plan, /tdd, /code-review, etc.)
-- ⚡ **Automated hooks** (auto-format, type-check, security scan)
+- `/agents`
+- `/help`
 
-## Try These Commands
+## Included
 
-### Plan a Feature
+- 14 agents
+- 50+ skills
+- 44 commands
 
-```
-/plan Create a user authentication system
-```
+## Help
 
-### Write Test-Driven Code
-
-```
-/tdd Implement user login endpoint
-```
-
-### Review Code
-
-```
-/code-review Check my recent changes
-```
-
-### Security Check
-
-```
-/security Review authentication code
-```
-
-## What's Next?
-
-- 📖 Read the [full documentation](README.md)
-- 🔧 Check [npm installation guide](docs/NPM_INSTALLATION.md)
-- 🤖 Learn about [available agents](AGENTS.md)
-- 📚 Explore [skills](skills/)
-
----
-
-Need help? Check [issues](https://github.com/jabing/easy_opencode/issues) or [discussions](https://github.com/jabing/easy_opencode/discussions).
-
-Happy coding! 🎉
+- [README](README.md)
+- [AGENTS](AGENTS.md)
+- [Issues](https://github.com/jabing/easy_opencode/issues)

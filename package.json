@@ -1,7 +1,7 @@
 {
   "name": "easy-opencode",
   "version": "1.9.9",
-  "description": "Production-ready AI coding plugin for OpenCode with 14 specialized agents, 50+ skills, 34 commands, and automated hook workflows.",
+  "description": "Production-ready AI coding plugin for OpenCode with 14 specialized agents, 50+ skills, 44 commands, and automated hook workflows.",
   "bin": {
     "eoc-install": "./bin/eoc-install.js"
   },
