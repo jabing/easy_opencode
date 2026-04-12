@@ -5,7 +5,7 @@ Run production-focused quality checks before merge/commit.
 ## Usage
 
 ```bash
-# Fast mode (default): structural + static checks
+# Fast mode (default): structural + static + metadata checks
 node scripts/quality-gate.js
 
 # Full mode: include lint/test/build/typecheck scripts when present
@@ -30,6 +30,9 @@ node scripts/quality-gate.js --json
 - Skill inventory gate:
   - validate skill structure and metadata via `scripts/skill-registry.js`
   - generate `skills/registry.json` for version/source tracking
+- Metadata consistency gate:
+  - validate counts in `README.md`, `AGENTS.md`, and `package.json` description
+  - compare against actual command/skill/agent assets
 - Optional full script checks:
   - `npm run lint`
   - `npm run typecheck`

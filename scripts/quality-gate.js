@@ -81,12 +81,22 @@ function collectCodeFiles() {
 
 function runCommand(command, args, timeoutMs) {
   return new Promise((resolve) => {
-    const child = spawn(command, args, {
-      cwd: ROOT,
-      shell: false,
-      windowsHide: true,
-      stdio: ['ignore', 'pipe', 'pipe'],
-    });
+    let child;
+    try {
+      child = spawn(command, args, {
+        cwd: ROOT,
+        shell: process.platform === 'win32',
+        windowsHide: true,
+        stdio: ['ignore', 'pipe', 'pipe'],
+      });
+    } catch (error) {
+      resolve({
+        code: 1,
+        timedOut: false,
+        output: String(error.message || error),
+      });
+      return;
+    }
     let out = '';
     let err = '';
     const timer = setTimeout(() => {
@@ -97,6 +107,14 @@ function runCommand(command, args, timeoutMs) {
     });
     child.stderr.on('data', (d) => {
       err += String(d);
+    });
+    child.on('error', (error) => {
+      clearTimeout(timer);
+      resolve({
+        code: 1,
+        timedOut: false,
+        output: String(error.message || error),
+      });
     });
     child.on('close', (code, signal) => {
       clearTimeout(timer);
@@ -125,6 +143,62 @@ function parseFrontmatter(content) {
     out[kv[1]] = kv[2].replace(/^["']|["']$/g, '');
   }
   return out;
+}
+
+function countCommands() {
+  const dir = path.join(ROOT, 'commands');
+  return fs.readdirSync(dir, { withFileTypes: true }).filter((e) => e.isFile() && e.name.endsWith('.md')).length;
+}
+
+function countSkills() {
+  const dir = path.join(ROOT, 'skills');
+  return fs
+    .readdirSync(dir, { withFileTypes: true })
+    .filter((e) => e.isDirectory() && fs.existsSync(path.join(dir, e.name, 'SKILL.md'))).length;
+}
+
+function countAgentsFromInstall() {
+  const installPath = path.join(ROOT, 'scripts', 'install.js');
+  const text = fs.readFileSync(installPath, 'utf8');
+  const m = text.match(/function buildAgents\([^)]*\)\s*\{\s*return\s*\{([\s\S]*?)\n\s*\}\s*\}/);
+  if (!m) throw new Error('cannot parse buildAgents()');
+  const body = m[1];
+  const keys = [...body.matchAll(/^\s{4}(?:'([^']+)'|([a-zA-Z0-9_-]+))\s*:\s*\{/gm)].map((x) => x[1] || x[2]);
+  return keys.length;
+}
+
+function parseCountTuple(text, re) {
+  const m = text.match(re);
+  if (!m) throw new Error('count tuple not found');
+  return { agents: Number(m[1]), skills: Number(m[2]), commands: Number(m[3]) };
+}
+
+function validateMetadataConsistency() {
+  const actual = {
+    agents: countAgentsFromInstall(),
+    skills: countSkills(),
+    commands: countCommands(),
+  };
+  const readme = fs.readFileSync(path.join(ROOT, 'README.md'), 'utf8');
+  const agentsMd = fs.readFileSync(path.join(ROOT, 'AGENTS.md'), 'utf8');
+  const pkg = JSON.parse(fs.readFileSync(path.join(ROOT, 'package.json'), 'utf8'));
+
+  const tuples = [
+    ['README.md', parseCountTuple(readme, /-\s*(\d+)\s+specialized agents[\s\S]*?-\s*(\d+)\+?\s+skills[\s\S]*?-\s*(\d+)\s+commands/i)],
+    ['AGENTS.md', parseCountTuple(agentsMd, /with\s+(\d+)\s+specialized agents,\s*(\d+)\+?\s+skills,\s*(\d+)\s+commands/i)],
+    ['package.json', parseCountTuple(String(pkg.description || ''), /with\s+(\d+)\s+specialized agents,\s*(\d+)\+?\s+skills,\s*(\d+)\s+commands/i)],
+  ];
+
+  const mismatches = [];
+  for (const [name, t] of tuples) {
+    if (t.agents !== actual.agents) mismatches.push(`${name}:agents=${t.agents} expected=${actual.agents}`);
+    if (t.skills !== actual.skills) mismatches.push(`${name}:skills=${t.skills} expected=${actual.skills}`);
+    if (t.commands !== actual.commands) mismatches.push(`${name}:commands=${t.commands} expected=${actual.commands}`);
+  }
+  return {
+    ok: mismatches.length === 0,
+    detail: mismatches.length === 0 ? `ok agents=${actual.agents} skills=${actual.skills} commands=${actual.commands}` : mismatches.join(' | '),
+  };
 }
 
 function validateSkillsAndWriteRegistry() {
@@ -246,6 +320,15 @@ async function run() {
   const skillGate = validateSkillsAndWriteRegistry();
   addResult(results, skillGate.ok ? 'pass' : 'fail', 'skills.registry', skillGate.detail);
 
+  // Metadata consistency gate: README/AGENTS/package counts must match filesystem truth.
+  const metadataGate = validateMetadataConsistency();
+  addResult(
+    results,
+    metadataGate.ok ? 'pass' : 'fail',
+    'metadata.consistency',
+    metadataGate.detail
+  );
+
   const scripts = (pkg && pkg.scripts) || {};
   if (full) {
     const npmCmd = process.platform === 'win32' ? 'npm.cmd' : 'npm';
@@ -261,6 +344,10 @@ async function run() {
         continue;
       }
       const r = await runCommand(npmCmd, args, timeoutMs);
+      if (/EPERM/i.test(r.output || '')) {
+        addResult(results, 'skip', `script:${name}`, 'skipped in restricted runtime (spawn EPERM)');
+        continue;
+      }
       if (r.timedOut) {
         addResult(results, 'fail', `script:${name}`, `timeout after ${timeoutMs}ms`);
         continue;

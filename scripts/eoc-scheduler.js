@@ -126,7 +126,7 @@ function shellCommand(command, workdir, timeoutMs, logFile) {
       },
       (error, stdout, stderr) => {
         const content = `${stdout || ''}${stderr || ''}`;
-        fs.writeFileSync(logFile, content, 'utf8');
+        fs.appendFileSync(logFile, content, 'utf8');
         const timedOut = Boolean(error && error.killed && error.signal === 'SIGTERM');
         if (!error) {
           resolve({ code: 0, timedOut: false });
@@ -143,6 +143,12 @@ function validateTasks(tasks) {
   const ids = new Set(Object.keys(tasks));
   const errors = [];
   for (const task of Object.values(tasks)) {
+    if (!String(task.command || '').trim()) {
+      errors.push(`task "${task.task_id}" missing command`);
+    }
+    if (!String(task.validation || '').trim()) {
+      errors.push(`task "${task.task_id}" missing validation`);
+    }
     for (const dep of task.deps || []) {
       if (!ids.has(dep)) {
         errors.push(`task "${task.task_id}" depends on missing task "${dep}"`);
@@ -328,6 +334,8 @@ async function runScheduler(run, simulate, fastFailOverride) {
           deps: task.deps,
           workdir: task.workdir,
           command: task.command,
+          validation: task.validation,
+          owner_hint: task.owner_hint || 'fullstack',
           timeout_sec: task.timeout_sec,
           retries: task.retries,
           priority: task.priority || 100,
@@ -340,6 +348,7 @@ async function runScheduler(run, simulate, fastFailOverride) {
     );
 
     const logFile = path.join(taskBase, `attempt-${task.attempts}.log`);
+    fs.writeFileSync(logFile, '', 'utf8');
     let result;
     if (simulate) {
       fs.writeFileSync(logFile, `[simulate] ${task.command}\n`, 'utf8');
@@ -361,6 +370,34 @@ async function runScheduler(run, simulate, fastFailOverride) {
     }
 
     if (result.code === 0) {
+      let validationResult;
+      if (simulate) {
+        fs.appendFileSync(logFile, `[simulate:validation] ${task.validation}\n`, 'utf8');
+        validationResult = { code: 0, timedOut: false };
+      } else {
+        validationResult = await shellCommand(task.validation, task.workdir, task.timeout_sec * 1000, logFile);
+      }
+      if (validationResult.timedOut) {
+        task.last_error = 'validation_timeout';
+        if (task.attempts <= task.retries + 1) {
+          task.status = 'queued';
+        } else {
+          task.status = 'failed';
+          task.ended_at = nowIso();
+        }
+        return;
+      }
+      if (validationResult.code !== 0) {
+        task.last_error = `validation_exit_code_${validationResult.code}`;
+        task.exit_code = validationResult.code;
+        if (task.attempts <= task.retries + 1) {
+          task.status = 'queued';
+        } else {
+          task.status = 'failed';
+          task.ended_at = nowIso();
+        }
+        return;
+      }
       task.status = 'success';
       task.exit_code = 0;
       task.ended_at = nowIso();
@@ -465,7 +502,7 @@ async function main() {
       console.log('Usage:');
       console.log('  node scripts/eoc-scheduler.js init --run-id <id> [--concurrency 2] [--fast-fail false]');
       console.log(
-        '  node scripts/eoc-scheduler.js add-task --run-id <id> --task-id <id> --cmd "..." [--deps a,b] [--timeout 600] [--retries 1] [--priority 100] [--workdir path]'
+        '  node scripts/eoc-scheduler.js add-task --run-id <id> --task-id <id> --cmd "..." --validation "..." [--deps a,b] [--timeout 600] [--retries 1] [--priority 100] [--owner fullstack] [--workdir path]'
       );
       console.log('  node scripts/eoc-scheduler.js run --run-id <id> [--simulate] [--fast-fail true]');
       console.log('  node scripts/eoc-scheduler.js status --run-id <id>');
@@ -487,15 +524,18 @@ async function main() {
         initScheduler(run, run.scheduler?.concurrency || 2, run.scheduler?.fast_fail);
         const taskId = opts['task-id'];
         const command = opts.cmd;
-        if (!taskId || !command) throw new Error('add-task requires --task-id and --cmd');
+        const validation = opts.validation;
+        if (!taskId || !command || !validation) throw new Error('add-task requires --task-id, --cmd, and --validation');
         if (run.scheduler.tasks[taskId]) throw new Error(`Task exists: ${taskId}`);
         const task = {
           task_id: taskId,
           command,
+          validation,
           deps: depList(opts.deps),
           timeout_sec: Number(opts.timeout || 600),
           retries: Number(opts.retries || 0),
           priority: Number(opts.priority || 100),
+          owner_hint: String(opts.owner || 'fullstack'),
           workdir: opts.workdir || process.cwd(),
           status: 'queued',
           attempts: 0,

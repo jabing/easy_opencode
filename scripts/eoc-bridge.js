@@ -87,20 +87,43 @@ function normalizeDeps(deps) {
     .filter(Boolean);
 }
 
+function normalizeOwnerHint(raw, taskId) {
+  const allowed = new Set(['backend', 'frontend', 'fullstack', 'qa', 'docs']);
+  const value = String(raw || '').trim().toLowerCase();
+  if (!value) return 'fullstack';
+  if (!allowed.has(value)) {
+    throw new Error(`Task "${taskId}" owner_hint must be one of: backend|frontend|fullstack|qa|docs`);
+  }
+  return value;
+}
+
+function assertRunnableText(raw, field, taskId) {
+  const value = String(raw || '').trim();
+  if (!value) throw new Error(`Task "${taskId}" missing ${field}`);
+  if (/[\r\n]/.test(value)) {
+    throw new Error(`Task "${taskId}" ${field} must be a single-line command`);
+  }
+  return value;
+}
+
 function normalizeTask(t) {
   const id = String(t.id || t.task_id || '').trim();
   if (!id) throw new Error('Task missing id/task_id');
-  const command = String(t.command || t.cmd || t.validation || '').trim();
-  if (!command) {
-    throw new Error(`Task "${id}" missing executable command (command/cmd/validation).`);
+  const command = assertRunnableText(t.command || t.cmd || '', 'command (command/cmd)', id);
+  const validation = assertRunnableText(t.validation || '', 'validation', id);
+  const priority = toNum(t.priority, 100);
+  if (!Number.isFinite(priority) || priority < 1 || priority > 200) {
+    throw new Error(`Task "${id}" priority must be between 1 and 200`);
   }
   return {
     task_id: id,
     command,
+    validation,
     deps: normalizeDeps(t.deps),
     timeout_sec: toNum(t.timeout_sec ?? t.timeout, 600),
     retries: toNum(t.retries, 0),
-    priority: toNum(t.priority, 100),
+    priority,
+    owner_hint: normalizeOwnerHint(t.owner_hint, id),
     workdir: String(t.workdir || process.cwd()),
     status: 'queued',
     attempts: 0,
@@ -219,6 +242,7 @@ function usage() {
   console.log('  --fast-fail true|false Override packet fast_fail');
   console.log('  --execute              Run scheduler immediately after import');
   console.log('  --plan-confirmed true|false  Defaults to true');
+  console.log('Packet requirements per task: id, command, validation, deps, priority(1-200), owner_hint(optional)');
 }
 
 function main() {

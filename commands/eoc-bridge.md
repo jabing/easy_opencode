@@ -25,8 +25,10 @@ node scripts/eoc-bridge.js --packet packet.json --execute --simulate
 - `fast_fail`
 - `tasks[]` where each task provides:
   - `id`
-  - `command` (or `cmd`, fallback `validation`)
-  - optional `deps`, `priority`, `timeout_sec`, `retries`, `workdir`
+  - `command` (or `cmd`)
+  - `validation` (deterministic executable check, required)
+  - optional `owner_hint` (`backend|frontend|fullstack|qa|docs`)
+  - optional `deps`, `priority(1-200)`, `timeout_sec`, `retries`, `workdir`
 
 ## Outcome
 

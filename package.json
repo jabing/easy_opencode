@@ -1,13 +1,19 @@
 {
   "name": "easy-opencode",
   "version": "1.9.10",
-  "description": "Production-ready AI coding plugin for OpenCode with 14 specialized agents, 55+ skills, 51 commands, and automated hook workflows.",
+  "description": "Production-ready AI coding plugin for OpenCode with 15 specialized agents, 51 skills, 59 commands, and automated hook workflows.",
   "bin": {
     "eoc-install": "bin/eoc-install.js"
   },
   "scripts": {
     "install": "node scripts/npm-install.js",
-    "postinstall": "node scripts/npm-postinstall.js"
+    "postinstall": "node scripts/npm-postinstall.js",
+    "quality-gate": "node scripts/quality-gate.js",
+    "quality-gate:full": "node scripts/quality-gate.js --full --strict",
+    "lint": "node scripts/metadata-check.js",
+    "typecheck": "node --check scripts/eoc-start.js && node --check scripts/eoc-scheduler.js && node --check scripts/eoc-bridge.js && node --check scripts/quality-gate.js && node --check scripts/skill-registry.js && node --check scripts/install.js && node --check scripts/metadata-check.js && node --check scripts/smoke-eoc.js && node --check scripts/build-check.js",
+    "test": "node scripts/smoke-eoc.js",
+    "build": "node scripts/build-check.js"
   },
   "keywords": [
     "opencode",

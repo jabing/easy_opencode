@@ -165,6 +165,29 @@ function readTitle(filePath, fallback) {
   }
 }
 
+function readCommandMeta(filePath) {
+  try {
+    const content = fs.readFileSync(filePath, 'utf8');
+    const m = content.match(/^---\s*\r?\n([\s\S]*?)\r?\n---\s*/);
+    if (!m) return {};
+    const out = {};
+    for (const line of m[1].split(/\r?\n/)) {
+      const kv = line.match(/^([a-zA-Z0-9_.-]+)\s*:\s*(.+)\s*$/);
+      if (!kv) continue;
+      const key = kv[1];
+      const raw = kv[2].replace(/^["']|["']$/g, '').trim();
+      if (key === 'subtask') {
+        out.subtask = raw === 'true';
+        continue;
+      }
+      out[key] = raw;
+    }
+    return out;
+  } catch {
+    return {};
+  }
+}
+
 function buildAgents(assetPrefix) {
   return {
     eoc_build: {
@@ -301,21 +324,23 @@ function buildCommandConfig(commandsDir, assetPrefix) {
     .sort((a, b) => a.localeCompare(b))
 
   const result = {}
+  const fallbackAgent = 'eoc_build'
 
   for (const fileName of commandFiles) {
     const name = fileName.replace(/\.md$/, '')
     const filePath = path.join(commandsDir, fileName)
     const title = readTitle(filePath, name)
+    const meta = readCommandMeta(filePath)
 
     const command = {
       description: title,
       template: `{file:${assetPrefix}/commands/${fileName}}\n\n$ARGUMENTS`,
     }
 
-    const agent = agentByCommand[name]
+    const agent = meta.agent || agentByCommand[name] || fallbackAgent
     if (agent) {
       command.agent = agent
-      command.subtask = true
+      command.subtask = meta.subtask !== undefined ? meta.subtask : true
     }
 
     result[name] = command
