@@ -12,6 +12,9 @@ Adds high-concurrency orchestration with:
 ## Usage
 
 ```bash
+# (recommended) import planner packet first
+node scripts/eoc-bridge.js --packet packet.json
+
 # Init scheduler
 node scripts/eoc-scheduler.js init --run-id <run-id> --concurrency 3 --fast-fail false
 

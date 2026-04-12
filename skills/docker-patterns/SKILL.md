@@ -1,7 +1,7 @@
 ---
 name: docker-patterns
 description: Docker and Docker Compose patterns for local development, container security, networking, volume strategies, and multi-service orchestration.
-origin: EOC
+origin: ECC
 ---
 
 # Docker Patterns
@@ -362,31 +362,3 @@ docker network inspect <project>_default
 # BAD: Putting secrets in docker-compose.yml
 # Use .env files (gitignored) or Docker secrets
 ```
-
-## Open-Source Benchmarks
-
-Reference projects for `docker-patterns` optimization:
-
-- [kubernetes/kubernetes](https://github.com/kubernetes/kubernetes) - Production deployment, reliability, and rollout patterns.
-- [helm/helm](https://github.com/helm/helm) - Reusable deployment packaging and environment overlays.
-
-### Optimization Guidance
-- Encode rollout and rollback steps as checklist templates.
-- Standardize health checks, SLOs, and failure budgets.
-- Attach security and observability requirements to each pattern.
-
-## Acceptance Criteria
-
-- Inputs: Clear task scope, target files/systems, and explicit constraints.
-- Outputs: Concrete artifact (code/doc/config/decision) aligned with this skill domain.
-- Validation: At least one executable check or deterministic review step is defined and run.
-- Done: Result is actionable, non-contradictory with adjacent skills, and mapped to user intent.
-
-## Skill Metadata
-
-- Owner: `easy-opencode-team`
-- Version: `1.0.0`
-- Last Reviewed: `2026-04-11`
-- Stability: `stable`
-- Overlap Domain: `devops`
-

@@ -38,6 +38,9 @@ node scripts/eoc-start.js advance
 # Resume / list runs
 node scripts/eoc-start.js list
 node scripts/eoc-start.js resume <run-id>
+
+# Import planner Execution Packet directly into run + scheduler
+node scripts/eoc-bridge.js --packet packet.json
 ```
 
 ## State Storage

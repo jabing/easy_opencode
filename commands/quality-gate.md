@@ -27,6 +27,9 @@ node scripts/quality-gate.js --json
   - test `.only(...)`
   - possible hardcoded credentials
   - debug traces / TODO/FIXME (warning by default)
+- Skill inventory gate:
+  - validate skill structure and metadata via `scripts/skill-registry.js`
+  - generate `skills/registry.json` for version/source tracking
 - Optional full script checks:
   - `npm run lint`
   - `npm run typecheck`

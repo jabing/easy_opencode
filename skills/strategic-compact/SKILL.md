@@ -1,7 +1,7 @@
 ---
 name: strategic-compact
 description: Suggests manual context compaction at logical intervals to preserve context through task phases rather than arbitrary auto-compaction.
-origin: EOC
+origin: ECC
 ---
 
 # Strategic Compact Skill
@@ -96,36 +96,36 @@ Understanding what persists helps you compact with confidence:
 5. **Write before compacting** — Save important context to files or memory before compacting
 6. **Use `/compact` with a summary** — Add a custom message: `/compact Focus on implementing auth middleware next`
 
+## Token Optimization Patterns
+
+### Trigger-Table Lazy Loading
+Instead of loading full skill content at session start, use a trigger table that maps keywords to skill paths. Skills load only when triggered, reducing baseline context by 50%+:
+
+| Trigger | Skill | Load When |
+|---------|-------|-----------|
+| "test", "tdd", "coverage" | tdd-workflow | User mentions testing |
+| "security", "auth", "xss" | security-review | Security-related work |
+| "deploy", "ci/cd" | deployment-patterns | Deployment context |
+
+### Context Composition Awareness
+Monitor what's consuming your context window:
+- **CLAUDE.md files** — Always loaded, keep lean
+- **Loaded skills** — Each skill adds 1-5K tokens
+- **Conversation history** — Grows with each exchange
+- **Tool results** — File reads, search results add bulk
+
+### Duplicate Instruction Detection
+Common sources of duplicate context:
+- Same rules in both `~/.claude/rules/` and project `.claude/rules/`
+- Skills that repeat CLAUDE.md instructions
+- Multiple skills covering overlapping domains
+
+### Context Optimization Tools
+- `token-optimizer` MCP — Automated 95%+ token reduction via content deduplication
+- `context-mode` — Context virtualization (315KB to 5.4KB demonstrated)
+
 ## Related
 
 - [The Longform Guide](https://x.com/affaanmustafa/status/2014040193557471352) — Token optimization section
 - Memory persistence hooks — For state that survives compaction
 - `continuous-learning` skill — Extracts patterns before session ends
-
-## Open-Source Benchmarks
-
-Reference projects for `strategic-compact` optimization:
-
-- [BerriAI/litellm](https://github.com/BerriAI/litellm) - Provider routing, fallback, and usage tracking patterns.
-- [promptfoo/promptfoo](https://github.com/promptfoo/promptfoo) - Prompt/version regression testing and eval automation.
-
-### Optimization Guidance
-- Attach model routing decisions to measurable SLOs.
-- Version prompts and eval datasets together.
-- Capture token and latency budgets in acceptance criteria.
-
-## Acceptance Criteria
-
-- Inputs: Clear task scope, target files/systems, and explicit constraints.
-- Outputs: Concrete artifact (code/doc/config/decision) aligned with this skill domain.
-- Validation: At least one executable check or deterministic review step is defined and run.
-- Done: Result is actionable, non-contradictory with adjacent skills, and mapped to user intent.
-
-## Skill Metadata
-
-- Owner: `easy-opencode-team`
-- Version: `1.0.0`
-- Last Reviewed: `2026-04-11`
-- Stability: `stable`
-- Overlap Domain: `llm-ops`
-

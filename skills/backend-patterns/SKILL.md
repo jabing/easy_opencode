@@ -1,7 +1,7 @@
 ---
 name: backend-patterns
 description: Backend architecture patterns, API design, database optimization, and server-side best practices for Node.js, Express, and Next.js API routes.
-origin: EOC
+origin: ECC
 ---
 
 # Backend Development Patterns
@@ -23,7 +23,7 @@ Backend architecture patterns and best practices for scalable server-side applic
 ### RESTful API Structure
 
 ```typescript
-// ✅ Resource-based URLs
+// PASS: Resource-based URLs
 GET    /api/markets                 # List resources
 GET    /api/markets/:id             # Get single resource
 POST   /api/markets                 # Create resource
@@ -31,7 +31,7 @@ PUT    /api/markets/:id             # Replace resource
 PATCH  /api/markets/:id             # Update resource
 DELETE /api/markets/:id             # Delete resource
 
-// ✅ Query parameters for filtering, sorting, pagination
+// PASS: Query parameters for filtering, sorting, pagination
 GET /api/markets?status=active&sort=volume&limit=20&offset=0
 ```
 
@@ -131,7 +131,7 @@ export default withAuth(async (req, res) => {
 ### Query Optimization
 
 ```typescript
-// ✅ GOOD: Select only needed columns
+// PASS: GOOD: Select only needed columns
 const { data } = await supabase
   .from('markets')
   .select('id, name, status, volume')
@@ -139,7 +139,7 @@ const { data } = await supabase
   .order('volume', { ascending: false })
   .limit(10)
 
-// ❌ BAD: Select everything
+// FAIL: BAD: Select everything
 const { data } = await supabase
   .from('markets')
   .select('*')
@@ -148,13 +148,13 @@ const { data } = await supabase
 ### N+1 Query Prevention
 
 ```typescript
-// ❌ BAD: N+1 query problem
+// FAIL: BAD: N+1 query problem
 const markets = await getMarkets()
 for (const market of markets) {
   market.creator = await getUser(market.creator_id)  // N queries
 }
 
-// ✅ GOOD: Batch fetch
+// PASS: GOOD: Batch fetch
 const markets = await getMarkets()
 const creatorIds = markets.map(m => m.creator_id)
 const creators = await getUsers(creatorIds)  // 1 query
@@ -596,31 +596,3 @@ export async function GET(request: Request) {
 ```
 
 **Remember**: Backend patterns enable scalable, maintainable server-side applications. Choose patterns that fit your complexity level.
-
-## Open-Source Benchmarks
-
-Reference projects for `backend-patterns` optimization:
-
-- [fastapi/fastapi](https://github.com/fastapi/fastapi) - Clear API contracts, validation-first handlers.
-- [prisma/prisma](https://github.com/prisma/prisma) - Strong schema modeling and migration discipline.
-
-### Optimization Guidance
-- Keep contract-first endpoint specs close to implementation.
-- Use explicit error envelopes and typed validation boundaries.
-- Document performance and consistency trade-offs per pattern.
-
-## Acceptance Criteria
-
-- Inputs: Clear task scope, target files/systems, and explicit constraints.
-- Outputs: Concrete artifact (code/doc/config/decision) aligned with this skill domain.
-- Validation: At least one executable check or deterministic review step is defined and run.
-- Done: Result is actionable, non-contradictory with adjacent skills, and mapped to user intent.
-
-## Skill Metadata
-
-- Owner: `easy-opencode-team`
-- Version: `1.0.0`
-- Last Reviewed: `2026-04-11`
-- Stability: `stable`
-- Overlap Domain: `backend`
-

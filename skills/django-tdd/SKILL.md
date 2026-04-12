@@ -1,7 +1,7 @@
 ---
 name: django-tdd
 description: Django testing strategies with pytest-django, TDD methodology, factory_boy, mocking, coverage, and testing Django REST Framework APIs.
-origin: EOC
+origin: ECC
 ---
 
 # Django Testing with TDD
@@ -727,31 +727,3 @@ open htmlcov/index.html
 | `mail.outbox` | Check sent emails |
 
 Remember: Tests are documentation. Good tests explain how your code should work. Keep them simple, readable, and maintainable.
-
-## Open-Source Benchmarks
-
-Reference projects for `django-tdd` optimization:
-
-- [pytest-dev/pytest](https://github.com/pytest-dev/pytest) - Mature test ergonomics and fixture patterns.
-- [microsoft/playwright](https://github.com/microsoft/playwright) - Robust, cross-browser E2E automation.
-
-### Optimization Guidance
-- Adopt table-driven and parameterized test styles.
-- Standardize fixture lifecycles and test data factories.
-- Separate fast unit gates from slower integration/E2E gates.
-
-## Acceptance Criteria
-
-- Inputs: Clear task scope, target files/systems, and explicit constraints.
-- Outputs: Concrete artifact (code/doc/config/decision) aligned with this skill domain.
-- Validation: At least one executable check or deterministic review step is defined and run.
-- Done: Result is actionable, non-contradictory with adjacent skills, and mapped to user intent.
-
-## Skill Metadata
-
-- Owner: `easy-opencode-team`
-- Version: `1.0.0`
-- Last Reviewed: `2026-04-11`
-- Stability: `stable`
-- Overlap Domain: `testing`
-

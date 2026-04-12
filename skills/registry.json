@@ -1,0 +1,832 @@
+{
+  "generated_at": "2026-04-11T21:52:14.036Z",
+  "counts": {
+    "total_dirs": 51,
+    "indexed": 51,
+    "failures": 0,
+    "warnings": 0
+  },
+  "skills": [
+    {
+      "dir": "api-design",
+      "name": "api-design",
+      "description": "REST API design patterns including resource naming, status codes, pagination, filtering, error responses, versioning, and rate limiting for production APIs.",
+      "origin": "ECC",
+      "version": "",
+      "assets": {
+        "scripts": false,
+        "data": false,
+        "templates": false
+      },
+      "upstream": null,
+      "files": {
+        "skill": "skills/api-design/SKILL.md"
+      }
+    },
+    {
+      "dir": "backend-patterns",
+      "name": "backend-patterns",
+      "description": "Backend architecture patterns, API design, database optimization, and server-side best practices for Node.js, Express, and Next.js API routes.",
+      "origin": "ECC",
+      "version": "",
+      "assets": {
+        "scripts": false,
+        "data": false,
+        "templates": false
+      },
+      "upstream": null,
+      "files": {
+        "skill": "skills/backend-patterns/SKILL.md"
+      }
+    },
+    {
+      "dir": "claude-public-tooling",
+      "name": "claude-public-tooling",
+      "description": "Public-feature parity guidance for Claude-style coding tools using official docs only (slash commands, hooks, MCP, context compaction, health checks).",
+      "origin": "EOC",
+      "version": "",
+      "assets": {
+        "scripts": false,
+        "data": false,
+        "templates": false
+      },
+      "upstream": null,
+      "files": {
+        "skill": "skills/claude-public-tooling/SKILL.md"
+      }
+    },
+    {
+      "dir": "clickhouse-io",
+      "name": "clickhouse-io",
+      "description": "ClickHouse database patterns, query optimization, analytics, and data engineering best practices for high-performance analytical workloads.",
+      "origin": "ECC",
+      "version": "",
+      "assets": {
+        "scripts": false,
+        "data": false,
+        "templates": false
+      },
+      "upstream": null,
+      "files": {
+        "skill": "skills/clickhouse-io/SKILL.md"
+      }
+    },
+    {
+      "dir": "coding-standards",
+      "name": "coding-standards",
+      "description": "Baseline cross-project coding conventions for naming, readability, immutability, and code-quality review. Use detailed frontend or backend skills for framework-specific patterns.",
+      "origin": "ECC",
+      "version": "",
+      "assets": {
+        "scripts": false,
+        "data": false,
+        "templates": false
+      },
+      "upstream": null,
+      "files": {
+        "skill": "skills/coding-standards/SKILL.md"
+      }
+    },
+    {
+      "dir": "configure-ecc",
+      "name": "configure-ecc",
+      "description": "Interactive installer for Everything Claude Code — guides users through selecting and installing skills and rules to user-level or project-level directories, verifies paths, and optionally optimizes installed files.",
+      "origin": "ECC",
+      "version": "",
+      "assets": {
+        "scripts": false,
+        "data": false,
+        "templates": false
+      },
+      "upstream": null,
+      "files": {
+        "skill": "skills/configure-ecc/SKILL.md"
+      }
+    },
+    {
+      "dir": "content-hash-cache-pattern",
+      "name": "content-hash-cache-pattern",
+      "description": "Cache expensive file processing results using SHA-256 content hashes — path-independent, auto-invalidating, with service layer separation.",
+      "origin": "ECC",
+      "version": "",
+      "assets": {
+        "scripts": false,
+        "data": false,
+        "templates": false
+      },
+      "upstream": null,
+      "files": {
+        "skill": "skills/content-hash-cache-pattern/SKILL.md"
+      }
+    },
+    {
+      "dir": "continuous-learning-v2",
+      "name": "continuous-learning-v2",
+      "description": "Instinct-based learning system that observes sessions via hooks, creates atomic instincts with confidence scoring, and evolves them into skills/commands/agents. v2.1 adds project-scoped instincts to prevent cross-project contamination.",
+      "origin": "ECC",
+      "version": "2.1.0",
+      "assets": {
+        "scripts": true,
+        "data": false,
+        "templates": false
+      },
+      "upstream": null,
+      "files": {
+        "skill": "skills/continuous-learning-v2/SKILL.md"
+      }
+    },
+    {
+      "dir": "cost-aware-llm-pipeline",
+      "name": "cost-aware-llm-pipeline",
+      "description": "Cost optimization patterns for LLM API usage — model routing by task complexity, budget tracking, retry logic, and prompt caching.",
+      "origin": "ECC",
+      "version": "",
+      "assets": {
+        "scripts": false,
+        "data": false,
+        "templates": false
+      },
+      "upstream": null,
+      "files": {
+        "skill": "skills/cost-aware-llm-pipeline/SKILL.md"
+      }
+    },
+    {
+      "dir": "cpp-coding-standards",
+      "name": "cpp-coding-standards",
+      "description": "C++ coding standards based on the C++ Core Guidelines (isocpp.github.io). Use when writing, reviewing, or refactoring C++ code to enforce modern, safe, and idiomatic practices.",
+      "origin": "ECC",
+      "version": "",
+      "assets": {
+        "scripts": false,
+        "data": false,
+        "templates": false
+      },
+      "upstream": null,
+      "files": {
+        "skill": "skills/cpp-coding-standards/SKILL.md"
+      }
+    },
+    {
+      "dir": "cpp-testing",
+      "name": "cpp-testing",
+      "description": "Use only when writing/updating/fixing C++ tests, configuring GoogleTest/CTest, diagnosing failing or flaky tests, or adding coverage/sanitizers.",
+      "origin": "ECC",
+      "version": "",
+      "assets": {
+        "scripts": false,
+        "data": false,
+        "templates": false
+      },
+      "upstream": null,
+      "files": {
+        "skill": "skills/cpp-testing/SKILL.md"
+      }
+    },
+    {
+      "dir": "database-migrations",
+      "name": "database-migrations",
+      "description": "Database migration best practices for schema changes, data migrations, rollbacks, and zero-downtime deployments across PostgreSQL, MySQL, and common ORMs (Prisma, Drizzle, Kysely, Django, TypeORM, golang-migrate).",
+      "origin": "ECC",
+      "version": "",
+      "assets": {
+        "scripts": false,
+        "data": false,
+        "templates": false
+      },
+      "upstream": null,
+      "files": {
+        "skill": "skills/database-migrations/SKILL.md"
+      }
+    },
+    {
+      "dir": "deployment-patterns",
+      "name": "deployment-patterns",
+      "description": "Deployment workflows, CI/CD pipeline patterns, Docker containerization, health checks, rollback strategies, and production readiness checklists for web applications.",
+      "origin": "ECC",
+      "version": "",
+      "assets": {
+        "scripts": false,
+        "data": false,
+        "templates": false
+      },
+      "upstream": null,
+      "files": {
+        "skill": "skills/deployment-patterns/SKILL.md"
+      }
+    },
+    {
+      "dir": "django-patterns",
+      "name": "django-patterns",
+      "description": "Django architecture patterns, REST API design with DRF, ORM best practices, caching, signals, middleware, and production-grade Django apps.",
+      "origin": "ECC",
+      "version": "",
+      "assets": {
+        "scripts": false,
+        "data": false,
+        "templates": false
+      },
+      "upstream": null,
+      "files": {
+        "skill": "skills/django-patterns/SKILL.md"
+      }
+    },
+    {
+      "dir": "django-security",
+      "name": "django-security",
+      "description": "Django security best practices, authentication, authorization, CSRF protection, SQL injection prevention, XSS prevention, and secure deployment configurations.",
+      "origin": "ECC",
+      "version": "",
+      "assets": {
+        "scripts": false,
+        "data": false,
+        "templates": false
+      },
+      "upstream": null,
+      "files": {
+        "skill": "skills/django-security/SKILL.md"
+      }
+    },
+    {
+      "dir": "django-tdd",
+      "name": "django-tdd",
+      "description": "Django testing strategies with pytest-django, TDD methodology, factory_boy, mocking, coverage, and testing Django REST Framework APIs.",
+      "origin": "ECC",
+      "version": "",
+      "assets": {
+        "scripts": false,
+        "data": false,
+        "templates": false
+      },
+      "upstream": null,
+      "files": {
+        "skill": "skills/django-tdd/SKILL.md"
+      }
+    },
+    {
+      "dir": "django-verification",
+      "name": "django-verification",
+      "description": "Verification loop for Django projects: migrations, linting, tests with coverage, security scans, and deployment readiness checks before release or PR.",
+      "origin": "ECC",
+      "version": "",
+      "assets": {
+        "scripts": false,
+        "data": false,
+        "templates": false
+      },
+      "upstream": null,
+      "files": {
+        "skill": "skills/django-verification/SKILL.md"
+      }
+    },
+    {
+      "dir": "docker-patterns",
+      "name": "docker-patterns",
+      "description": "Docker and Docker Compose patterns for local development, container security, networking, volume strategies, and multi-service orchestration.",
+      "origin": "ECC",
+      "version": "",
+      "assets": {
+        "scripts": false,
+        "data": false,
+        "templates": false
+      },
+      "upstream": null,
+      "files": {
+        "skill": "skills/docker-patterns/SKILL.md"
+      }
+    },
+    {
+      "dir": "e2e-testing",
+      "name": "e2e-testing",
+      "description": "Playwright E2E testing patterns, Page Object Model, configuration, CI/CD integration, artifact management, and flaky test strategies.",
+      "origin": "ECC",
+      "version": "",
+      "assets": {
+        "scripts": false,
+        "data": false,
+        "templates": false
+      },
+      "upstream": null,
+      "files": {
+        "skill": "skills/e2e-testing/SKILL.md"
+      }
+    },
+    {
+      "dir": "eval-harness",
+      "name": "eval-harness",
+      "description": "Formal evaluation framework for Claude Code sessions implementing eval-driven development (EDD) principles",
+      "origin": "ECC",
+      "version": "",
+      "assets": {
+        "scripts": false,
+        "data": false,
+        "templates": false
+      },
+      "upstream": null,
+      "files": {
+        "skill": "skills/eval-harness/SKILL.md"
+      }
+    },
+    {
+      "dir": "foundation-models-on-device",
+      "name": "foundation-models-on-device",
+      "description": "Apple FoundationModels framework for on-device LLM — text generation, guided generation with @Generable, tool calling, and snapshot streaming in iOS 26+.",
+      "origin": "",
+      "version": "",
+      "assets": {
+        "scripts": false,
+        "data": false,
+        "templates": false
+      },
+      "upstream": null,
+      "files": {
+        "skill": "skills/foundation-models-on-device/SKILL.md"
+      }
+    },
+    {
+      "dir": "frontend-patterns",
+      "name": "frontend-patterns",
+      "description": "Frontend development patterns for React, Next.js, state management, performance optimization, and UI best practices.",
+      "origin": "ECC",
+      "version": "",
+      "assets": {
+        "scripts": false,
+        "data": false,
+        "templates": false
+      },
+      "upstream": null,
+      "files": {
+        "skill": "skills/frontend-patterns/SKILL.md"
+      }
+    },
+    {
+      "dir": "golang-patterns",
+      "name": "golang-patterns",
+      "description": "Idiomatic Go patterns, best practices, and conventions for building robust, efficient, and maintainable Go applications.",
+      "origin": "ECC",
+      "version": "",
+      "assets": {
+        "scripts": false,
+        "data": false,
+        "templates": false
+      },
+      "upstream": null,
+      "files": {
+        "skill": "skills/golang-patterns/SKILL.md"
+      }
+    },
+    {
+      "dir": "golang-testing",
+      "name": "golang-testing",
+      "description": "Go testing patterns including table-driven tests, subtests, benchmarks, fuzzing, and test coverage. Follows TDD methodology with idiomatic Go practices.",
+      "origin": "ECC",
+      "version": "",
+      "assets": {
+        "scripts": false,
+        "data": false,
+        "templates": false
+      },
+      "upstream": null,
+      "files": {
+        "skill": "skills/golang-testing/SKILL.md"
+      }
+    },
+    {
+      "dir": "iterative-retrieval",
+      "name": "iterative-retrieval",
+      "description": "Pattern for progressively refining context retrieval to solve the subagent context problem",
+      "origin": "ECC",
+      "version": "",
+      "assets": {
+        "scripts": false,
+        "data": false,
+        "templates": false
+      },
+      "upstream": null,
+      "files": {
+        "skill": "skills/iterative-retrieval/SKILL.md"
+      }
+    },
+    {
+      "dir": "java-coding-standards",
+      "name": "java-coding-standards",
+      "description": "Java coding standards for Spring Boot services: naming, immutability, Optional usage, streams, exceptions, generics, and project layout.",
+      "origin": "ECC",
+      "version": "",
+      "assets": {
+        "scripts": false,
+        "data": false,
+        "templates": false
+      },
+      "upstream": null,
+      "files": {
+        "skill": "skills/java-coding-standards/SKILL.md"
+      }
+    },
+    {
+      "dir": "jpa-patterns",
+      "name": "jpa-patterns",
+      "description": "JPA/Hibernate patterns for entity design, relationships, query optimization, transactions, auditing, indexing, pagination, and pooling in Spring Boot.",
+      "origin": "ECC",
+      "version": "",
+      "assets": {
+        "scripts": false,
+        "data": false,
+        "templates": false
+      },
+      "upstream": null,
+      "files": {
+        "skill": "skills/jpa-patterns/SKILL.md"
+      }
+    },
+    {
+      "dir": "nutrient-document-processing",
+      "name": "nutrient-document-processing",
+      "description": "Process, convert, OCR, extract, redact, sign, and fill documents using the Nutrient DWS API. Works with PDFs, DOCX, XLSX, PPTX, HTML, and images.",
+      "origin": "ECC",
+      "version": "",
+      "assets": {
+        "scripts": false,
+        "data": false,
+        "templates": false
+      },
+      "upstream": null,
+      "files": {
+        "skill": "skills/nutrient-document-processing/SKILL.md"
+      }
+    },
+    {
+      "dir": "openspec-workflow",
+      "name": "openspec-workflow",
+      "description": "Use this skill for spec-first delivery with explicit proposal, tasks, implementation, and archive phases. Aligns with OpenSpec style change folders and review gates.",
+      "origin": "EOC",
+      "version": "",
+      "assets": {
+        "scripts": false,
+        "data": false,
+        "templates": false
+      },
+      "upstream": null,
+      "files": {
+        "skill": "skills/openspec-workflow/SKILL.md"
+      }
+    },
+    {
+      "dir": "plankton-code-quality",
+      "name": "plankton-code-quality",
+      "description": "Write-time code quality enforcement using Plankton — auto-formatting, linting, and Claude-powered fixes on every file edit via hooks.",
+      "origin": "community",
+      "version": "",
+      "assets": {
+        "scripts": false,
+        "data": false,
+        "templates": false
+      },
+      "upstream": null,
+      "files": {
+        "skill": "skills/plankton-code-quality/SKILL.md"
+      }
+    },
+    {
+      "dir": "postgres-patterns",
+      "name": "postgres-patterns",
+      "description": "PostgreSQL database patterns for query optimization, schema design, indexing, and security. Based on Supabase best practices.",
+      "origin": "ECC",
+      "version": "",
+      "assets": {
+        "scripts": false,
+        "data": false,
+        "templates": false
+      },
+      "upstream": null,
+      "files": {
+        "skill": "skills/postgres-patterns/SKILL.md"
+      }
+    },
+    {
+      "dir": "python-patterns",
+      "name": "python-patterns",
+      "description": "Pythonic idioms, PEP 8 standards, type hints, and best practices for building robust, efficient, and maintainable Python applications.",
+      "origin": "ECC",
+      "version": "",
+      "assets": {
+        "scripts": false,
+        "data": false,
+        "templates": false
+      },
+      "upstream": null,
+      "files": {
+        "skill": "skills/python-patterns/SKILL.md"
+      }
+    },
+    {
+      "dir": "python-testing",
+      "name": "python-testing",
+      "description": "Python testing strategies using pytest, TDD methodology, fixtures, mocking, parametrization, and coverage requirements.",
+      "origin": "ECC",
+      "version": "",
+      "assets": {
+        "scripts": false,
+        "data": false,
+        "templates": false
+      },
+      "upstream": null,
+      "files": {
+        "skill": "skills/python-testing/SKILL.md"
+      }
+    },
+    {
+      "dir": "regex-vs-llm-structured-text",
+      "name": "regex-vs-llm-structured-text",
+      "description": "Decision framework for choosing between regex and LLM when parsing structured text — start with regex, add LLM only for low-confidence edge cases.",
+      "origin": "ECC",
+      "version": "",
+      "assets": {
+        "scripts": false,
+        "data": false,
+        "templates": false
+      },
+      "upstream": null,
+      "files": {
+        "skill": "skills/regex-vs-llm-structured-text/SKILL.md"
+      }
+    },
+    {
+      "dir": "search-first",
+      "name": "search-first",
+      "description": "Research-before-coding workflow. Search for existing tools, libraries, and patterns before writing custom code. Invokes the researcher agent.",
+      "origin": "ECC",
+      "version": "",
+      "assets": {
+        "scripts": false,
+        "data": false,
+        "templates": false
+      },
+      "upstream": null,
+      "files": {
+        "skill": "skills/search-first/SKILL.md"
+      }
+    },
+    {
+      "dir": "security-review",
+      "name": "security-review",
+      "description": "Use this skill when adding authentication, handling user input, working with secrets, creating API endpoints, or implementing payment/sensitive features. Provides comprehensive security checklist and patterns.",
+      "origin": "ECC",
+      "version": "",
+      "assets": {
+        "scripts": false,
+        "data": false,
+        "templates": false
+      },
+      "upstream": null,
+      "files": {
+        "skill": "skills/security-review/SKILL.md"
+      }
+    },
+    {
+      "dir": "security-scan",
+      "name": "security-scan",
+      "description": "Scan your Claude Code configuration (.claude/ directory) for security vulnerabilities, misconfigurations, and injection risks using AgentShield. Checks CLAUDE.md, settings.json, MCP servers, hooks, and agent definitions.",
+      "origin": "ECC",
+      "version": "",
+      "assets": {
+        "scripts": false,
+        "data": false,
+        "templates": false
+      },
+      "upstream": null,
+      "files": {
+        "skill": "skills/security-scan/SKILL.md"
+      }
+    },
+    {
+      "dir": "skill-stocktake",
+      "name": "skill-stocktake",
+      "description": "Use when auditing Claude skills and commands for quality. Supports Quick Scan (changed skills only) and Full Stocktake modes with sequential subagent batch evaluation.",
+      "origin": "ECC",
+      "version": "",
+      "assets": {
+        "scripts": true,
+        "data": false,
+        "templates": false
+      },
+      "upstream": null,
+      "files": {
+        "skill": "skills/skill-stocktake/SKILL.md"
+      }
+    },
+    {
+      "dir": "springboot-patterns",
+      "name": "springboot-patterns",
+      "description": "Spring Boot architecture patterns, REST API design, layered services, data access, caching, async processing, and logging. Use for Java Spring Boot backend work.",
+      "origin": "ECC",
+      "version": "",
+      "assets": {
+        "scripts": false,
+        "data": false,
+        "templates": false
+      },
+      "upstream": null,
+      "files": {
+        "skill": "skills/springboot-patterns/SKILL.md"
+      }
+    },
+    {
+      "dir": "springboot-security",
+      "name": "springboot-security",
+      "description": "Spring Security best practices for authn/authz, validation, CSRF, secrets, headers, rate limiting, and dependency security in Java Spring Boot services.",
+      "origin": "ECC",
+      "version": "",
+      "assets": {
+        "scripts": false,
+        "data": false,
+        "templates": false
+      },
+      "upstream": null,
+      "files": {
+        "skill": "skills/springboot-security/SKILL.md"
+      }
+    },
+    {
+      "dir": "springboot-tdd",
+      "name": "springboot-tdd",
+      "description": "Test-driven development for Spring Boot using JUnit 5, Mockito, MockMvc, Testcontainers, and JaCoCo. Use when adding features, fixing bugs, or refactoring.",
+      "origin": "ECC",
+      "version": "",
+      "assets": {
+        "scripts": false,
+        "data": false,
+        "templates": false
+      },
+      "upstream": null,
+      "files": {
+        "skill": "skills/springboot-tdd/SKILL.md"
+      }
+    },
+    {
+      "dir": "springboot-verification",
+      "name": "springboot-verification",
+      "description": "Verification loop for Spring Boot projects: build, static analysis, tests with coverage, security scans, and diff review before release or PR.",
+      "origin": "ECC",
+      "version": "",
+      "assets": {
+        "scripts": false,
+        "data": false,
+        "templates": false
+      },
+      "upstream": null,
+      "files": {
+        "skill": "skills/springboot-verification/SKILL.md"
+      }
+    },
+    {
+      "dir": "strategic-compact",
+      "name": "strategic-compact",
+      "description": "Suggests manual context compaction at logical intervals to preserve context through task phases rather than arbitrary auto-compaction.",
+      "origin": "ECC",
+      "version": "",
+      "assets": {
+        "scripts": false,
+        "data": false,
+        "templates": false
+      },
+      "upstream": null,
+      "files": {
+        "skill": "skills/strategic-compact/SKILL.md"
+      }
+    },
+    {
+      "dir": "superpowers-workflow",
+      "name": "superpowers-workflow",
+      "description": "Use this skill for disciplined agent execution: clarify -> plan -> execute -> verify -> summarize. Inspired by public command-framework patterns.",
+      "origin": "EOC",
+      "version": "",
+      "assets": {
+        "scripts": false,
+        "data": false,
+        "templates": false
+      },
+      "upstream": null,
+      "files": {
+        "skill": "skills/superpowers-workflow/SKILL.md"
+      }
+    },
+    {
+      "dir": "swift-actor-persistence",
+      "name": "swift-actor-persistence",
+      "description": "Thread-safe data persistence in Swift using actors — in-memory cache with file-backed storage, eliminating data races by design.",
+      "origin": "ECC",
+      "version": "",
+      "assets": {
+        "scripts": false,
+        "data": false,
+        "templates": false
+      },
+      "upstream": null,
+      "files": {
+        "skill": "skills/swift-actor-persistence/SKILL.md"
+      }
+    },
+    {
+      "dir": "swift-concurrency-6-2",
+      "name": "swift-concurrency-6-2",
+      "description": "Swift 6.2 Approachable Concurrency — single-threaded by default, @concurrent for explicit background offloading, isolated conformances for main actor types.",
+      "origin": "",
+      "version": "",
+      "assets": {
+        "scripts": false,
+        "data": false,
+        "templates": false
+      },
+      "upstream": null,
+      "files": {
+        "skill": "skills/swift-concurrency-6-2/SKILL.md"
+      }
+    },
+    {
+      "dir": "swift-protocol-di-testing",
+      "name": "swift-protocol-di-testing",
+      "description": "Protocol-based dependency injection for testable Swift code — mock file system, network, and external APIs using focused protocols and Swift Testing.",
+      "origin": "ECC",
+      "version": "",
+      "assets": {
+        "scripts": false,
+        "data": false,
+        "templates": false
+      },
+      "upstream": null,
+      "files": {
+        "skill": "skills/swift-protocol-di-testing/SKILL.md"
+      }
+    },
+    {
+      "dir": "swiftui-patterns",
+      "name": "swiftui-patterns",
+      "description": "SwiftUI architecture patterns, state management with @Observable, view composition, navigation, performance optimization, and modern iOS/macOS UI best practices.",
+      "origin": "",
+      "version": "",
+      "assets": {
+        "scripts": false,
+        "data": false,
+        "templates": false
+      },
+      "upstream": null,
+      "files": {
+        "skill": "skills/swiftui-patterns/SKILL.md"
+      }
+    },
+    {
+      "dir": "tdd-workflow",
+      "name": "tdd-workflow",
+      "description": "Use this skill when writing new features, fixing bugs, or refactoring code. Enforces test-driven development with 80%+ coverage including unit, integration, and E2E tests.",
+      "origin": "ECC",
+      "version": "",
+      "assets": {
+        "scripts": false,
+        "data": false,
+        "templates": false
+      },
+      "upstream": null,
+      "files": {
+        "skill": "skills/tdd-workflow/SKILL.md"
+      }
+    },
+    {
+      "dir": "ui-ux-pro-max",
+      "name": "ui-ux-pro-max",
+      "description": "UI/UX design intelligence for web and mobile. Includes 50+ styles, 161 color palettes, 57 font pairings, 161 product types, 99 UX guidelines, and 25 chart types across 10 stacks (React, Next.js, Vue, Svelte, SwiftUI, React Native, Flutter, Tailwind, shadcn/ui, and HTML/CSS). Actions: plan, build, create, design, implement, review, fix, improve, optimize, enhance, refactor, and check UI/UX code. Projects: website, landing page, dashboard, admin panel, e-commerce, SaaS, portfolio, blog, and mobile app. Elements: button, modal, navbar, sidebar, card, table, form, and chart. Styles: glassmorphism, claymorphism, minimalism, brutalism, neumorphism, bento grid, dark mode, responsive, skeuomorphism, and flat design. Topics: color systems, accessibility, animation, layout, typography, font pairing, spacing, interaction states, shadow, and gradient. Integrations: shadcn/ui MCP for component search and examples.",
+      "origin": "",
+      "version": "",
+      "assets": {
+        "scripts": true,
+        "data": true,
+        "templates": true
+      },
+      "upstream": {
+        "repository": "https://github.com/nextlevelbuilder/ui-ux-pro-max-skill",
+        "commit": "b7e3af80f6e331f6fb456667b82b12cade7c9d35",
+        "license": "MIT",
+        "sync_date": "2026-04-11"
+      },
+      "files": {
+        "skill": "skills/ui-ux-pro-max/SKILL.md"
+      }
+    },
+    {
+      "dir": "verification-loop",
+      "name": "verification-loop",
+      "description": "A comprehensive verification system for Claude Code sessions.",
+      "origin": "ECC",
+      "version": "",
+      "assets": {
+        "scripts": false,
+        "data": false,
+        "templates": false
+      },
+      "upstream": null,
+      "files": {
+        "skill": "skills/verification-loop/SKILL.md"
+      }
+    }
+  ]
+}

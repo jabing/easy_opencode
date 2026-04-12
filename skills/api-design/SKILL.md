@@ -1,7 +1,7 @@
 ---
 name: api-design
 description: REST API design patterns including resource naming, status codes, pagination, filtering, error responses, versioning, and rate limiting for production APIs.
-origin: EOC
+origin: ECC
 ---
 
 # API Design Patterns
@@ -521,31 +521,3 @@ Before shipping a new endpoint:
 - [ ] Response does not leak internal details (stack traces, SQL errors)
 - [ ] Consistent naming with existing endpoints (camelCase vs snake_case)
 - [ ] Documented (OpenAPI/Swagger spec updated)
-
-## Open-Source Benchmarks
-
-Reference projects for `api-design` optimization:
-
-- [kubernetes/kubernetes](https://github.com/kubernetes/kubernetes) - Battle-tested API conventions and versioning patterns.
-- [OpenAPITools/openapi-generator](https://github.com/OpenAPITools/openapi-generator) - Contract-driven client/server generation.
-
-### Optimization Guidance
-- Define compatibility policy and deprecation windows.
-- Generate examples from executable API specs.
-- Tie pagination/filtering/sorting guidance to concrete schemas.
-
-## Acceptance Criteria
-
-- Inputs: Clear task scope, target files/systems, and explicit constraints.
-- Outputs: Concrete artifact (code/doc/config/decision) aligned with this skill domain.
-- Validation: At least one executable check or deterministic review step is defined and run.
-- Done: Result is actionable, non-contradictory with adjacent skills, and mapped to user intent.
-
-## Skill Metadata
-
-- Owner: `easy-opencode-team`
-- Version: `1.0.0`
-- Last Reviewed: `2026-04-11`
-- Stability: `stable`
-- Overlap Domain: `api`
-

@@ -1,17 +1,10 @@
 ---
 name: search-first
 description: Research-before-coding workflow. Search for existing tools, libraries, and patterns before writing custom code. Invokes the researcher agent.
-origin: EOC
+origin: ECC
 ---
 
 # /search-first — Research Before You Code
-
-## When to Activate
-
-- Trigger this skill when the request clearly matches this skill's domain.
-- Use this skill before writing implementation details outside its scope.
-- If multiple skills overlap, follow `skills/ROUTING_GUIDE.md` precedence rules.
-
 
 Systematizes the "search for existing solutions before implementing" workflow.
 
@@ -68,10 +61,11 @@ Use this skill when:
 
 Before writing a utility or adding functionality, mentally run through:
 
+0. Does this already exist in the repo? → `rg` through relevant modules/tests first
 1. Is this a common problem? → Search npm/PyPI
 2. Is there an MCP for this? → Check `~/.claude/settings.json` and search
 3. Is there a skill for this? → Check `~/.claude/skills/`
-4. Is there a GitHub template? → Search GitHub
+4. Is there a GitHub implementation/template? → Run GitHub code search for maintained OSS before writing net-new code
 
 ### Full Mode (agent)
 
@@ -165,31 +159,3 @@ Result: 1 package + 1 schema file, no custom validation logic
 - **Ignoring MCP**: Not checking if an MCP server already provides the capability
 - **Over-customizing**: Wrapping a library so heavily it loses its benefits
 - **Dependency bloat**: Installing a massive package for one small feature
-
-## Open-Source Benchmarks
-
-Reference projects for `search-first` optimization:
-
-- [deepset-ai/haystack](https://github.com/deepset-ai/haystack) - Composable retrieval pipelines and evaluation patterns.
-- [langchain-ai/langchain](https://github.com/langchain-ai/langchain) - Tooling abstractions for retrieval orchestration.
-
-### Optimization Guidance
-- Separate retrieval, reranking, and answer synthesis concerns.
-- Track recall/latency/cost metrics per retrieval stage.
-- Add fallback plans for sparse and hybrid search modes.
-
-## Acceptance Criteria
-
-- Inputs: Clear task scope, target files/systems, and explicit constraints.
-- Outputs: Concrete artifact (code/doc/config/decision) aligned with this skill domain.
-- Validation: At least one executable check or deterministic review step is defined and run.
-- Done: Result is actionable, non-contradictory with adjacent skills, and mapped to user intent.
-
-## Skill Metadata
-
-- Owner: `easy-opencode-team`
-- Version: `1.0.0`
-- Last Reviewed: `2026-04-11`
-- Stability: `stable`
-- Overlap Domain: `retrieval`
-

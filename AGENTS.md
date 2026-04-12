@@ -1,6 +1,6 @@
 # Easy OpenCode - Agent Instructions
 
-Easy OpenCode is an OpenCode plugin with 15 specialized agents, 50+ skills, 53 commands, and optional hook automation.
+Easy OpenCode is an OpenCode plugin with 15 specialized agents, 50+ skills, 56 commands, and optional hook automation.
 
 ## Installation
 

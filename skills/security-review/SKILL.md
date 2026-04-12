@@ -1,7 +1,7 @@
 ---
 name: security-review
 description: Use this skill when adding authentication, handling user input, working with secrets, creating API endpoints, or implementing payment/sensitive features. Provides comprehensive security checklist and patterns.
-origin: EOC
+origin: ECC
 ---
 
 # Security Review Skill
@@ -22,13 +22,13 @@ This skill ensures all code follows security best practices and identifies poten
 
 ### 1. Secrets Management
 
-#### ❌ NEVER Do This
+#### FAIL: NEVER Do This
 ```typescript
 const apiKey = "sk-proj-xxxxx"  // Hardcoded secret
 const dbPassword = "password123" // In source code
 ```
 
-#### ✅ ALWAYS Do This
+#### PASS: ALWAYS Do This
 ```typescript
 const apiKey = process.env.OPENAI_API_KEY
 const dbUrl = process.env.DATABASE_URL
@@ -108,14 +108,14 @@ function validateFileUpload(file: File) {
 
 ### 3. SQL Injection Prevention
 
-#### ❌ NEVER Concatenate SQL
+#### FAIL: NEVER Concatenate SQL
 ```typescript
 // DANGEROUS - SQL Injection vulnerability
 const query = `SELECT * FROM users WHERE email = '${userEmail}'`
 await db.query(query)
 ```
 
-#### ✅ ALWAYS Use Parameterized Queries
+#### PASS: ALWAYS Use Parameterized Queries
 ```typescript
 // Safe - parameterized query
 const { data } = await supabase
@@ -140,10 +140,10 @@ await db.query(
 
 #### JWT Token Handling
 ```typescript
-// ❌ WRONG: localStorage (vulnerable to XSS)
+// FAIL: WRONG: localStorage (vulnerable to XSS)
 localStorage.setItem('token', token)
 
-// ✅ CORRECT: httpOnly cookies
+// PASS: CORRECT: httpOnly cookies
 res.setHeader('Set-Cookie',
   `token=${token}; HttpOnly; Secure; SameSite=Strict; Max-Age=3600`)
 ```
@@ -300,18 +300,18 @@ app.use('/api/search', searchLimiter)
 
 #### Logging
 ```typescript
-// ❌ WRONG: Logging sensitive data
+// FAIL: WRONG: Logging sensitive data
 console.log('User login:', { email, password })
 console.log('Payment:', { cardNumber, cvv })
 
-// ✅ CORRECT: Redact sensitive data
+// PASS: CORRECT: Redact sensitive data
 console.log('User login:', { email, userId })
 console.log('Payment:', { last4: card.last4, userId })
 ```
 
 #### Error Messages
 ```typescript
-// ❌ WRONG: Exposing internal details
+// FAIL: WRONG: Exposing internal details
 catch (error) {
   return NextResponse.json(
     { error: error.message, stack: error.stack },
@@ -319,7 +319,7 @@ catch (error) {
   )
 }
 
-// ✅ CORRECT: Generic error messages
+// PASS: CORRECT: Generic error messages
 catch (error) {
   console.error('Internal error:', error)
   return NextResponse.json(
@@ -493,31 +493,3 @@ Before ANY production deployment:
 ---
 
 **Remember**: Security is not optional. One vulnerability can compromise the entire platform. When in doubt, err on the side of caution.
-
-## Open-Source Benchmarks
-
-Reference projects for `security-review` optimization:
-
-- [OWASP/CheatSheetSeries](https://github.com/OWASP/CheatSheetSeries) - Practical baseline controls for web and API security.
-- [aquasecurity/trivy](https://github.com/aquasecurity/trivy) - Dependency, image, and IaC vulnerability scanning.
-
-### Optimization Guidance
-- Translate checklist items into enforceable CI checks.
-- Prefer deny-by-default patterns for authz and network boundaries.
-- Add concrete remediation snippets for common findings.
-
-## Acceptance Criteria
-
-- Inputs: Clear task scope, target files/systems, and explicit constraints.
-- Outputs: Concrete artifact (code/doc/config/decision) aligned with this skill domain.
-- Validation: At least one executable check or deterministic review step is defined and run.
-- Done: Result is actionable, non-contradictory with adjacent skills, and mapped to user intent.
-
-## Skill Metadata
-
-- Owner: `easy-opencode-team`
-- Version: `1.0.0`
-- Last Reviewed: `2026-04-11`
-- Stability: `stable`
-- Overlap Domain: `security`
-

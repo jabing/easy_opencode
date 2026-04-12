@@ -113,6 +113,73 @@ function addResult(bucket, status, check, detail) {
   bucket.push({ status, check, detail });
 }
 
+function parseFrontmatter(content) {
+  const normalized = content.replace(/^\uFEFF/, '');
+  const m = normalized.match(/^---\s*\r?\n([\s\S]*?)\r?\n---\s*/);
+  if (!m) return {};
+  const body = m[1];
+  const out = {};
+  for (const line of body.split(/\r?\n/)) {
+    const kv = line.match(/^([a-zA-Z0-9_.-]+)\s*:\s*(.+)\s*$/);
+    if (!kv) continue;
+    out[kv[1]] = kv[2].replace(/^["']|["']$/g, '');
+  }
+  return out;
+}
+
+function validateSkillsAndWriteRegistry() {
+  const skillsDir = path.join(ROOT, 'skills');
+  if (!fs.existsSync(skillsDir)) {
+    return { ok: false, detail: 'skills directory missing' };
+  }
+  const dirs = fs
+    .readdirSync(skillsDir, { withFileTypes: true })
+    .filter((d) => d.isDirectory())
+    .map((d) => d.name)
+    .sort((a, b) => a.localeCompare(b));
+
+  const failures = [];
+  const names = new Map();
+  const skills = [];
+
+  for (const dir of dirs) {
+    const base = path.join(skillsDir, dir);
+    const skillFile = path.join(base, 'SKILL.md');
+    if (!fs.existsSync(skillFile)) {
+      failures.push(`${dir}: missing SKILL.md`);
+      continue;
+    }
+    const content = fs.readFileSync(skillFile, 'utf8');
+    const fm = parseFrontmatter(content);
+    const name = String(fm.name || dir).trim();
+    names.set(name, (names.get(name) || 0) + 1);
+    skills.push({
+      dir,
+      name,
+      origin: fm.origin || '',
+      version: fm.version || '',
+      assets: {
+        scripts: fs.existsSync(path.join(base, 'scripts')),
+        data: fs.existsSync(path.join(base, 'data')),
+        templates: fs.existsSync(path.join(base, 'templates')),
+      },
+    });
+  }
+
+  for (const [name, count] of names.entries()) {
+    if (count > 1) failures.push(`duplicate skill name: ${name}`);
+  }
+
+  const registry = {
+    generated_at: new Date().toISOString(),
+    counts: { total_dirs: dirs.length, indexed: skills.length, failures: failures.length },
+    skills,
+  };
+  fs.writeFileSync(path.join(skillsDir, 'registry.json'), JSON.stringify(registry, null, 2) + '\n', 'utf8');
+
+  return { ok: failures.length === 0, detail: failures.length === 0 ? 'ok' : failures.join(' | ') };
+}
+
 function scanFile(filePath, findings) {
   const content = fs.readFileSync(filePath, 'utf8');
   const rel = path.relative(ROOT, filePath).replace(/\\/g, '/');
@@ -174,6 +241,10 @@ async function run() {
   }
   addResult(results, findings.fail.length === 0 ? 'pass' : 'fail', 'static.scan.failures', findings.fail.length === 0 ? 'none' : findings.fail.join(' | '));
   addResult(results, findings.warn.length === 0 ? 'pass' : strict ? 'fail' : 'warn', 'static.scan.warnings', findings.warn.length === 0 ? 'none' : findings.warn.join(' | '));
+
+  // Skill structure gate: validate inventory and emit skills/registry.json.
+  const skillGate = validateSkillsAndWriteRegistry();
+  addResult(results, skillGate.ok ? 'pass' : 'fail', 'skills.registry', skillGate.detail);
 
   const scripts = (pkg && pkg.scripts) || {};
   if (full) {

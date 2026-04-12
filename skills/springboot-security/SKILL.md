@@ -1,7 +1,7 @@
 ---
 name: springboot-security
 description: Spring Security best practices for authn/authz, validation, CSRF, secrets, headers, rate limiting, and dependency security in Java Spring Boot services.
-origin: EOC
+origin: ECC
 ---
 
 # Spring Boot Security Review
@@ -270,31 +270,3 @@ public class RateLimitFilter extends OncePerRequestFilter {
 - [ ] Logs free of sensitive data
 
 **Remember**: Deny by default, validate inputs, least privilege, and secure-by-configuration first.
-
-## Open-Source Benchmarks
-
-Reference projects for `springboot-security` optimization:
-
-- [spring-projects/spring-security](https://github.com/spring-projects/spring-security) - Comprehensive authn/authz and method security patterns.
-- [OWASP/CheatSheetSeries](https://github.com/OWASP/CheatSheetSeries) - Practical app security controls and checklists.
-
-### Optimization Guidance
-- Favor explicit security filter chain examples by use case.
-- Map role/permission models to endpoint and method rules.
-- Include secure defaults for sessions, CSRF, and CORS.
-
-## Acceptance Criteria
-
-- Inputs: Clear task scope, target files/systems, and explicit constraints.
-- Outputs: Concrete artifact (code/doc/config/decision) aligned with this skill domain.
-- Validation: At least one executable check or deterministic review step is defined and run.
-- Done: Result is actionable, non-contradictory with adjacent skills, and mapped to user intent.
-
-## Skill Metadata
-
-- Owner: `easy-opencode-team`
-- Version: `1.0.0`
-- Last Reviewed: `2026-04-11`
-- Stability: `stable`
-- Overlap Domain: `security`
-

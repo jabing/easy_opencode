@@ -1,17 +1,10 @@
 ---
 name: cpp-testing
 description: Use only when writing/updating/fixing C++ tests, configuring GoogleTest/CTest, diagnosing failing or flaky tests, or adding coverage/sanitizers.
-origin: EOC
+origin: ECC
 ---
 
 # C++ Testing (Agent Skill)
-
-## When to Activate
-
-- Trigger this skill when the request clearly matches this skill's domain.
-- Use this skill before writing implementation details outside its scope.
-- If multiple skills overlap, follow `skills/ROUTING_GUIDE.md` precedence rules.
-
 
 Agent-focused testing workflow for modern C++ (C++17/20) using GoogleTest/GoogleMock with CMake/CTest.
 
@@ -168,6 +161,7 @@ include(FetchContent)
 set(GTEST_VERSION v1.17.0) # Adjust to project policy.
 FetchContent_Declare(
   googletest
+  # Google Test framework (official repository)
   URL https://github.com/google/googletest/archive/refs/tags/${GTEST_VERSION}.zip
 )
 FetchContent_MakeAvailable(googletest)
@@ -328,31 +322,3 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
 
 - **Catch2**: header-only, expressive matchers
 - **doctest**: lightweight, minimal compile overhead
-
-## Open-Source Benchmarks
-
-Reference projects for `cpp-testing` optimization:
-
-- [pytest-dev/pytest](https://github.com/pytest-dev/pytest) - Mature test ergonomics and fixture patterns.
-- [microsoft/playwright](https://github.com/microsoft/playwright) - Robust, cross-browser E2E automation.
-
-### Optimization Guidance
-- Adopt table-driven and parameterized test styles.
-- Standardize fixture lifecycles and test data factories.
-- Separate fast unit gates from slower integration/E2E gates.
-
-## Acceptance Criteria
-
-- Inputs: Clear task scope, target files/systems, and explicit constraints.
-- Outputs: Concrete artifact (code/doc/config/decision) aligned with this skill domain.
-- Validation: At least one executable check or deterministic review step is defined and run.
-- Done: Result is actionable, non-contradictory with adjacent skills, and mapped to user intent.
-
-## Skill Metadata
-
-- Owner: `easy-opencode-team`
-- Version: `1.0.0`
-- Last Reviewed: `2026-04-11`
-- Stability: `stable`
-- Overlap Domain: `testing`
-

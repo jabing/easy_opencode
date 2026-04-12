@@ -1,7 +1,7 @@
 ---
 name: python-patterns
 description: Pythonic idioms, PEP 8 standards, type hints, and best practices for building robust, efficient, and maintainable Python applications.
-origin: EOC
+origin: ECC
 ---
 
 # Python Development Patterns
@@ -748,31 +748,3 @@ except SpecificError as e:
 ```
 
 __Remember__: Python code should be readable, explicit, and follow the principle of least surprise. When in doubt, prioritize clarity over cleverness.
-
-## Open-Source Benchmarks
-
-Reference projects for `python-patterns` optimization:
-
-- [pydantic/pydantic](https://github.com/pydantic/pydantic) - Reliable schema validation and parsing boundaries.
-- [pytest-dev/pytest](https://github.com/pytest-dev/pytest) - Best-in-class testing and fixture ecosystem.
-
-### Optimization Guidance
-- Lead with typing and schema validation at boundaries.
-- Show modular project layouts for service and library code.
-- Use fixtures and parametrization for concise test coverage.
-
-## Acceptance Criteria
-
-- Inputs: Clear task scope, target files/systems, and explicit constraints.
-- Outputs: Concrete artifact (code/doc/config/decision) aligned with this skill domain.
-- Validation: At least one executable check or deterministic review step is defined and run.
-- Done: Result is actionable, non-contradictory with adjacent skills, and mapped to user intent.
-
-## Skill Metadata
-
-- Owner: `easy-opencode-team`
-- Version: `1.0.0`
-- Last Reviewed: `2026-04-11`
-- Stability: `stable`
-- Overlap Domain: `python`
-

@@ -1,7 +1,7 @@
 ---
 name: cost-aware-llm-pipeline
 description: Cost optimization patterns for LLM API usage — model routing by task complexity, budget tracking, retry logic, and prompt caching.
-origin: EOC
+origin: ECC
 ---
 
 # Cost-Aware LLM Pipeline
@@ -181,31 +181,3 @@ def process(text: str, config: Config, tracker: CostTracker) -> tuple[Result, Co
 - Batch processing pipelines where cost adds up quickly
 - Multi-model architectures that need intelligent routing
 - Production systems that need budget guardrails
-
-## Open-Source Benchmarks
-
-Reference projects for `cost-aware-llm-pipeline` optimization:
-
-- [BerriAI/litellm](https://github.com/BerriAI/litellm) - Provider routing, fallback, and usage tracking patterns.
-- [promptfoo/promptfoo](https://github.com/promptfoo/promptfoo) - Prompt/version regression testing and eval automation.
-
-### Optimization Guidance
-- Attach model routing decisions to measurable SLOs.
-- Version prompts and eval datasets together.
-- Capture token and latency budgets in acceptance criteria.
-
-## Acceptance Criteria
-
-- Inputs: Clear task scope, target files/systems, and explicit constraints.
-- Outputs: Concrete artifact (code/doc/config/decision) aligned with this skill domain.
-- Validation: At least one executable check or deterministic review step is defined and run.
-- Done: Result is actionable, non-contradictory with adjacent skills, and mapped to user intent.
-
-## Skill Metadata
-
-- Owner: `easy-opencode-team`
-- Version: `1.0.0`
-- Last Reviewed: `2026-04-11`
-- Stability: `stable`
-- Overlap Domain: `llm-ops`
-

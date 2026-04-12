@@ -6,16 +6,19 @@ Production-ready OpenCode plugin with multi-agent workflows, reusable skills, sl
 
 - 15 specialized agents (3 primary + hidden specialists)
 - 50+ skills
-- 53 commands
+- 56 commands
 - Hook plugin for formatting, checks, and guardrails
 - Gate-controlled delivery flow via `/eoc-start`
 - DAG concurrency orchestration via `/eoc-parallel`
 - Run observability via `/eoc-metrics`
+- Plan-to-execution bridge via `/eoc-bridge`
 - Quality guardrails with fast/full modes via `/quality-gate`
+- Skill source/version tracking via `/skill-registry`
 - OpenSpec-style spec-first commands (`/openspec-proposal`, `/openspec-apply`, `/openspec-archive`)
 - Superpowers-style execution commands (`/superpowers-brainstorm`, `/superpowers-plan`, `/superpowers-execute`)
 - Vue bigscreen elite workflow via `/vue-bigscreen`
 - One-command Vue bigscreen scaffold via `/vue-bigscreen-init`
+- Professional UX audit workflow via `/ui-ux-review`
 
 ## Install
 

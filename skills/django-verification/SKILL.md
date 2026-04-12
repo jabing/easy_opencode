@@ -1,7 +1,7 @@
 ---
 name: django-verification
 description: "Verification loop for Django projects: migrations, linting, tests with coverage, security scans, and deployment readiness checks before release or PR."
-origin: EOC
+origin: ECC
 ---
 
 # Django Verification Loop
@@ -357,7 +357,7 @@ Phase 12: Diff Review
   ✓ No hardcoded secrets
   ✓ Migrations included
 
-RECOMMENDATION: ⚠️ Fix pip-audit vulnerabilities before deploying
+RECOMMENDATION: WARNING: Fix pip-audit vulnerabilities before deploying
 
 NEXT STEPS:
 1. Update vulnerable dependencies
@@ -467,31 +467,3 @@ jobs:
 | Diff stats | `git diff --stat` |
 
 Remember: Automated verification catches common issues but doesn't replace manual code review and testing in staging environment.
-
-## Open-Source Benchmarks
-
-Reference projects for `django-verification` optimization:
-
-- [pytest-dev/pytest](https://github.com/pytest-dev/pytest) - Mature test ergonomics and fixture patterns.
-- [microsoft/playwright](https://github.com/microsoft/playwright) - Robust, cross-browser E2E automation.
-
-### Optimization Guidance
-- Adopt table-driven and parameterized test styles.
-- Standardize fixture lifecycles and test data factories.
-- Separate fast unit gates from slower integration/E2E gates.
-
-## Acceptance Criteria
-
-- Inputs: Clear task scope, target files/systems, and explicit constraints.
-- Outputs: Concrete artifact (code/doc/config/decision) aligned with this skill domain.
-- Validation: At least one executable check or deterministic review step is defined and run.
-- Done: Result is actionable, non-contradictory with adjacent skills, and mapped to user intent.
-
-## Skill Metadata
-
-- Owner: `easy-opencode-team`
-- Version: `1.0.0`
-- Last Reviewed: `2026-04-11`
-- Stability: `stable`
-- Overlap Domain: `verification`
-

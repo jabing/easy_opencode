@@ -1,7 +1,7 @@
 ---
 name: postgres-patterns
 description: PostgreSQL database patterns for query optimization, schema design, indexing, and security. Based on Supabase best practices.
-origin: EOC
+origin: ECC
 ---
 
 # PostgreSQL Patterns
@@ -144,32 +144,4 @@ SELECT pg_reload_conf();
 
 ---
 
-*Based on [Supabase Agent Skills](https://github.com/supabase/agent-skills) (MIT License)*
-
-## Open-Source Benchmarks
-
-Reference projects for `postgres-patterns` optimization:
-
-- [postgres/postgres](https://github.com/postgres/postgres) - Canonical SQL behavior and indexing semantics.
-- [liquibase/liquibase](https://github.com/liquibase/liquibase) - Versioned migration workflow and rollback practices.
-
-### Optimization Guidance
-- Make migration steps idempotent and rollback-aware.
-- Include index strategy guidance with query examples.
-- Separate OLTP and analytics query patterns clearly.
-
-## Acceptance Criteria
-
-- Inputs: Clear task scope, target files/systems, and explicit constraints.
-- Outputs: Concrete artifact (code/doc/config/decision) aligned with this skill domain.
-- Validation: At least one executable check or deterministic review step is defined and run.
-- Done: Result is actionable, non-contradictory with adjacent skills, and mapped to user intent.
-
-## Skill Metadata
-
-- Owner: `easy-opencode-team`
-- Version: `1.0.0`
-- Last Reviewed: `2026-04-11`
-- Stability: `stable`
-- Overlap Domain: `database`
-
+*Based on Supabase Agent Skills (credit: Supabase team) (MIT License)*

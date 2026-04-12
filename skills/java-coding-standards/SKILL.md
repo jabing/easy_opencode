@@ -1,7 +1,7 @@
 ---
 name: java-coding-standards
 description: "Java coding standards for Spring Boot services: naming, immutability, Optional usage, streams, exceptions, generics, and project layout."
-origin: EOC
+origin: ECC
 ---
 
 # Java Coding Standards
@@ -26,22 +26,22 @@ Standards for readable, maintainable Java (17+) code in Spring Boot services.
 ## Naming
 
 ```java
-// ✅ Classes/Records: PascalCase
+// PASS: Classes/Records: PascalCase
 public class MarketService {}
 public record Money(BigDecimal amount, Currency currency) {}
 
-// ✅ Methods/fields: camelCase
+// PASS: Methods/fields: camelCase
 private final MarketRepository marketRepository;
 public Market findBySlug(String slug) {}
 
-// ✅ Constants: UPPER_SNAKE_CASE
+// PASS: Constants: UPPER_SNAKE_CASE
 private static final int MAX_PAGE_SIZE = 100;
 ```
 
 ## Immutability
 
 ```java
-// ✅ Favor records and final fields
+// PASS: Favor records and final fields
 public record MarketDto(Long id, String name, MarketStatus status) {}
 
 public class Market {
@@ -54,10 +54,10 @@ public class Market {
 ## Optional Usage
 
 ```java
-// ✅ Return Optional from find* methods
+// PASS: Return Optional from find* methods
 Optional<Market> market = marketRepository.findBySlug(slug);
 
-// ✅ Map/flatMap instead of get()
+// PASS: Map/flatMap instead of get()
 return market
     .map(MarketResponse::from)
     .orElseThrow(() -> new EntityNotFoundException("Market not found"));
@@ -66,13 +66,13 @@ return market
 ## Streams Best Practices
 
 ```java
-// ✅ Use streams for transformations, keep pipelines short
+// PASS: Use streams for transformations, keep pipelines short
 List<String> names = markets.stream()
     .map(Market::name)
     .filter(Objects::nonNull)
     .toList();
 
-// ❌ Avoid complex nested streams; prefer loops for clarity
+// FAIL: Avoid complex nested streams; prefer loops for clarity
 ```
 
 ## Exceptions
@@ -145,31 +145,3 @@ log.error("failed_fetch_market slug={}", slug, ex);
 - Favor deterministic tests; no hidden sleeps
 
 **Remember**: Keep code intentional, typed, and observable. Optimize for maintainability over micro-optimizations unless proven necessary.
-
-## Open-Source Benchmarks
-
-Reference projects for `java-coding-standards` optimization:
-
-- [spring-projects/spring-boot](https://github.com/spring-projects/spring-boot) - Production app scaffolding and auto-config patterns.
-- [testcontainers/testcontainers-java](https://github.com/testcontainers/testcontainers-java) - Realistic integration testing with ephemeral dependencies.
-
-### Optimization Guidance
-- Bind config validation to startup and CI checks.
-- Show service/repository boundaries with transaction guidance.
-- Use containerized integration tests for data and messaging tiers.
-
-## Acceptance Criteria
-
-- Inputs: Clear task scope, target files/systems, and explicit constraints.
-- Outputs: Concrete artifact (code/doc/config/decision) aligned with this skill domain.
-- Validation: At least one executable check or deterministic review step is defined and run.
-- Done: Result is actionable, non-contradictory with adjacent skills, and mapped to user intent.
-
-## Skill Metadata
-
-- Owner: `easy-opencode-team`
-- Version: `1.0.0`
-- Last Reviewed: `2026-04-11`
-- Stability: `stable`
-- Overlap Domain: `java`
-

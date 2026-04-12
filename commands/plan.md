@@ -53,7 +53,7 @@ Blocking Questions: [if any]
 First Execution Step: [single concrete action]
 
 ### Execution Packet (JSON)
-[Must include objective, recommended_concurrency, fast_fail, and task list with id/deps/priority/validation]
+[Must include objective, recommended_concurrency, fast_fail, and task list with id/command/deps/priority/validation]
 
 **WAITING FOR CONFIRMATION**: Proceed with this plan? (yes/no/modify)
 

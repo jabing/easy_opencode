@@ -1,7 +1,7 @@
 ---
 name: jpa-patterns
 description: JPA/Hibernate patterns for entity design, relationships, query optimization, transactions, auditing, indexing, pagination, and pooling in Spring Boot.
-origin: EOC
+origin: ECC
 ---
 
 # JPA/Hibernate Patterns
@@ -149,31 +149,3 @@ spring.jpa.properties.hibernate.jdbc.lob.non_contextual_creation=true
 - Assert SQL efficiency using logs: set `logging.level.org.hibernate.SQL=DEBUG` and `logging.level.org.hibernate.orm.jdbc.bind=TRACE` for parameter values
 
 **Remember**: Keep entities lean, queries intentional, and transactions short. Prevent N+1 with fetch strategies and projections, and index for your read/write paths.
-
-## Open-Source Benchmarks
-
-Reference projects for `jpa-patterns` optimization:
-
-- [spring-projects/spring-boot](https://github.com/spring-projects/spring-boot) - Production app scaffolding and auto-config patterns.
-- [testcontainers/testcontainers-java](https://github.com/testcontainers/testcontainers-java) - Realistic integration testing with ephemeral dependencies.
-
-### Optimization Guidance
-- Bind config validation to startup and CI checks.
-- Show service/repository boundaries with transaction guidance.
-- Use containerized integration tests for data and messaging tiers.
-
-## Acceptance Criteria
-
-- Inputs: Clear task scope, target files/systems, and explicit constraints.
-- Outputs: Concrete artifact (code/doc/config/decision) aligned with this skill domain.
-- Validation: At least one executable check or deterministic review step is defined and run.
-- Done: Result is actionable, non-contradictory with adjacent skills, and mapped to user intent.
-
-## Skill Metadata
-
-- Owner: `easy-opencode-team`
-- Version: `1.0.0`
-- Last Reviewed: `2026-04-11`
-- Stability: `stable`
-- Overlap Domain: `java`
-

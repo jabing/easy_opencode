@@ -89,6 +89,7 @@ After section 7, output a fenced JSON block with this schema:
     {
       "id": "short-kebab-id",
       "goal": "what this task produces",
+      "command": "executable command string",
       "deps": [],
       "priority": 100,
       "owner_hint": "backend|frontend|fullstack|qa|docs",
@@ -103,4 +104,5 @@ Rules:
 - `priority` range: 1-200, higher means earlier scheduling.
 - Include at least one independent task pair when safe.
 - Keep total tasks between 3 and 12.
+- Every task should include a runnable `command` and a deterministic `validation`.
 - `validation` must be directly executable where possible (command/file assertion).

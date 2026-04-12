@@ -30,4 +30,4 @@ Potential consolidation opportunities:
 
 - `django-tdd`, `springboot-tdd`, `golang-testing`, `python-testing` -> keep framework specifics but share one common TDD contract.
 - `security-review` and `security-scan` -> keep separate intent, cross-link explicitly.
-- `verification-loop`, `eval-harness`, `continuous-learning*` -> clarify boundaries and handoff order.
+- `verification-loop`, `eval-harness`, `continuous-learning-v2` -> clarify boundaries and handoff order.

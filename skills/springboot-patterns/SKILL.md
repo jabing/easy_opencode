@@ -1,7 +1,7 @@
 ---
 name: springboot-patterns
 description: Spring Boot architecture patterns, REST API design, layered services, data access, caching, async processing, and logging. Use for Java Spring Boot backend work.
-origin: EOC
+origin: ECC
 ---
 
 # Spring Boot Development Patterns
@@ -312,31 +312,3 @@ Use Spring’s `@Scheduled` or integrate with queues (e.g., Kafka, SQS, RabbitMQ
 - Enforce null-safety via `@NonNull` and `Optional` where appropriate
 
 **Remember**: Keep controllers thin, services focused, repositories simple, and errors handled centrally. Optimize for maintainability and testability.
-
-## Open-Source Benchmarks
-
-Reference projects for `springboot-patterns` optimization:
-
-- [spring-projects/spring-boot](https://github.com/spring-projects/spring-boot) - Production app scaffolding and auto-config patterns.
-- [testcontainers/testcontainers-java](https://github.com/testcontainers/testcontainers-java) - Realistic integration testing with ephemeral dependencies.
-
-### Optimization Guidance
-- Bind config validation to startup and CI checks.
-- Show service/repository boundaries with transaction guidance.
-- Use containerized integration tests for data and messaging tiers.
-
-## Acceptance Criteria
-
-- Inputs: Clear task scope, target files/systems, and explicit constraints.
-- Outputs: Concrete artifact (code/doc/config/decision) aligned with this skill domain.
-- Validation: At least one executable check or deterministic review step is defined and run.
-- Done: Result is actionable, non-contradictory with adjacent skills, and mapped to user intent.
-
-## Skill Metadata
-
-- Owner: `easy-opencode-team`
-- Version: `1.0.0`
-- Last Reviewed: `2026-04-11`
-- Stability: `stable`
-- Overlap Domain: `springboot`
-

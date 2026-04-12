@@ -342,6 +342,9 @@ Use these commands in OpenCode:
 - `/orchestrate` - Multi-agent workflow
 - `/vue-bigscreen` - Vue bigscreen elite design + implementation workflow
 - `/vue-bigscreen-init` - Generate Vue bigscreen scaffold structure
+- `/ui-ux-review` - Structured UI/UX audit and redesign recommendations
+- `/eoc-bridge` - Convert planner Execution Packet to runnable EOC scheduler run
+- `/skill-registry` - Generate and validate skill source/version registry
 
 ---
 

@@ -1,0 +1,256 @@
+#!/usr/bin/env node
+const fs = require('fs');
+const path = require('path');
+const crypto = require('crypto');
+const { spawnSync } = require('child_process');
+
+const RUN_DIR = path.join(process.cwd(), '.opencode', 'eoc-run');
+const ACTIVE_FILE = path.join(RUN_DIR, 'active.json');
+
+function ensureDir(p) {
+  fs.mkdirSync(p, { recursive: true });
+}
+
+function nowIso() {
+  return new Date().toISOString();
+}
+
+function parseArgs(argv) {
+  const opts = { _: [] };
+  for (let i = 2; i < argv.length; i++) {
+    const t = argv[i];
+    if (!t.startsWith('--')) {
+      opts._.push(t);
+      continue;
+    }
+    const k = t.slice(2);
+    const n = argv[i + 1];
+    if (!n || n.startsWith('--')) opts[k] = true;
+    else {
+      opts[k] = n;
+      i += 1;
+    }
+  }
+  return opts;
+}
+
+function toBool(v, fallback = false) {
+  if (v === undefined) return fallback;
+  return v === true || v === 'true' || v === '1' || v === 1;
+}
+
+function toNum(v, fallback) {
+  const n = Number(v);
+  return Number.isFinite(n) ? n : fallback;
+}
+
+function extractPacket(raw) {
+  const clean = String(raw).replace(/^\uFEFF/, '');
+  try {
+    return JSON.parse(clean);
+  } catch {
+    // Planner output may contain a fenced json block.
+    const re = /```json\s*([\s\S]*?)```/g;
+    let m = null;
+    while ((m = re.exec(clean)) !== null) {
+      const candidate = m[1];
+      try {
+        const parsed = JSON.parse(candidate);
+        if (parsed && Array.isArray(parsed.tasks)) return parsed;
+      } catch {
+        // keep scanning
+      }
+    }
+    throw new Error('Failed to parse packet JSON. Provide a JSON file or markdown containing a valid ```json block.');
+  }
+}
+
+function readPacket(opts) {
+  if (opts.packet) {
+    const p = path.resolve(process.cwd(), String(opts.packet));
+    if (!fs.existsSync(p)) throw new Error(`Packet file not found: ${p}`);
+    return extractPacket(fs.readFileSync(p, 'utf8'));
+  }
+  if (opts.stdin) {
+    const raw = fs.readFileSync(0, 'utf8');
+    return extractPacket(raw);
+  }
+  throw new Error('Missing packet input. Use --packet <file> or --stdin.');
+}
+
+function normalizeDeps(deps) {
+  if (!deps) return [];
+  if (Array.isArray(deps)) return deps.map(String).map((x) => x.trim()).filter(Boolean);
+  return String(deps)
+    .split(',')
+    .map((x) => x.trim())
+    .filter(Boolean);
+}
+
+function normalizeTask(t) {
+  const id = String(t.id || t.task_id || '').trim();
+  if (!id) throw new Error('Task missing id/task_id');
+  const command = String(t.command || t.cmd || t.validation || '').trim();
+  if (!command) {
+    throw new Error(`Task "${id}" missing executable command (command/cmd/validation).`);
+  }
+  return {
+    task_id: id,
+    command,
+    deps: normalizeDeps(t.deps),
+    timeout_sec: toNum(t.timeout_sec ?? t.timeout, 600),
+    retries: toNum(t.retries, 0),
+    priority: toNum(t.priority, 100),
+    workdir: String(t.workdir || process.cwd()),
+    status: 'queued',
+    attempts: 0,
+    created_at: nowIso(),
+  };
+}
+
+function validateTasks(tasks) {
+  const ids = new Set();
+  for (const t of tasks) {
+    if (ids.has(t.task_id)) throw new Error(`Duplicate task id: ${t.task_id}`);
+    ids.add(t.task_id);
+  }
+  for (const t of tasks) {
+    for (const dep of t.deps) {
+      if (!ids.has(dep)) throw new Error(`Task "${t.task_id}" depends on missing "${dep}"`);
+      if (dep === t.task_id) throw new Error(`Task "${t.task_id}" cannot depend on itself`);
+    }
+  }
+}
+
+function runPath(runId) {
+  return path.join(RUN_DIR, `${runId}.json`);
+}
+
+function saveRun(run) {
+  ensureDir(RUN_DIR);
+  run.updated_at = nowIso();
+  fs.writeFileSync(runPath(run.run_id), JSON.stringify(run, null, 2) + '\n', 'utf8');
+}
+
+function setActive(runId) {
+  ensureDir(RUN_DIR);
+  fs.writeFileSync(
+    ACTIVE_FILE,
+    JSON.stringify({ run_id: runId, updated_at: nowIso(), source: 'eoc-bridge' }, null, 2) + '\n',
+    'utf8'
+  );
+}
+
+function buildRun(packet, opts) {
+  const runId = String(opts['run-id'] || `${new Date().toISOString().replace(/[-:.TZ]/g, '').slice(0, 14)}-${crypto.randomBytes(3).toString('hex')}`);
+  const tasks = (packet.tasks || []).map(normalizeTask);
+  validateTasks(tasks);
+
+  const objective = String(opts.objective || packet.objective || 'bridged-plan').trim();
+  const schedulerTasks = {};
+  for (const t of tasks) schedulerTasks[t.task_id] = t;
+
+  return {
+    run_id: runId,
+    objective,
+    plan_id: opts['plan-id'] || packet.plan_id || null,
+    current_gate: 'GATE_0_PLAN_READY',
+    status: 'active',
+    pause_after_gate: null,
+    state: {
+      plan_confirmed: toBool(opts['plan-confirmed'], true),
+      scope_locked: false,
+      acceptance_criteria_locked: false,
+      implementation_completed: false,
+      build_passed: false,
+      test_passed: false,
+      lint_passed: false,
+      coverage_passed: false,
+      code_review_verdict: '',
+      security_review_verdict: '',
+      docs_updated: false,
+      archive_completed: false,
+    },
+    scheduler: {
+      concurrency: toNum(opts.concurrency ?? packet.recommended_concurrency, 2),
+      fast_fail: toBool(opts['fast-fail'] ?? packet.fast_fail, false),
+      tasks: schedulerTasks,
+      started_at: null,
+      ended_at: null,
+      status: 'idle',
+      errors: [],
+      metrics: {
+        total: 0,
+        queued: 0,
+        running: 0,
+        success: 0,
+        failed: 0,
+        skipped: 0,
+        retried: 0,
+        timed_out: 0,
+      },
+    },
+    history: [
+      { at: nowIso(), event: 'bridge_imported', gate: 'GATE_0_PLAN_READY', detail: `tasks=${tasks.length}` },
+    ],
+    created_at: nowIso(),
+    updated_at: nowIso(),
+  };
+}
+
+function executeScheduler(runId, opts) {
+  const args = ['scripts/eoc-scheduler.js', 'run', '--run-id', runId];
+  if (toBool(opts.simulate, false)) args.push('--simulate');
+  if (opts['fast-fail'] !== undefined) {
+    args.push('--fast-fail', String(opts['fast-fail']));
+  }
+  const r = spawnSync('node', args, { stdio: 'inherit', shell: false });
+  if (r.status !== 0) {
+    throw new Error(`Scheduler execution failed with code ${r.status}`);
+  }
+}
+
+function usage() {
+  console.log('Usage:');
+  console.log('  node scripts/eoc-bridge.js --packet <execution-packet.json> [--objective "..."] [--plan-id PLAN-1]');
+  console.log('  node scripts/eoc-bridge.js --stdin [--execute] [--simulate]');
+  console.log('Options:');
+  console.log('  --concurrency <n>      Override packet recommended_concurrency');
+  console.log('  --fast-fail true|false Override packet fast_fail');
+  console.log('  --execute              Run scheduler immediately after import');
+  console.log('  --plan-confirmed true|false  Defaults to true');
+}
+
+function main() {
+  try {
+    const opts = parseArgs(process.argv);
+    if (opts.help || opts.h || process.argv.length <= 2) {
+      usage();
+      process.exit(0);
+    }
+    const packet = readPacket(opts);
+    if (!Array.isArray(packet.tasks) || packet.tasks.length === 0) {
+      throw new Error('Execution packet must include non-empty tasks array.');
+    }
+    const run = buildRun(packet, opts);
+    saveRun(run);
+    setActive(run.run_id);
+
+    console.log(`Bridge import complete. Run ID: ${run.run_id}`);
+    console.log(`Objective: ${run.objective}`);
+    console.log(`Tasks: ${Object.keys(run.scheduler.tasks).length}`);
+    console.log(`Concurrency: ${run.scheduler.concurrency}`);
+    console.log(`Fast Fail: ${run.scheduler.fast_fail}`);
+    console.log('Next: node scripts/eoc-scheduler.js run --run-id ' + run.run_id);
+
+    if (toBool(opts.execute, false)) {
+      executeScheduler(run.run_id, opts);
+    }
+  } catch (err) {
+    console.error(`[eoc-bridge] ${err.message}`);
+    usage();
+    process.exit(1);
+  }
+}
+
+main();

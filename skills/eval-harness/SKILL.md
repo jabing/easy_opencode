@@ -1,7 +1,7 @@
 ---
 name: eval-harness
 description: Formal evaluation framework for Claude Code sessions implementing eval-driven development (EDD) principles
-origin: EOC
+origin: ECC
 tools: Read, Write, Edit, Bash, Grep, Glob
 ---
 
@@ -235,30 +235,36 @@ Regression: 3/3 passed (pass^3: 100%)
 Status: SHIP IT
 ```
 
-## Open-Source Benchmarks
+## Product Evals (v1.8)
 
-Reference projects for `eval-harness` optimization:
+Use product evals when behavior quality cannot be captured by unit tests alone.
 
-- [BerriAI/litellm](https://github.com/BerriAI/litellm) - Provider routing, fallback, and usage tracking patterns.
-- [promptfoo/promptfoo](https://github.com/promptfoo/promptfoo) - Prompt/version regression testing and eval automation.
+### Grader Types
 
-### Optimization Guidance
-- Attach model routing decisions to measurable SLOs.
-- Version prompts and eval datasets together.
-- Capture token and latency budgets in acceptance criteria.
+1. Code grader (deterministic assertions)
+2. Rule grader (regex/schema constraints)
+3. Model grader (LLM-as-judge rubric)
+4. Human grader (manual adjudication for ambiguous outputs)
 
-## Acceptance Criteria
+### pass@k Guidance
 
-- Inputs: Clear task scope, target files/systems, and explicit constraints.
-- Outputs: Concrete artifact (code/doc/config/decision) aligned with this skill domain.
-- Validation: At least one executable check or deterministic review step is defined and run.
-- Done: Result is actionable, non-contradictory with adjacent skills, and mapped to user intent.
+- `pass@1`: direct reliability
+- `pass@3`: practical reliability under controlled retries
+- `pass^3`: stability test (all 3 runs must pass)
 
-## Skill Metadata
+Recommended thresholds:
+- Capability evals: pass@3 >= 0.90
+- Regression evals: pass^3 = 1.00 for release-critical paths
 
-- Owner: `easy-opencode-team`
-- Version: `1.0.0`
-- Last Reviewed: `2026-04-11`
-- Stability: `stable`
-- Overlap Domain: `evaluation`
+### Eval Anti-Patterns
 
+- Overfitting prompts to known eval examples
+- Measuring only happy-path outputs
+- Ignoring cost and latency drift while chasing pass rates
+- Allowing flaky graders in release gates
+
+### Minimal Eval Artifact Layout
+
+- `.claude/evals/<feature>.md` definition
+- `.claude/evals/<feature>.log` run history
+- `docs/releases/<version>/eval-summary.md` release snapshot

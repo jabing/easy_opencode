@@ -287,8 +287,11 @@ function buildCommandConfig(commandsDir, assetPrefix) {
     'eoc-start': 'eoc_planner',
     'eoc-parallel': 'eoc_planner',
     'eoc-metrics': 'eoc_planner',
+    'eoc-bridge': 'eoc_planner',
     'vue-bigscreen': 'vue-bigscreen-designer',
     'vue-bigscreen-init': 'vue-bigscreen-designer',
+    'ui-ux-review': 'architect',
+    'skill-registry': 'eoc_planner',
   }
 
   const commandFiles = fs
@@ -338,7 +341,7 @@ function buildEocConfig(assetPrefix, commandsDir) {
     `${assetPrefix}/skills/openspec-workflow/SKILL.md`,
     `${assetPrefix}/skills/superpowers-workflow/SKILL.md`,
     `${assetPrefix}/skills/claude-public-tooling/SKILL.md`,
-    `${assetPrefix}/skills/vue-bigscreen-elite/SKILL.md`,
+    `${assetPrefix}/skills/ui-ux-pro-max/SKILL.md`,
   ]
 
   return {

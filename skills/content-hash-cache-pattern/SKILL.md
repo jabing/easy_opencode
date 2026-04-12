@@ -1,7 +1,7 @@
 ---
 name: content-hash-cache-pattern
 description: Cache expensive file processing results using SHA-256 content hashes — path-independent, auto-invalidating, with service layer separation.
-origin: EOC
+origin: ECC
 ---
 
 # Content-Hash File Cache Pattern
@@ -159,31 +159,3 @@ data = dataclasses.asdict(entry)  # Use manual serialization instead
 - Data that must always be fresh (real-time feeds)
 - Cache entries that would be extremely large (consider streaming instead)
 - Results that depend on parameters beyond file content (e.g., different extraction configs)
-
-## Open-Source Benchmarks
-
-Reference projects for `content-hash-cache-pattern` optimization:
-
-- [fastapi/fastapi](https://github.com/fastapi/fastapi) - Clear API contracts, validation-first handlers.
-- [prisma/prisma](https://github.com/prisma/prisma) - Strong schema modeling and migration discipline.
-
-### Optimization Guidance
-- Keep contract-first endpoint specs close to implementation.
-- Use explicit error envelopes and typed validation boundaries.
-- Document performance and consistency trade-offs per pattern.
-
-## Acceptance Criteria
-
-- Inputs: Clear task scope, target files/systems, and explicit constraints.
-- Outputs: Concrete artifact (code/doc/config/decision) aligned with this skill domain.
-- Validation: At least one executable check or deterministic review step is defined and run.
-- Done: Result is actionable, non-contradictory with adjacent skills, and mapped to user intent.
-
-## Skill Metadata
-
-- Owner: `easy-opencode-team`
-- Version: `1.0.0`
-- Last Reviewed: `2026-04-11`
-- Stability: `stable`
-- Overlap Domain: `performance`
-
