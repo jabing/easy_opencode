@@ -25,8 +25,8 @@ node scripts/eoc-ultrawork.js --packet packet.json --simulate
 
 1. Imports packet via `eoc-bridge` and executes scheduler
 2. Advances all gates with required evidence fields
-3. Runs quality gate (inline full gate) unless `--skip-quality`
-4. Computes coverage evidence from run tasks (`scripts/coverage-check.js`)
+3. Runs quality gate (inline full gate) unconditionally
+4. Verifies real code coverage from `coverage/coverage-summary.json` (`scripts/coverage-check.js`)
 5. Derives code/security review verdicts from quality evidence (`scripts/review-gate.js`)
 5. Stops on any failed stage with explicit error output
 

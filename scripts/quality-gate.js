@@ -295,15 +295,22 @@ async function runInternalScript(name) {
     const note = r.degraded ? `checked=${r.checked}; degraded=typescript-unavailable` : `checked=${r.checked}`;
     return { code: r.ok ? (r.degraded ? 2 : 0) : 1, output: r.ok ? note : r.failures.slice(0, 5).join(' | ') };
   }
-  if (name === 'test') {
-    const { runSmokeEoc } = require('./smoke-eoc.js');
-    const r = await runSmokeEoc({ silent: true });
-    return { code: r && r.ok ? 0 : 1, output: r && r.mode ? r.mode : 'unknown' };
-  }
   if (name === 'build') {
     const { runBuildCheck } = require('./build-check.js');
     const r = runBuildCheck();
     return { code: r.ok ? 0 : 1, output: r.ok ? 'ok' : (r.missing || []).join(' | ') };
+  }
+  if (name === 'test') {
+    const { runCorePipelineSmoke } = require('./test-core-pipeline.js');
+    const r = await runCorePipelineSmoke({ silent: true });
+    return { code: r && r.ok ? 0 : 1, output: r && r.runId ? `run_id=${r.runId}` : 'unknown' };
+  }
+  if (name === 'coverage') {
+    const { runRuntimeCoverage } = require('./runtime-coverage.js');
+    const { runCoverageCheck } = require('./coverage-check.js');
+    await runRuntimeCoverage({ silent: true });
+    const cov = runCoverageCheck({ summary: path.join(ROOT, 'coverage', 'coverage-summary.json'), threshold: 75 });
+    return { code: cov.ok ? 0 : 1, output: cov.detail };
   }
   return null;
 }
@@ -360,6 +367,7 @@ async function runQualityGate(options = {}) {
       ['lint', ['run', 'lint']],
       ['typecheck', ['run', 'typecheck']],
       ['test', ['test']],
+      ['coverage', ['run', 'coverage']],
       ['build', ['run', 'build']],
     ];
     for (const [name, args] of ordered) {
@@ -388,7 +396,7 @@ async function runQualityGate(options = {}) {
       }
       const r = await runCommand(npmCmd, args, timeoutMs);
       if (/EPERM/i.test(r.output || '')) {
-        addResult(results, 'skip', `script:${name}`, 'skipped in restricted runtime (spawn EPERM)');
+        addResult(results, 'fail', `script:${name}`, 'spawn EPERM (cannot bypass full gate)');
         continue;
       }
       if (r.timedOut) {

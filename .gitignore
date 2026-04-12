@@ -37,6 +37,7 @@ nul
 
 # Generated artifacts
 tests/coverage/
+coverage/
 *.tgz
 opencode.json
 .opencode/easy-opencode/

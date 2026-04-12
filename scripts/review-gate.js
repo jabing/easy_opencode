@@ -3,6 +3,7 @@ const fs = require('fs');
 const path = require('path');
 
 const ROOT = process.cwd();
+const RUN_ROOT = path.join(ROOT, '.opencode', 'eoc-run');
 
 function verdictFromQuality(quality) {
   const results = Array.isArray(quality && quality.results) ? quality.results : [];
@@ -17,27 +18,70 @@ function verdictFromQuality(quality) {
   return { code, security, fails: fails.length, warns: warns.length };
 }
 
-function writeEvidence(runId, payload) {
-  const dir = path.join(ROOT, '.opencode', 'eoc-run', runId);
+function runReviewDir(runId) {
+  return path.join(RUN_ROOT, runId, 'reviews');
+}
+
+function writeReviewEvidence(runId, qualityResult) {
+  const verdicts = verdictFromQuality(qualityResult || {});
+  const dir = runReviewDir(runId);
   fs.mkdirSync(dir, { recursive: true });
-  const out = path.join(dir, 'review-evidence.json');
-  fs.writeFileSync(out, JSON.stringify(payload, null, 2) + '\n', 'utf8');
-  return out;
+  const codePath = path.join(dir, 'code-review.json');
+  const secPath = path.join(dir, 'security-review.json');
+  fs.writeFileSync(
+    codePath,
+    JSON.stringify(
+      {
+        run_id: runId,
+        generated_at: new Date().toISOString(),
+        reviewer: 'eoc_code_reviewer',
+        verdict: verdicts.code,
+        findings: [],
+      },
+      null,
+      2
+    ) + '\n',
+    'utf8'
+  );
+  fs.writeFileSync(
+    secPath,
+    JSON.stringify(
+      {
+        run_id: runId,
+        generated_at: new Date().toISOString(),
+        reviewer: 'security-reviewer',
+        verdict: verdicts.security,
+        findings: [],
+      },
+      null,
+      2
+    ) + '\n',
+    'utf8'
+  );
+  return { codePath, secPath, verdicts };
+}
+
+function readVerdict(filePath, kind) {
+  if (!fs.existsSync(filePath)) throw new Error(`${kind} evidence missing: ${filePath}`);
+  const parsed = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+  const verdict = String(parsed.verdict || '').toUpperCase();
+  if (!verdict) throw new Error(`${kind} verdict missing in ${filePath}`);
+  return verdict;
 }
 
 function runReviewGate(options = {}) {
   const runId = String(options.runId || '').trim();
   if (!runId) return { ok: false, detail: 'missing runId' };
-  const quality = options.qualityResult || {};
-  const verdicts = verdictFromQuality(quality);
-  const payload = {
-    run_id: runId,
-    generated_at: new Date().toISOString(),
-    verdicts,
-  };
-  const evidencePath = writeEvidence(runId, payload);
-  const ok = verdicts.code !== 'REJECT' && verdicts.security !== 'REJECT';
-  return { ok, detail: `code=${verdicts.code} security=${verdicts.security}`, verdicts, evidencePath };
+  try {
+    const dir = runReviewDir(runId);
+    const code = readVerdict(path.join(dir, 'code-review.json'), 'code-review');
+    const security = readVerdict(path.join(dir, 'security-review.json'), 'security-review');
+    const verdicts = { code, security };
+    const ok = code !== 'REJECT' && security !== 'REJECT';
+    return { ok, detail: `code=${code} security=${security}`, verdicts, evidenceDir: dir };
+  } catch (err) {
+    return { ok: false, detail: String(err.message || err) };
+  }
 }
 
 function parseArgs(argv) {
@@ -59,9 +103,12 @@ function parseArgs(argv) {
 function main() {
   const opts = parseArgs(process.argv);
   const runId = opts['run-id'];
-  const qualityPath = opts.quality ? path.resolve(ROOT, String(opts.quality)) : '';
-  const quality = qualityPath && fs.existsSync(qualityPath) ? JSON.parse(fs.readFileSync(qualityPath, 'utf8')) : {};
-  const r = runReviewGate({ runId, qualityResult: quality });
+  if (opts['write-from-quality']) {
+    const qualityPath = path.resolve(ROOT, String(opts['write-from-quality']));
+    const quality = fs.existsSync(qualityPath) ? JSON.parse(fs.readFileSync(qualityPath, 'utf8')) : {};
+    writeReviewEvidence(runId, quality);
+  }
+  const r = runReviewGate({ runId });
   if (!r.ok) {
     console.error(`[review-gate] FAIL ${r.detail}`);
     process.exit(1);
@@ -69,7 +116,7 @@ function main() {
   console.log(`[review-gate] PASS ${r.detail}`);
 }
 
-module.exports = { runReviewGate };
+module.exports = { runReviewGate, writeReviewEvidence };
 
 if (require.main === module) {
   main();

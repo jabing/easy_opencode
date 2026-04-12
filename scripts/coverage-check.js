@@ -3,33 +3,24 @@ const fs = require('fs');
 const path = require('path');
 
 const ROOT = process.cwd();
-const RUN_DIR = path.join(ROOT, '.opencode', 'eoc-run');
-
-function getRunId(input) {
-  if (input) return String(input);
-  const active = path.join(RUN_DIR, 'active.json');
-  if (!fs.existsSync(active)) return '';
-  const parsed = JSON.parse(fs.readFileSync(active, 'utf8'));
-  return String(parsed.run_id || '');
-}
+const DEFAULT_SUMMARY = path.join(ROOT, 'coverage', 'coverage-summary.json');
 
 function runCoverageCheck(options = {}) {
-  const runId = getRunId(options.runId);
-  if (!runId) return { ok: false, detail: 'no run id provided and no active run' };
-  const runPath = path.join(RUN_DIR, `${runId}.json`);
-  if (!fs.existsSync(runPath)) return { ok: false, detail: `run not found: ${runId}` };
-  const run = JSON.parse(fs.readFileSync(runPath, 'utf8'));
-  const tasks = Object.values((run.scheduler && run.scheduler.tasks) || {});
-  if (tasks.length === 0) return { ok: false, detail: 'no scheduler tasks found' };
-
-  const validated = tasks.filter((t) => t.status === 'success').length;
-  const pct = (validated / tasks.length) * 100;
-  const threshold = Number(options.threshold || 100);
+  const summaryPath = path.resolve(ROOT, String(options.summary || DEFAULT_SUMMARY));
+  if (!fs.existsSync(summaryPath)) {
+    return { ok: false, detail: `coverage summary not found: ${summaryPath}` };
+  }
+  const parsed = JSON.parse(fs.readFileSync(summaryPath, 'utf8'));
+  const total = parsed.total || {};
+  const lines = total.lines || {};
+  const pct = Number(lines.pct);
+  if (!Number.isFinite(pct)) return { ok: false, detail: 'invalid coverage summary: total.lines.pct missing' };
+  const threshold = Number(options.threshold || 80);
   const ok = pct >= threshold;
   return {
     ok,
-    detail: `validated=${validated}/${tasks.length} (${pct.toFixed(1)}%) threshold=${threshold}%`,
-    metrics: { validated, total: tasks.length, pct, threshold },
+    detail: `lines=${pct.toFixed(1)}% threshold=${threshold}% source=${summaryPath}`,
+    metrics: { lines_pct: pct, threshold, source: summaryPath },
   };
 }
 
@@ -51,7 +42,7 @@ function parseArgs(argv) {
 
 function main() {
   const opts = parseArgs(process.argv);
-  const r = runCoverageCheck({ runId: opts['run-id'], threshold: opts.threshold });
+  const r = runCoverageCheck({ summary: opts.summary, threshold: opts.threshold });
   if (!r.ok) {
     console.error(`[coverage-check] FAIL ${r.detail}`);
     process.exit(1);
