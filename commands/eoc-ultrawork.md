@@ -12,13 +12,13 @@ Run the full gated flow automatically with minimal manual intervention.
 
 ```bash
 # Execute from packet
-node scripts/eoc-ultrawork.js --packet packet.json --code-review reviews/code-review.json --security-review reviews/security-review.json --plan-id PLAN-2026-0412
+node scripts/eoc-ultrawork.js --packet packet.json --code-review reviews/code-review.json --security-review reviews/security-review.json --docs-evidence reviews/docs-evidence.json --archive-evidence reviews/archive-evidence.json --plan-id PLAN-2026-0412
 
 # Execute from planner markdown/json piped to stdin
-cat plan-output.md | node scripts/eoc-ultrawork.js --stdin --code-review reviews/code-review.json --security-review reviews/security-review.json
+cat plan-output.md | node scripts/eoc-ultrawork.js --stdin --code-review reviews/code-review.json --security-review reviews/security-review.json --docs-evidence reviews/docs-evidence.json --archive-evidence reviews/archive-evidence.json
 
 # Simulate scheduler execution
-node scripts/eoc-ultrawork.js --packet packet.json --simulate --code-review reviews/code-review.json --security-review reviews/security-review.json
+node scripts/eoc-ultrawork.js --packet packet.json --simulate --code-review reviews/code-review.json --security-review reviews/security-review.json --docs-evidence reviews/docs-evidence.json --archive-evidence reviews/archive-evidence.json
 ```
 
 ## What It Does
@@ -37,4 +37,5 @@ node scripts/eoc-ultrawork.js --packet packet.json --simulate --code-review revi
 - Requires scheduler status `completed` before moving to quality gate
 - Requires coverage check and review gate to pass before release gate
 - Requires external review evidence files with `source: external`
+- Requires docs/archive evidence files with matching `run_id`
 - Blocks release gate unless all prior gates are satisfied

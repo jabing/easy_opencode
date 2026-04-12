@@ -85,7 +85,7 @@ function runCommand(command, args, timeoutMs) {
     try {
       child = spawn(command, args, {
         cwd: ROOT,
-        shell: process.platform === 'win32',
+        shell: false,
         windowsHide: true,
         stdio: ['ignore', 'pipe', 'pipe'],
       });
@@ -476,4 +476,3 @@ module.exports = { runQualityGate };
 if (require.main === module) {
   main();
 }
-  const allowShellTrue = new Set(['scripts/check-environment.js']);

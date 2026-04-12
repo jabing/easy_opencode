@@ -4,9 +4,14 @@ const fs = require('fs');
 const bridge = require('./eoc-bridge.js');
 const scheduler = require('./eoc-scheduler.js');
 const eocStart = require('./eoc-start.js');
-const { runReviewGate, writeReviewEvidence } = require('./review-gate.js');
+const { runReviewGate } = require('./review-gate.js');
 
 const ROOT = process.cwd();
+
+function writeJson(filePath, data) {
+  fs.mkdirSync(path.dirname(filePath), { recursive: true });
+  fs.writeFileSync(filePath, JSON.stringify(data, null, 2) + '\n', 'utf8');
+}
 
 async function runCorePipelineSmoke(options = {}) {
   const packet = {
@@ -50,8 +55,24 @@ async function runCorePipelineSmoke(options = {}) {
   eocStart.markField(runId, 'coverage_passed', true);
   eocStart.advanceGate(runId);
 
-  writeReviewEvidence(runId, { results: [] });
-  const review = runReviewGate({ runId });
+  const reviewDir = path.join(ROOT, '.opencode', 'eoc-run', runId, 'reviews');
+  writeJson(path.join(reviewDir, 'code-review.json'), {
+    run_id: runId,
+    generated_at: new Date().toISOString(),
+    reviewer: 'external-code-reviewer',
+    source: 'external',
+    verdict: 'APPROVE',
+    findings: [],
+  });
+  writeJson(path.join(reviewDir, 'security-review.json'), {
+    run_id: runId,
+    generated_at: new Date().toISOString(),
+    reviewer: 'external-security-reviewer',
+    source: 'external',
+    verdict: 'APPROVE',
+    findings: [],
+  });
+  const review = runReviewGate({ runId, reviewDir });
   if (!review.ok) throw new Error(`review gate failed in smoke: ${review.detail}`);
   eocStart.markField(runId, 'code_review_verdict', review.verdicts.code);
   eocStart.markField(runId, 'security_review_verdict', review.verdicts.security);

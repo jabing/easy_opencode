@@ -14,8 +14,8 @@ const RUN_ACTIVE = path.join(ROOT, '.opencode', 'eoc-run', 'active.json');
 
 function usage() {
   console.log('Usage:');
-  console.log('  node scripts/eoc-ultrawork.js --packet <execution-packet.json> --code-review <file> --security-review <file> [--plan-id <id>] [--simulate]');
-  console.log('  cat plan.md | node scripts/eoc-ultrawork.js --stdin --code-review <file> --security-review <file> [--simulate]');
+  console.log('  node scripts/eoc-ultrawork.js --packet <execution-packet.json> --code-review <file> --security-review <file> --docs-evidence <file> --archive-evidence <file> [--plan-id <id>] [--simulate]');
+  console.log('  cat plan.md | node scripts/eoc-ultrawork.js --stdin --code-review <file> --security-review <file> --docs-evidence <file> --archive-evidence <file> [--simulate]');
 }
 
 function parseArgs(argv) {
@@ -37,46 +37,14 @@ function parseArgs(argv) {
   return opts;
 }
 
-function runNode(args, input) {
-  let r = spawnSync(process.execPath, args, {
-    cwd: ROOT,
-    shell: false,
-    windowsHide: true,
-    encoding: 'utf8',
-    input,
-  });
-  if (r.error && String(r.error.message || '').includes('EPERM')) {
-    r = spawnSync(process.execPath, args, {
-      cwd: ROOT,
-      shell: process.platform === 'win32',
-      windowsHide: true,
-      encoding: 'utf8',
-      input,
-    });
-  }
-  if (r.error) throw r.error;
-  if (r.status !== 0) {
-    throw new Error((r.stderr || r.stdout || '').trim() || `Command failed: node ${args.join(' ')}`);
-  }
-  return (r.stdout || '').trim();
-}
-
 function runNpm(args) {
   const cmd = process.platform === 'win32' ? 'npm.cmd' : 'npm';
-  let r = spawnSync(cmd, args, {
+  const r = spawnSync(cmd, args, {
     cwd: ROOT,
     shell: false,
     windowsHide: true,
     encoding: 'utf8',
   });
-  if (r.error && String(r.error.message || '').includes('EPERM')) {
-    r = spawnSync(cmd, args, {
-      cwd: ROOT,
-      shell: process.platform === 'win32',
-      windowsHide: true,
-      encoding: 'utf8',
-    });
-  }
   if (r.error) throw r.error;
   if (r.status !== 0) {
     throw new Error((r.stderr || r.stdout || '').trim() || `Command failed: ${cmd} ${args.join(' ')}`);
@@ -112,6 +80,26 @@ function loadRun(runId) {
   return JSON.parse(fs.readFileSync(p, 'utf8'));
 }
 
+function assertEvidenceFile(filePath, runId, kind) {
+  if (!filePath) throw new Error(`Missing required ${kind} evidence file.`);
+  const absolute = path.resolve(ROOT, String(filePath));
+  if (!fs.existsSync(absolute)) {
+    throw new Error(`${kind} evidence file not found: ${absolute}`);
+  }
+  const raw = fs.readFileSync(absolute, 'utf8').trim();
+  if (!raw) throw new Error(`${kind} evidence file is empty: ${absolute}`);
+  if (absolute.toLowerCase().endsWith('.json')) {
+    const parsed = JSON.parse(raw);
+    const evidenceRunId = String(parsed.run_id || '').trim();
+    if (!evidenceRunId) {
+      throw new Error(`${kind} evidence missing run_id: ${absolute}`);
+    }
+    if (evidenceRunId !== runId) {
+      throw new Error(`${kind} evidence run_id mismatch: expected=${runId} got=${evidenceRunId}`);
+    }
+  }
+}
+
 async function runQualityGateInline() {
   if (typeof qualityGate.runQualityGate === 'function') {
     const r = await qualityGate.runQualityGate({ full: true, strict: true, json: true, silent: true });
@@ -131,6 +119,9 @@ async function mainForTesting() {
     }
     if (!opts['code-review'] || !opts['security-review']) {
       throw new Error('Missing required review evidence. Provide --code-review <file> and --security-review <file>.');
+    }
+    if (!opts['docs-evidence'] || !opts['archive-evidence']) {
+      throw new Error('Missing required gate-5 evidence. Provide --docs-evidence <file> and --archive-evidence <file>.');
     }
 
     let packetRaw = undefined;
@@ -188,6 +179,8 @@ async function mainForTesting() {
     advance(runId);
 
     // Gate 5 -> 6
+    assertEvidenceFile(opts['docs-evidence'], runId, 'docs');
+    assertEvidenceFile(opts['archive-evidence'], runId, 'archive');
     mark(runId, 'docs_updated', true);
     mark(runId, 'archive_completed', true);
     advance(runId);

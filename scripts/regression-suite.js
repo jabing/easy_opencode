@@ -36,6 +36,32 @@ async function testReviewEvidenceRequired() {
   assert(!r.ok, 'review gate should fail when evidence files missing');
 }
 
+async function testReviewRunIdMismatchRejected() {
+  const runId = `RUN-${Date.now()}-MISMATCH`;
+  const code = path.join(ROOT, '.tmp', 'code-review-mismatch.json');
+  const security = path.join(ROOT, '.tmp', 'security-review-mismatch.json');
+  writeJson(code, {
+    run_id: `${runId}-other`,
+    generated_at: new Date().toISOString(),
+    reviewer: 'external-code-reviewer',
+    source: 'external',
+    verdict: 'APPROVE',
+    findings: [],
+  });
+  writeJson(security, {
+    run_id: runId,
+    generated_at: new Date().toISOString(),
+    reviewer: 'external-security-reviewer',
+    source: 'external',
+    verdict: 'APPROVE',
+    findings: [],
+  });
+  const r = runReviewGate({ runId, codeFile: code, securityFile: security });
+  assert(!r.ok, 'review gate should reject run_id mismatch');
+  fs.rmSync(code, { force: true });
+  fs.rmSync(security, { force: true });
+}
+
 async function testCoverageThreshold() {
   const summary = path.join(ROOT, '.tmp', 'coverage-summary-test.json');
   writeJson(summary, { total: { lines: { pct: 79.9 } } });
@@ -61,11 +87,20 @@ async function testSafeSchedulerPath() {
   assert(done.scheduler && done.scheduler.status === 'completed', 'scheduler should complete safe DAG');
 }
 
+async function testUltraworkRequiresGate5Evidence() {
+  const script = fs.readFileSync(path.join(ROOT, 'scripts', 'eoc-ultrawork.js'), 'utf8');
+  assert(script.includes("opts['docs-evidence']"), 'ultrawork should require docs evidence option');
+  assert(script.includes("opts['archive-evidence']"), 'ultrawork should require archive evidence option');
+  assert(script.includes('Missing required gate-5 evidence'), 'ultrawork should expose gate-5 evidence error');
+}
+
 async function runRegressionSuite() {
   await testUnsafeCommandBlocked();
   await testReviewEvidenceRequired();
+  await testReviewRunIdMismatchRejected();
   await testCoverageThreshold();
   await testSafeSchedulerPath();
+  await testUltraworkRequiresGate5Evidence();
   console.log('[regression-suite] PASS');
 }
 
