@@ -41,6 +41,9 @@ node scripts/eoc-start.js resume <run-id>
 
 # Import planner Execution Packet directly into run + scheduler
 node scripts/eoc-bridge.js --packet packet.json
+
+# Full one-command orchestration (bridge + scheduler + gates)
+node scripts/eoc-ultrawork.js --packet packet.json
 ```
 
 ## State Storage

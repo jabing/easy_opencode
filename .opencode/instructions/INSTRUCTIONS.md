@@ -344,7 +344,10 @@ Use these commands in OpenCode:
 - `/vue-bigscreen-init` - Generate Vue bigscreen scaffold structure
 - `/ui-ux-review` - Structured UI/UX audit and redesign recommendations
 - `/eoc-bridge` - Convert planner Execution Packet to runnable EOC scheduler run
+- `/eoc-ultrawork` - Run plan packet through full gated delivery flow automatically
 - `/skill-registry` - Generate and validate skill source/version registry
+- `/hashline-edit` - Hash-anchored guarded line edit workflow
+- `/ast-rewrite` - AST-based symbol rewrite codemod entrypoint
 
 ---
 

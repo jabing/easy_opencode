@@ -6,15 +6,19 @@ Production-ready OpenCode plugin with multi-agent workflows, reusable skills, sl
 
 - 15 specialized agents (3 primary + hidden specialists)
 - 51 skills
-- 59 commands
+- 62 commands
 - Hook plugin for formatting, checks, and guardrails
 - Gate-controlled delivery flow via `/eoc-start`
 - DAG concurrency orchestration via `/eoc-parallel`
 - Run observability via `/eoc-metrics`
 - Plan-to-execution bridge via `/eoc-bridge`
+- One-command gated orchestration via `/eoc-ultrawork`
 - Quality guardrails with fast/full modes via `/quality-gate`
 - Skill source/version tracking via `/skill-registry`
+- Hash-anchored guarded edit flow via `/hashline-edit`
+- AST codemod refactor entry via `/ast-rewrite`
 - CI quality workflow via `.github/workflows/ci.yml` (`npm run quality-gate:full`)
+- Multi-workflow CI for smoke matrix, skills drift, security scan, and release gates
 - OpenSpec-style spec-first commands (`/openspec-proposal`, `/openspec-apply`, `/openspec-archive`)
 - Superpowers-style execution commands (`/superpowers-brainstorm`, `/superpowers-plan`, `/superpowers-execute`)
 - Vue bigscreen elite workflow via `/vue-bigscreen`
