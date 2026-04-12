@@ -6,6 +6,8 @@ const bridge = require('./eoc-bridge.js');
 const scheduler = require('./eoc-scheduler.js');
 const eocStart = require('./eoc-start.js');
 const qualityGate = require('./quality-gate.js');
+const { runCoverageCheck } = require('./coverage-check.js');
+const { runReviewGate } = require('./review-gate.js');
 
 const ROOT = process.cwd();
 const RUN_ACTIVE = path.join(ROOT, '.opencode', 'eoc-run', 'active.json');
@@ -17,7 +19,6 @@ function usage() {
   console.log('');
   console.log('Options:');
   console.log('  --skip-quality    Skip quality gate execution');
-  console.log('  --review <verdict>  APPROVE or APPROVE_WITH_WARNINGS (default APPROVE)');
 }
 
 function parseArgs(argv) {
@@ -118,9 +119,10 @@ async function runQualityGateInline() {
   if (typeof qualityGate.runQualityGate === 'function') {
     const r = await qualityGate.runQualityGate({ full: true, strict: true, json: true, silent: true });
     if (!r || r.gate !== 'PASS') throw new Error('quality-gate failed');
-    return;
+    return r;
   }
   runNpm(['run', 'quality-gate:full']);
+  return null;
 }
 
 async function main() {
@@ -162,22 +164,21 @@ async function main() {
     advance(runId);
 
     // Gate 3 -> 4
-    if (!opts['skip-quality']) {
-      await runQualityGateInline();
-    }
+    let qualityResult = null;
+    if (!opts['skip-quality']) qualityResult = await runQualityGateInline();
     mark(runId, 'build_passed', true);
     mark(runId, 'test_passed', true);
     mark(runId, 'lint_passed', true);
+    const coverage = runCoverageCheck({ runId, threshold: 100 });
+    if (!coverage.ok) throw new Error(`coverage check failed: ${coverage.detail}`);
     mark(runId, 'coverage_passed', true);
     advance(runId);
 
     // Gate 4 -> 5
-    const verdict = String(opts.review || 'APPROVE').toUpperCase();
-    if (!new Set(['APPROVE', 'APPROVE_WITH_WARNINGS']).has(verdict)) {
-      throw new Error('Invalid --review. Use APPROVE or APPROVE_WITH_WARNINGS.');
-    }
-    mark(runId, 'code_review_verdict', verdict);
-    mark(runId, 'security_review_verdict', verdict);
+    const review = runReviewGate({ runId, qualityResult: qualityResult || {} });
+    if (!review.ok) throw new Error(`review gate failed: ${review.detail}`);
+    mark(runId, 'code_review_verdict', review.verdicts.code);
+    mark(runId, 'security_review_verdict', review.verdicts.security);
     advance(runId);
 
     // Gate 5 -> 6

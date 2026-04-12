@@ -293,7 +293,7 @@ async function runInternalScript(name) {
     const { runTypecheck } = require('./typecheck.js');
     const r = runTypecheck();
     const note = r.degraded ? `checked=${r.checked}; degraded=typescript-unavailable` : `checked=${r.checked}`;
-    return { code: r.ok ? 0 : 1, output: r.ok ? note : r.failures.slice(0, 5).join(' | ') };
+    return { code: r.ok ? (r.degraded ? 2 : 0) : 1, output: r.ok ? note : r.failures.slice(0, 5).join(' | ') };
   }
   if (name === 'test') {
     const { runSmokeEoc } = require('./smoke-eoc.js');
@@ -369,6 +369,15 @@ async function runQualityGate(options = {}) {
       }
       const internal = await runInternalScript(name);
       if (internal) {
+        if (name === 'typecheck' && internal.code === 2) {
+          addResult(
+            results,
+            strict ? 'fail' : 'warn',
+            `script:${name}`,
+            `degraded: ${internal.output}`
+          );
+          continue;
+        }
         addResult(
           results,
           internal.code === 0 ? 'pass' : 'fail',

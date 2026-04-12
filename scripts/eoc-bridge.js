@@ -106,11 +106,19 @@ function assertRunnableText(raw, field, taskId) {
   return value;
 }
 
+function assertSafeCommand(cmd, field, taskId) {
+  if (/(\|\||&&|[|;<>`])/.test(cmd)) {
+    throw new Error(`Task "${taskId}" ${field} contains blocked shell operators.`);
+  }
+}
+
 function normalizeTask(t) {
   const id = String(t.id || t.task_id || '').trim();
   if (!id) throw new Error('Task missing id/task_id');
   const command = assertRunnableText(t.command || t.cmd || '', 'command (command/cmd)', id);
   const validation = assertRunnableText(t.validation || '', 'validation', id);
+  assertSafeCommand(command, 'command', id);
+  assertSafeCommand(validation, 'validation', id);
   const priority = toNum(t.priority, 100);
   if (!Number.isFinite(priority) || priority < 1 || priority > 200) {
     throw new Error(`Task "${id}" priority must be between 1 and 200`);

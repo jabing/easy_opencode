@@ -25,12 +25,15 @@ node scripts/eoc-ultrawork.js --packet packet.json --simulate
 
 1. Imports packet via `eoc-bridge` and executes scheduler
 2. Advances all gates with required evidence fields
-3. Runs quality gate (`npm run quality-gate:full`) unless `--skip-quality`
-4. Records review verdicts and completes docs/archive gates
+3. Runs quality gate (inline full gate) unless `--skip-quality`
+4. Computes coverage evidence from run tasks (`scripts/coverage-check.js`)
+5. Derives code/security review verdicts from quality evidence (`scripts/review-gate.js`)
 5. Stops on any failed stage with explicit error output
 
 ## Guardrails
 
 - Requires valid Execution Packet with `command` and `validation` per task
+- Blocks commands containing unsafe shell operators (`|`, `;`, redirection, etc.)
 - Requires scheduler status `completed` before moving to quality gate
+- Requires coverage check and review gate to pass before release gate
 - Blocks release gate unless all prior gates are satisfied

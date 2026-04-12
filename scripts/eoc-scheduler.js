@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 const fs = require('fs');
 const path = require('path');
-const { exec } = require('child_process');
+const { spawn } = require('child_process');
 
 const RUN_DIR = path.join(process.cwd(), '.opencode', 'eoc-run');
 
@@ -113,29 +113,59 @@ function ensureTaskCtx(runId, taskId) {
   return base;
 }
 
+function hasUnsafeShellOperators(command) {
+  return /(\|\||&&|[|;<>`])/.test(String(command || ''));
+}
+
+function splitCommand(command) {
+  const input = String(command || '').trim();
+  const tokens = [];
+  const re = /"([^"\\]*(?:\\.[^"\\]*)*)"|'([^'\\]*(?:\\.[^'\\]*)*)'|[^\s"']+/g;
+  let m;
+  while ((m = re.exec(input)) !== null) {
+    if (m[1] !== undefined) tokens.push(m[1].replace(/\\"/g, '"'));
+    else if (m[2] !== undefined) tokens.push(m[2].replace(/\\'/g, "'"));
+    else tokens.push(m[0]);
+  }
+  if (tokens.length === 0) throw new Error('Empty command');
+  return { file: tokens[0], args: tokens.slice(1) };
+}
+
 function shellCommand(command, workdir, timeoutMs, logFile) {
   return new Promise((resolve) => {
-    exec(
-      command,
-      {
+    try {
+      if (hasUnsafeShellOperators(command)) {
+        fs.appendFileSync(logFile, `[blocked] unsafe shell operators in command: ${command}\n`, 'utf8');
+        resolve({ code: 126, timedOut: false });
+        return;
+      }
+      const parsed = splitCommand(command);
+      const child = spawn(parsed.file, parsed.args, {
         cwd: workdir || process.cwd(),
         windowsHide: true,
-        timeout: timeoutMs,
-        maxBuffer: 1024 * 1024 * 16,
-        shell: true,
-      },
-      (error, stdout, stderr) => {
-        const content = `${stdout || ''}${stderr || ''}`;
-        fs.appendFileSync(logFile, content, 'utf8');
-        const timedOut = Boolean(error && error.killed && error.signal === 'SIGTERM');
-        if (!error) {
-          resolve({ code: 0, timedOut: false });
-          return;
-        }
-        const code = typeof error.code === 'number' ? error.code : 1;
-        resolve({ code, timedOut });
-      }
-    );
+        shell: false,
+      });
+      let killedByTimeout = false;
+      const timer = setTimeout(() => {
+        killedByTimeout = true;
+        child.kill();
+      }, timeoutMs);
+
+      child.stdout.on('data', (d) => fs.appendFileSync(logFile, String(d), 'utf8'));
+      child.stderr.on('data', (d) => fs.appendFileSync(logFile, String(d), 'utf8'));
+      child.on('error', (err) => {
+        clearTimeout(timer);
+        fs.appendFileSync(logFile, `${String(err.message || err)}\n`, 'utf8');
+        resolve({ code: 1, timedOut: false });
+      });
+      child.on('close', (code) => {
+        clearTimeout(timer);
+        resolve({ code: typeof code === 'number' ? code : 1, timedOut: killedByTimeout });
+      });
+    } catch (err) {
+      fs.appendFileSync(logFile, `${String(err.message || err)}\n`, 'utf8');
+      resolve({ code: 1, timedOut: false });
+    }
   });
 }
 
@@ -579,6 +609,8 @@ module.exports = {
   runScheduler,
   runSchedulerById,
   printStatus,
+  hasUnsafeShellOperators,
+  splitCommand,
 };
 
 if (require.main === module) {
