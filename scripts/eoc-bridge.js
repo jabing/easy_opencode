@@ -267,9 +267,7 @@ function main() {
     console.log(`Fast Fail: ${run.scheduler.fast_fail}`);
     console.log('Next: node scripts/eoc-scheduler.js run --run-id ' + run.run_id);
 
-    if (toBool(opts.execute, false)) {
-      executeScheduler(run.run_id, opts);
-    }
+    if (toBool(opts.execute, false)) executeScheduler(run.run_id, opts);
   } catch (err) {
     console.error(`[eoc-bridge] ${err.message}`);
     usage();
@@ -277,4 +275,36 @@ function main() {
   }
 }
 
-main();
+function bridgeFromPacket(packet, opts = {}) {
+  if (!Array.isArray(packet.tasks) || packet.tasks.length === 0) {
+    throw new Error('Execution packet must include non-empty tasks array.');
+  }
+  const run = buildRun(packet, opts);
+  saveRun(run);
+  setActive(run.run_id);
+  if (toBool(opts.execute, false)) executeScheduler(run.run_id, opts);
+  return run;
+}
+
+function bridgeFromOptions(opts = {}, stdinRaw) {
+  let packet;
+  if (stdinRaw !== undefined) packet = extractPacket(stdinRaw);
+  else packet = readPacket(opts);
+  return bridgeFromPacket(packet, opts);
+}
+
+module.exports = {
+  extractPacket,
+  readPacket,
+  normalizeTask,
+  validateTasks,
+  saveRun,
+  setActive,
+  buildRun,
+  bridgeFromPacket,
+  bridgeFromOptions,
+};
+
+if (require.main === module) {
+  main();
+}

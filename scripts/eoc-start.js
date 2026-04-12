@@ -259,6 +259,14 @@ function cmdMark(rest) {
   printRun(run);
 }
 
+function markField(runId, field, value) {
+  const run = getRunOrThrow(runId);
+  run.state[field] = value;
+  run.history.push({ at: new Date().toISOString(), event: 'mark', gate: run.current_gate, detail: `${field}=${value}` });
+  saveRun(run);
+  return run;
+}
+
 function cmdAdvance(rest) {
   const opts = parseOptions(rest);
   const run = getRunOrThrow(opts['run-id']);
@@ -294,6 +302,26 @@ function cmdAdvance(rest) {
 
   saveRun(run);
   printRun(run);
+}
+
+function advanceGate(runId) {
+  const run = getRunOrThrow(runId);
+  if (run.current_gate === 'GATE_6_RELEASE_READY') return { advanced: false, reason: 'final', run };
+  const unmet = unmetForGate(run);
+  if (unmet.length > 0) return { advanced: false, reason: 'blocked', unmet, run };
+  const prev = run.current_gate;
+  const next = nextGate(prev);
+  if (!next) return { advanced: false, reason: 'no_next', run };
+  run.current_gate = next;
+  run.history.push({ at: new Date().toISOString(), event: 'advance', gate: next, detail: `from=${prev}` });
+  if (run.pause_after_gate && run.pause_after_gate === next) {
+    run.status = 'paused';
+    run.history.push({ at: new Date().toISOString(), event: 'paused', gate: next, detail: 'pause-after-gate reached' });
+  } else {
+    run.status = next === 'GATE_6_RELEASE_READY' ? 'completed' : 'active';
+  }
+  saveRun(run);
+  return { advanced: true, run };
 }
 
 function cmdResume(rest) {
@@ -359,4 +387,19 @@ function main() {
   }
 }
 
-main();
+module.exports = {
+  GATES,
+  loadRun,
+  saveRun,
+  setActive,
+  getActiveRunId,
+  getRunOrThrow,
+  unmetForGate,
+  markField,
+  advanceGate,
+  printRun,
+};
+
+if (require.main === module) {
+  main();
+}

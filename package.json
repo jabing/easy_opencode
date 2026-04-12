@@ -16,7 +16,7 @@
     "ast:rewrite": "node scripts/ast-rewrite.js rename-symbol",
     "security:audit": "npm audit --omit=dev --audit-level=high",
     "lint": "node scripts/metadata-check.js",
-    "typecheck": "node --check scripts/eoc-start.js && node --check scripts/eoc-scheduler.js && node --check scripts/eoc-bridge.js && node --check scripts/quality-gate.js && node --check scripts/skill-registry.js && node --check scripts/install.js && node --check scripts/metadata-check.js && node --check scripts/smoke-eoc.js && node --check scripts/build-check.js",
+    "typecheck": "node scripts/typecheck.js",
     "test": "node scripts/smoke-eoc.js",
     "build": "node scripts/build-check.js"
   },

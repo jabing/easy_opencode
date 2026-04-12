@@ -283,12 +283,36 @@ function scanFile(filePath, findings) {
   }
 }
 
-async function run() {
-  const opts = parseArgs(process.argv);
-  const full = toBool(opts.full);
-  const strict = toBool(opts.strict);
-  const jsonMode = toBool(opts.json);
-  const timeoutMs = Number(opts.timeout || 180000);
+async function runInternalScript(name) {
+  if (name === 'lint') {
+    const { runMetadataCheck } = require('./metadata-check.js');
+    const r = runMetadataCheck();
+    return { code: r.ok ? 0 : 1, output: r.ok ? r.detail : r.failures.join(' | ') };
+  }
+  if (name === 'typecheck') {
+    const { runTypecheck } = require('./typecheck.js');
+    const r = runTypecheck();
+    const note = r.degraded ? `checked=${r.checked}; degraded=typescript-unavailable` : `checked=${r.checked}`;
+    return { code: r.ok ? 0 : 1, output: r.ok ? note : r.failures.slice(0, 5).join(' | ') };
+  }
+  if (name === 'test') {
+    const { runSmokeEoc } = require('./smoke-eoc.js');
+    const r = await runSmokeEoc({ silent: true });
+    return { code: r && r.ok ? 0 : 1, output: r && r.mode ? r.mode : 'unknown' };
+  }
+  if (name === 'build') {
+    const { runBuildCheck } = require('./build-check.js');
+    const r = runBuildCheck();
+    return { code: r.ok ? 0 : 1, output: r.ok ? 'ok' : (r.missing || []).join(' | ') };
+  }
+  return null;
+}
+
+async function runQualityGate(options = {}) {
+  const full = toBool(options.full);
+  const strict = toBool(options.strict);
+  const jsonMode = toBool(options.json);
+  const timeoutMs = Number(options.timeout || 180000);
   const results = [];
 
   addResult(results, exists('package.json') ? 'pass' : 'fail', 'package.json', exists('package.json') ? 'present' : 'missing');
@@ -343,6 +367,16 @@ async function run() {
         addResult(results, 'skip', `script:${name}`, 'not defined');
         continue;
       }
+      const internal = await runInternalScript(name);
+      if (internal) {
+        addResult(
+          results,
+          internal.code === 0 ? 'pass' : 'fail',
+          `script:${name}`,
+          internal.code === 0 ? `ok (${internal.output})` : `internal fail: ${internal.output.slice(0, 300)}`
+        );
+        continue;
+      }
       const r = await runCommand(npmCmd, args, timeoutMs);
       if (/EPERM/i.test(r.output || '')) {
         addResult(results, 'skip', `script:${name}`, 'skipped in restricted runtime (spawn EPERM)');
@@ -367,21 +401,18 @@ async function run() {
   );
   const gatePass = counts.fail === 0;
 
-  if (jsonMode) {
-    process.stdout.write(
-      JSON.stringify(
-        {
-          gate: gatePass ? 'PASS' : 'FAIL',
-          strict,
-          full,
-          counts,
-          results,
-        },
-        null,
-        2
-      ) + '\n'
-    );
-  } else {
+  const payload = {
+    gate: gatePass ? 'PASS' : 'FAIL',
+    strict,
+    full,
+    counts,
+    results,
+  };
+
+  if (!options.silent) {
+    if (jsonMode) {
+      process.stdout.write(JSON.stringify(payload, null, 2) + '\n');
+    } else {
     console.log('=== Quality Gate ===');
     console.log(`Mode: ${full ? 'full' : 'fast'}${strict ? ' + strict' : ''}`);
     for (const r of results) {
@@ -391,12 +422,25 @@ async function run() {
     console.log('');
     console.log(`Summary: pass=${counts.pass} fail=${counts.fail} warn=${counts.warn} skip=${counts.skip}`);
     console.log(`Status: ${gatePass ? 'PASS' : 'FAIL'}`);
+    }
   }
 
-  process.exit(gatePass ? 0 : 1);
+  return payload;
 }
 
-run().catch((err) => {
-  console.error(`[quality-gate] ${err.message}`);
-  process.exit(1);
-});
+async function main() {
+  try {
+    const opts = parseArgs(process.argv);
+    const result = await runQualityGate(opts);
+    process.exit(result.gate === 'PASS' ? 0 : 1);
+  } catch (err) {
+    console.error(`[quality-gate] ${err.message}`);
+    process.exit(1);
+  }
+}
+
+module.exports = { runQualityGate };
+
+if (require.main === module) {
+  main();
+}

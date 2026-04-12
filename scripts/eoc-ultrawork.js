@@ -2,6 +2,10 @@
 const fs = require('fs');
 const path = require('path');
 const { spawnSync } = require('child_process');
+const bridge = require('./eoc-bridge.js');
+const scheduler = require('./eoc-scheduler.js');
+const eocStart = require('./eoc-start.js');
+const qualityGate = require('./quality-gate.js');
 
 const ROOT = process.cwd();
 const RUN_ACTIVE = path.join(ROOT, '.opencode', 'eoc-run', 'active.json');
@@ -90,11 +94,18 @@ function getActiveRunId() {
 }
 
 function mark(runId, field, value) {
-  runNode(['scripts/eoc-start.js', 'mark', field, String(value), '--run-id', runId]);
+  return eocStart.markField(runId, field, value);
 }
 
 function advance(runId) {
-  runNode(['scripts/eoc-start.js', 'advance', '--run-id', runId]);
+  const res = eocStart.advanceGate(runId);
+  if (!res.advanced && res.reason === 'blocked') {
+    throw new Error(`Gate blocked: ${(res.unmet || []).join(', ')}`);
+  }
+  if (!res.advanced && res.reason !== 'final') {
+    throw new Error(`Cannot advance gate. reason=${res.reason}`);
+  }
+  return res;
 }
 
 function loadRun(runId) {
@@ -103,7 +114,16 @@ function loadRun(runId) {
   return JSON.parse(fs.readFileSync(p, 'utf8'));
 }
 
-function main() {
+async function runQualityGateInline() {
+  if (typeof qualityGate.runQualityGate === 'function') {
+    const r = await qualityGate.runQualityGate({ full: true, strict: true, json: true, silent: true });
+    if (!r || r.gate !== 'PASS') throw new Error('quality-gate failed');
+    return;
+  }
+  runNpm(['run', 'quality-gate:full']);
+}
+
+async function main() {
   try {
     const opts = parseArgs(process.argv);
     if (opts.help || opts.h || (!opts.packet && !opts.stdin)) {
@@ -111,16 +131,18 @@ function main() {
       process.exit(0);
     }
 
-    const bridgeArgs = ['scripts/eoc-bridge.js'];
-    if (opts.packet) bridgeArgs.push('--packet', String(opts.packet));
-    if (opts.stdin) bridgeArgs.push('--stdin');
-    if (opts['plan-id']) bridgeArgs.push('--plan-id', String(opts['plan-id']));
-    if (opts.simulate) bridgeArgs.push('--simulate');
-    bridgeArgs.push('--execute');
-
-    const stdinInput = opts.stdin ? fs.readFileSync(0, 'utf8') : undefined;
-    runNode(bridgeArgs, stdinInput);
-    const runId = getActiveRunId();
+    let packetRaw = undefined;
+    if (opts.stdin) packetRaw = fs.readFileSync(0, 'utf8');
+    const run = bridge.bridgeFromOptions(
+      {
+        packet: opts.packet,
+        'plan-id': opts['plan-id'],
+        simulate: opts.simulate,
+      },
+      packetRaw
+    );
+    await scheduler.runSchedulerById(run.run_id, { simulate: Boolean(opts.simulate) });
+    const runId = run.run_id;
 
     // Gate 0 -> 1
     advance(runId);
@@ -141,7 +163,7 @@ function main() {
 
     // Gate 3 -> 4
     if (!opts['skip-quality']) {
-      runNpm(['run', 'quality-gate:full']);
+      await runQualityGateInline();
     }
     mark(runId, 'build_passed', true);
     mark(runId, 'test_passed', true);
@@ -172,4 +194,6 @@ function main() {
   }
 }
 
-main();
+if (require.main === module) {
+  main();
+}

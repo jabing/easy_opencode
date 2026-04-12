@@ -2,10 +2,13 @@
 const fs = require('fs');
 const path = require('path');
 const { spawnSync } = require('child_process');
+const bridge = require('./eoc-bridge.js');
+const scheduler = require('./eoc-scheduler.js');
 
 const ROOT = process.cwd();
 const TMP_PACKET = path.join(ROOT, '.tmp-smoke-packet.json');
 const RUN_DIR = path.join(ROOT, '.opencode', 'eoc-run');
+const ACTIVE_PATH = path.join(RUN_DIR, 'active.json');
 
 function runNode(args) {
   const r = spawnSync(process.execPath, args, {
@@ -21,14 +24,36 @@ function runNode(args) {
   }
 }
 
-function cleanup() {
+function cleanupFileOnly() {
   if (fs.existsSync(TMP_PACKET)) fs.unlinkSync(TMP_PACKET);
-  if (fs.existsSync(RUN_DIR)) fs.rmSync(RUN_DIR, { recursive: true, force: true });
 }
 
-function main() {
+function snapshotRunState() {
+  const activeRaw = fs.existsSync(ACTIVE_PATH) ? fs.readFileSync(ACTIVE_PATH, 'utf8') : null;
+  return { activeRaw };
+}
+
+function cleanupRunArtifacts(runId, snapshot) {
+  cleanupFileOnly();
+  if (runId) {
+    const runFile = path.join(RUN_DIR, `${runId}.json`);
+    const taskDir = path.join(RUN_DIR, runId);
+    if (fs.existsSync(runFile)) fs.rmSync(runFile, { force: true });
+    if (fs.existsSync(taskDir)) fs.rmSync(taskDir, { recursive: true, force: true });
+  }
+  if (snapshot && snapshot.activeRaw !== null) {
+    fs.mkdirSync(RUN_DIR, { recursive: true });
+    fs.writeFileSync(ACTIVE_PATH, snapshot.activeRaw, 'utf8');
+  } else if (fs.existsSync(ACTIVE_PATH)) {
+    fs.rmSync(ACTIVE_PATH, { force: true });
+  }
+}
+
+async function runSmokeEoc(options = {}) {
+  let runId = null;
+  const snapshot = snapshotRunState();
   try {
-    cleanup();
+    cleanupFileOnly();
     const packet = {
       plan_id: 'PLAN-SMOKE-CI',
       objective: 'smoke-test-eoc',
@@ -57,14 +82,18 @@ function main() {
     };
 
     fs.writeFileSync(TMP_PACKET, JSON.stringify(packet, null, 2) + '\n', 'utf8');
-    try {
-      runNode(['scripts/eoc-bridge.js', '--packet', TMP_PACKET, '--execute', '--simulate', '--plan-id', 'PLAN-SMOKE-CI']);
-      console.log('[smoke-eoc] PASS (e2e)');
-      return;
-    } catch (error) {
-      const msg = String(error && error.message ? error.message : error);
-      if (!/EPERM/i.test(msg)) throw error;
+    const run = bridge.bridgeFromPacket(packet, { 'plan-id': 'PLAN-SMOKE-CI' });
+    runId = run.run_id;
+    await scheduler.runSchedulerById(runId, { simulate: true });
+    const done = scheduler.loadRun(runId);
+    if (String(done.scheduler?.status) !== 'completed') {
+      throw new Error(`scheduler status=${done.scheduler?.status || 'unknown'}`);
     }
+    if (!options.silent) console.log('[smoke-eoc] PASS (inline e2e)');
+    return { ok: true, mode: 'inline-e2e' };
+  } catch (error) {
+    const msg = String(error && error.message ? error.message : error);
+    if (!/EPERM/i.test(msg)) throw error;
 
     // Restricted runtime fallback: static smoke assertions.
     const bridge = fs.readFileSync(path.join(ROOT, 'scripts', 'eoc-bridge.js'), 'utf8');
@@ -75,10 +104,24 @@ function main() {
     if (!scheduler.includes('validation_exit_code_') || !scheduler.includes('add-task requires --task-id, --cmd, and --validation')) {
       throw new Error('scheduler validation assertion failed');
     }
-    console.log('[smoke-eoc] PASS (restricted-runtime fallback)');
+    if (!options.silent) console.log('[smoke-eoc] PASS (restricted-runtime fallback)');
+    return { ok: true, mode: 'restricted-fallback' };
   } finally {
-    cleanup();
+    cleanupRunArtifacts(runId, snapshot);
   }
 }
 
-main();
+async function main() {
+  try {
+    await runSmokeEoc();
+  } catch (err) {
+    console.error(`[smoke-eoc] ${err.message}`);
+    process.exit(1);
+  }
+}
+
+module.exports = { runSmokeEoc };
+
+if (require.main === module) {
+  main();
+}

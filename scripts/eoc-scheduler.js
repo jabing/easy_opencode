@@ -468,6 +468,12 @@ async function runScheduler(run, simulate, fastFailOverride) {
   }
 }
 
+async function runSchedulerById(runId, options = {}) {
+  const run = loadRun(runId);
+  await runScheduler(run, Boolean(options.simulate), options.fastFail);
+  return loadRun(runId);
+}
+
 function printStatus(run) {
   const sch = run.scheduler;
   if (!sch) {
@@ -565,4 +571,16 @@ async function main() {
   }
 }
 
-main();
+module.exports = {
+  runPath,
+  loadRun,
+  saveRun,
+  initScheduler,
+  runScheduler,
+  runSchedulerById,
+  printStatus,
+};
+
+if (require.main === module) {
+  main();
+}

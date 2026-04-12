@@ -38,7 +38,7 @@ function assertEq(name, actual, expected, failures) {
   if (actual !== expected) failures.push(`${name} expected=${expected} actual=${actual}`);
 }
 
-function main() {
+function runMetadataCheck() {
   const actual = {
     agents: countAgentsFromInstall(),
     skills: countSkills(),
@@ -77,14 +77,34 @@ function main() {
   }
 
   if (failures.length > 0) {
-    console.error('[metadata-check] FAIL');
-    failures.forEach((f) => console.error(`- ${f}`));
-    process.exit(1);
+    return {
+      ok: false,
+      detail: failures.join(' | '),
+      actual,
+      failures,
+    };
   }
 
-  console.log(
-    `[metadata-check] PASS agents=${actual.agents} skills=${actual.skills} commands=${actual.commands}`
-  );
+  return {
+    ok: true,
+    detail: `agents=${actual.agents} skills=${actual.skills} commands=${actual.commands}`,
+    actual,
+    failures: [],
+  };
 }
 
-main();
+function main() {
+  const r = runMetadataCheck();
+  if (!r.ok) {
+    console.error('[metadata-check] FAIL');
+    r.failures.forEach((f) => console.error(`- ${f}`));
+    process.exit(1);
+  }
+  console.log(`[metadata-check] PASS ${r.detail}`);
+}
+
+module.exports = { runMetadataCheck };
+
+if (require.main === module) {
+  main();
+}
