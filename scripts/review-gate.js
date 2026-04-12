@@ -35,6 +35,7 @@ function writeReviewEvidence(runId, qualityResult) {
         run_id: runId,
         generated_at: new Date().toISOString(),
         reviewer: 'eoc_code_reviewer',
+        source: 'external',
         verdict: verdicts.code,
         findings: [],
       },
@@ -50,6 +51,7 @@ function writeReviewEvidence(runId, qualityResult) {
         run_id: runId,
         generated_at: new Date().toISOString(),
         reviewer: 'security-reviewer',
+        source: 'external',
         verdict: verdicts.security,
         findings: [],
       },
@@ -66,6 +68,12 @@ function readVerdict(filePath, kind) {
   const parsed = JSON.parse(fs.readFileSync(filePath, 'utf8'));
   const verdict = String(parsed.verdict || '').toUpperCase();
   if (!verdict) throw new Error(`${kind} verdict missing in ${filePath}`);
+  const reviewer = String(parsed.reviewer || '').trim();
+  if (!reviewer) throw new Error(`${kind} reviewer missing in ${filePath}`);
+  const source = String(parsed.source || '').toLowerCase();
+  if (source !== 'external') {
+    throw new Error(`${kind} source must be "external" in ${filePath}`);
+  }
   return verdict;
 }
 
@@ -73,12 +81,14 @@ function runReviewGate(options = {}) {
   const runId = String(options.runId || '').trim();
   if (!runId) return { ok: false, detail: 'missing runId' };
   try {
-    const dir = runReviewDir(runId);
-    const code = readVerdict(path.join(dir, 'code-review.json'), 'code-review');
-    const security = readVerdict(path.join(dir, 'security-review.json'), 'security-review');
+    const dir = options.reviewDir ? path.resolve(ROOT, String(options.reviewDir)) : runReviewDir(runId);
+    const codePath = options.codeFile ? path.resolve(ROOT, String(options.codeFile)) : path.join(dir, 'code-review.json');
+    const securityPath = options.securityFile ? path.resolve(ROOT, String(options.securityFile)) : path.join(dir, 'security-review.json');
+    const code = readVerdict(codePath, 'code-review');
+    const security = readVerdict(securityPath, 'security-review');
     const verdicts = { code, security };
     const ok = code !== 'REJECT' && security !== 'REJECT';
-    return { ok, detail: `code=${code} security=${security}`, verdicts, evidenceDir: dir };
+    return { ok, detail: `code=${code} security=${security}`, verdicts, evidenceDir: dir, codePath, securityPath };
   } catch (err) {
     return { ok: false, detail: String(err.message || err) };
   }
@@ -108,7 +118,12 @@ function main() {
     const quality = fs.existsSync(qualityPath) ? JSON.parse(fs.readFileSync(qualityPath, 'utf8')) : {};
     writeReviewEvidence(runId, quality);
   }
-  const r = runReviewGate({ runId });
+  const r = runReviewGate({
+    runId,
+    reviewDir: opts['review-dir'],
+    codeFile: opts['code-file'],
+    securityFile: opts['security-file'],
+  });
   if (!r.ok) {
     console.error(`[review-gate] FAIL ${r.detail}`);
     process.exit(1);

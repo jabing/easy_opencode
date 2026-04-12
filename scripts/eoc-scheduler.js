@@ -4,6 +4,28 @@ const path = require('path');
 const { spawn } = require('child_process');
 
 const RUN_DIR = path.join(process.cwd(), '.opencode', 'eoc-run');
+const COMMAND_POLICY_PATH = path.join(RUN_DIR, 'command-policy.json');
+const DEFAULT_ALLOWED_EXECUTABLES = [
+  'node',
+  'node.exe',
+  'npm',
+  'npm.cmd',
+  'npx',
+  'npx.cmd',
+  'pnpm',
+  'pnpm.cmd',
+  'yarn',
+  'yarn.cmd',
+  'git',
+  'git.exe',
+  'python',
+  'python.exe',
+  'python3',
+  'pwsh',
+  'pwsh.exe',
+  'powershell',
+  'powershell.exe',
+];
 
 function ensureDir(p) {
   fs.mkdirSync(p, { recursive: true });
@@ -131,6 +153,32 @@ function splitCommand(command) {
   return { file: tokens[0], args: tokens.slice(1) };
 }
 
+function loadCommandPolicy() {
+  const defaults = {
+    allowed_executables: DEFAULT_ALLOWED_EXECUTABLES.slice(),
+  };
+  if (!fs.existsSync(COMMAND_POLICY_PATH)) return defaults;
+  try {
+    const parsed = JSON.parse(fs.readFileSync(COMMAND_POLICY_PATH, 'utf8'));
+    const list = Array.isArray(parsed.allowed_executables) ? parsed.allowed_executables : [];
+    const normalized = list
+      .map((x) => String(x || '').trim().toLowerCase())
+      .filter(Boolean);
+    if (normalized.length === 0) return defaults;
+    return { allowed_executables: normalized };
+  } catch {
+    return defaults;
+  }
+}
+
+function isExecutableAllowed(file, policy) {
+  const raw = String(file || '').trim();
+  if (!raw) return false;
+  const base = path.basename(raw).toLowerCase();
+  const allowed = new Set((policy && policy.allowed_executables) || DEFAULT_ALLOWED_EXECUTABLES);
+  return allowed.has(base) || allowed.has(raw.toLowerCase());
+}
+
 function shellCommand(command, workdir, timeoutMs, logFile) {
   return new Promise((resolve) => {
     try {
@@ -139,7 +187,13 @@ function shellCommand(command, workdir, timeoutMs, logFile) {
         resolve({ code: 126, timedOut: false });
         return;
       }
+      const policy = loadCommandPolicy();
       const parsed = splitCommand(command);
+      if (!isExecutableAllowed(parsed.file, policy)) {
+        fs.appendFileSync(logFile, `[blocked] executable not in allowlist: ${parsed.file}\n`, 'utf8');
+        resolve({ code: 126, timedOut: false });
+        return;
+      }
       const child = spawn(parsed.file, parsed.args, {
         cwd: workdir || process.cwd(),
         windowsHide: true,
@@ -172,12 +226,33 @@ function shellCommand(command, workdir, timeoutMs, logFile) {
 function validateTasks(tasks) {
   const ids = new Set(Object.keys(tasks));
   const errors = [];
+  const policy = loadCommandPolicy();
   for (const task of Object.values(tasks)) {
     if (!String(task.command || '').trim()) {
       errors.push(`task "${task.task_id}" missing command`);
     }
     if (!String(task.validation || '').trim()) {
       errors.push(`task "${task.task_id}" missing validation`);
+    }
+    try {
+      if (hasUnsafeShellOperators(task.command)) {
+        errors.push(`task "${task.task_id}" command has blocked shell operators`);
+      } else {
+        const parsed = splitCommand(task.command);
+        if (!isExecutableAllowed(parsed.file, policy)) {
+          errors.push(`task "${task.task_id}" command executable not allowed: ${parsed.file}`);
+        }
+      }
+      if (hasUnsafeShellOperators(task.validation)) {
+        errors.push(`task "${task.task_id}" validation has blocked shell operators`);
+      } else {
+        const parsedV = splitCommand(task.validation);
+        if (!isExecutableAllowed(parsedV.file, policy)) {
+          errors.push(`task "${task.task_id}" validation executable not allowed: ${parsedV.file}`);
+        }
+      }
+    } catch (err) {
+      errors.push(`task "${task.task_id}" command parse failed: ${String(err.message || err)}`);
     }
     for (const dep of task.deps || []) {
       if (!ids.has(dep)) {
@@ -611,6 +686,8 @@ module.exports = {
   printStatus,
   hasUnsafeShellOperators,
   splitCommand,
+  loadCommandPolicy,
+  isExecutableAllowed,
 };
 
 if (require.main === module) {

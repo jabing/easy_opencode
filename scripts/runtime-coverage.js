@@ -2,6 +2,7 @@
 const fs = require('fs');
 const path = require('path');
 const inspector = require('inspector');
+const { runRegressionSuite } = require('./regression-suite.js');
 
 const ROOT = process.cwd();
 const SUMMARY_PATH = path.join(ROOT, 'coverage', 'coverage-summary.json');
@@ -73,6 +74,18 @@ async function runRuntimeCoverage(options = {}) {
   const session = new inspector.Session();
   session.connect();
   try {
+    // Warm-up run to stabilize branch paths and reduce coverage variance across entrypoints.
+    for (const key of Object.keys(require.cache)) {
+      if (key.startsWith(path.join(ROOT, 'scripts'))) {
+        delete require.cache[key];
+      }
+    }
+    {
+      const { runCorePipelineSmoke } = require('./test-core-pipeline.js');
+      await runCorePipelineSmoke({ silent: true });
+      await runRegressionSuite();
+    }
+
     await postAsync(session, 'Profiler.enable');
     await postAsync(session, 'Profiler.startPreciseCoverage', { callCount: true, detailed: true });
     for (const key of Object.keys(require.cache)) {
@@ -81,9 +94,10 @@ async function runRuntimeCoverage(options = {}) {
       }
     }
     const { runCorePipelineSmoke } = require('./test-core-pipeline.js');
-    const { runQualityGate } = require('./quality-gate.js');
     await runCorePipelineSmoke({ silent: true });
-    await runQualityGate({ full: false, strict: false, silent: true });
+    await runRegressionSuite();
+    await runCorePipelineSmoke({ silent: true });
+    await runRegressionSuite();
     const data = await postAsync(session, 'Profiler.takePreciseCoverage');
     await postAsync(session, 'Profiler.stopPreciseCoverage');
     await postAsync(session, 'Profiler.disable');

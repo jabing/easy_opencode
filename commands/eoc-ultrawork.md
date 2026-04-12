@@ -12,13 +12,13 @@ Run the full gated flow automatically with minimal manual intervention.
 
 ```bash
 # Execute from packet
-node scripts/eoc-ultrawork.js --packet packet.json --plan-id PLAN-2026-0412
+node scripts/eoc-ultrawork.js --packet packet.json --code-review reviews/code-review.json --security-review reviews/security-review.json --plan-id PLAN-2026-0412
 
 # Execute from planner markdown/json piped to stdin
-cat plan-output.md | node scripts/eoc-ultrawork.js --stdin
+cat plan-output.md | node scripts/eoc-ultrawork.js --stdin --code-review reviews/code-review.json --security-review reviews/security-review.json
 
 # Simulate scheduler execution
-node scripts/eoc-ultrawork.js --packet packet.json --simulate
+node scripts/eoc-ultrawork.js --packet packet.json --simulate --code-review reviews/code-review.json --security-review reviews/security-review.json
 ```
 
 ## What It Does
@@ -27,8 +27,8 @@ node scripts/eoc-ultrawork.js --packet packet.json --simulate
 2. Advances all gates with required evidence fields
 3. Runs quality gate (inline full gate) unconditionally
 4. Verifies real code coverage from `coverage/coverage-summary.json` (`scripts/coverage-check.js`)
-5. Derives code/security review verdicts from quality evidence (`scripts/review-gate.js`)
-5. Stops on any failed stage with explicit error output
+5. Validates external code/security review evidence files (`scripts/review-gate.js`)
+6. Stops on any failed stage with explicit error output
 
 ## Guardrails
 
@@ -36,4 +36,5 @@ node scripts/eoc-ultrawork.js --packet packet.json --simulate
 - Blocks commands containing unsafe shell operators (`|`, `;`, redirection, etc.)
 - Requires scheduler status `completed` before moving to quality gate
 - Requires coverage check and review gate to pass before release gate
+- Requires external review evidence files with `source: external`
 - Blocks release gate unless all prior gates are satisfied

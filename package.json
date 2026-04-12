@@ -15,11 +15,11 @@
     "hashline:apply": "node scripts/hashline-edit.js apply",
     "ast:rewrite": "node scripts/ast-rewrite.js rename-symbol",
     "security:audit": "npm audit --omit=dev --audit-level=high",
-    "coverage": "node scripts/runtime-coverage.js && node scripts/coverage-check.js --summary coverage/coverage-summary.json --threshold 75",
+    "coverage": "node scripts/runtime-coverage.js && node scripts/coverage-check.js --summary coverage/coverage-summary.json --threshold 80",
     "review:gate": "node scripts/review-gate.js",
     "lint": "node scripts/metadata-check.js",
     "typecheck": "node scripts/typecheck.js",
-    "test": "node scripts/test-core-pipeline.js",
+    "test": "node scripts/test-core-pipeline.js && node scripts/regression-suite.js",
     "build": "node scripts/build-check.js"
   },
   "keywords": [

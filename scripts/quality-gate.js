@@ -259,6 +259,7 @@ function scanFile(filePath, findings) {
   const rel = path.relative(ROOT, filePath).replace(/\\/g, '/');
   const isTest = /(^|\/)(test|tests|__tests__)\/|(\.test\.|\.spec\.)/i.test(rel);
   const isAppCode = /^(src|lib|app)\//.test(rel);
+  const allowShellTrue = new Set(['scripts/check-environment.js']);
 
   // Keep signal high: only flag debug logs inside product code folders.
   if (isAppCode && /\bconsole\.log\s*\(/.test(content)) {
@@ -271,6 +272,18 @@ function scanFile(filePath, findings) {
   }
   if (isTest && /\b(it|describe|test)\.only\s*\(/.test(content)) {
     findings.fail.push(`[test-only] .only detected in ${rel}`);
+  }
+  if (/\beval\s*\(/.test(content)) {
+    findings.fail.push(`[dynamic-code] eval(...) detected in ${rel}`);
+  }
+  if (/\bnew Function\s*\(/.test(content)) {
+    findings.fail.push(`[dynamic-code] new Function(...) detected in ${rel}`);
+  }
+  if (!isTest && /(^|[^\w$.])(exec|execSync)\s*\(/.test(content)) {
+    findings.fail.push(`[command-exec] exec/execSync detected in ${rel}`);
+  }
+  if (/\bshell\s*:\s*true/.test(content) && !allowShellTrue.has(rel)) {
+    findings.warn.push(`[shell-true] shell:true detected in ${rel}`);
   }
   if (isAppCode && /\b(TODO|FIXME)\b/.test(content)) {
     findings.warn.push(`[todo] TODO/FIXME found in ${rel}`);
@@ -302,14 +315,16 @@ async function runInternalScript(name) {
   }
   if (name === 'test') {
     const { runCorePipelineSmoke } = require('./test-core-pipeline.js');
+    const { runRegressionSuite } = require('./regression-suite.js');
     const r = await runCorePipelineSmoke({ silent: true });
-    return { code: r && r.ok ? 0 : 1, output: r && r.runId ? `run_id=${r.runId}` : 'unknown' };
+    await runRegressionSuite();
+    return { code: r && r.ok ? 0 : 1, output: r && r.runId ? `run_id=${r.runId}; regression=ok` : 'unknown' };
   }
   if (name === 'coverage') {
     const { runRuntimeCoverage } = require('./runtime-coverage.js');
     const { runCoverageCheck } = require('./coverage-check.js');
     await runRuntimeCoverage({ silent: true });
-    const cov = runCoverageCheck({ summary: path.join(ROOT, 'coverage', 'coverage-summary.json'), threshold: 75 });
+    const cov = runCoverageCheck({ summary: path.join(ROOT, 'coverage', 'coverage-summary.json'), threshold: 80 });
     return { code: cov.ok ? 0 : 1, output: cov.detail };
   }
   return null;
@@ -461,3 +476,4 @@ module.exports = { runQualityGate };
 if (require.main === module) {
   main();
 }
+  const allowShellTrue = new Set(['scripts/check-environment.js']);

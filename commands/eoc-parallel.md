@@ -41,6 +41,7 @@ node scripts/eoc-scheduler.js status --run-id <run-id>
 - Tasks with unmet dependencies remain blocked.
 - Timeout and retry are enforced per task.
 - Validation command is required and executed after each task command.
+- Task executable must be in scheduler allowlist (see `docs/COMMAND_POLICY.md`).
 - Scheduler validates missing deps and dependency cycles before execution.
 - Tasks downstream of failed/skipped deps are auto-marked `skipped` with explicit reason.
 - Scheduler marks run `blocked` if no runnable tasks remain but queued tasks still exist.
