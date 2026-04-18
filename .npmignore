@@ -1,0 +1,32 @@
+# Build and dependency artifacts
+node_modules/
+dist/
+build/
+coverage/
+*.log
+
+# VCS and local metadata
+.git/
+.github/
+.DS_Store
+
+# Local tests and dev-only assets
+tests/
+*.tgz
+
+# Generated OpenCode runtime state
+.opencode/coder-loop/
+.opencode/implementation/
+.opencode/implementation-plans/
+.opencode/observability/
+.opencode/orchestrator/
+.opencode/reviews/
+.opencode/delivery/
+.opencode/eoc-run/
+.opencode/task-bundles/
+.opencode/kernel/
+.opencode/package-manager.json
+
+# Generated registries
+capabilities/registry.json
+skills/registry.json
