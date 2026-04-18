@@ -1,6 +1,8 @@
 const fs = require('fs');
 const path = require('path');
 
+const ECOSYSTEM_STATE_RELATIVE_PATH = path.join('.opencode', 'ecosystem.json');
+
 /**
  * @typedef {{
  *   schema_version: number,
@@ -73,7 +75,7 @@ function normalizeState(rootDir, raw, source) {
     validateRecord(raw.bootstrap, 'bootstrap');
   }
 
-  const file_path = path.join(path.resolve(rootDir), '.opencode', 'ecosystem.json');
+  const file_path = path.join(path.resolve(rootDir), ECOSYSTEM_STATE_RELATIVE_PATH);
   /** @type {Record<string, unknown>} */
   const emptyRecord = {};
   const modeOverrides = raw.mode_overrides && typeof raw.mode_overrides === 'object' && !Array.isArray(raw.mode_overrides)
@@ -99,9 +101,30 @@ function normalizeState(rootDir, raw, source) {
   };
 }
 
+/** @param {string} rootDir */
+function getEcosystemStatePath(rootDir) {
+  return path.join(path.resolve(rootDir), ECOSYSTEM_STATE_RELATIVE_PATH);
+}
+
+/**
+ * @param {EcosystemState} state
+ * @returns {Record<string, unknown>}
+ */
+function toPersistedState(state) {
+  return {
+    schema_version: state.schema_version,
+    applied_bundles: state.applied_bundles,
+    enabled_bundles: state.enabled_bundles,
+    disabled_bundles: state.disabled_bundles,
+    mode_overrides: state.mode_overrides,
+    automation_policy_overrides: state.automation_policy_overrides,
+    bootstrap: state.bootstrap,
+  };
+}
+
 /** @param {string} [rootDir] @returns {EcosystemState} */
 function loadEcosystemState(rootDir = process.cwd()) {
-  const file_path = path.join(path.resolve(rootDir), '.opencode', 'ecosystem.json');
+  const file_path = getEcosystemStatePath(rootDir);
 
   if (!fs.existsSync(file_path)) {
     return normalizeState(rootDir, {}, 'default');
@@ -111,6 +134,41 @@ function loadEcosystemState(rootDir = process.cwd()) {
   return normalizeState(rootDir, raw, 'managed');
 }
 
+/**
+ * @param {string} rootDir
+ * @param {Record<string, unknown>} raw
+ * @returns {EcosystemState}
+ */
+function writeEcosystemState(rootDir, raw) {
+  const normalized = normalizeState(rootDir, raw, 'managed');
+  const filePath = getEcosystemStatePath(rootDir);
+  fs.mkdirSync(path.dirname(filePath), { recursive: true });
+  fs.writeFileSync(filePath, JSON.stringify(toPersistedState(normalized), null, 2) + '\n', 'utf8');
+  return normalized;
+}
+
+/**
+ * @param {string} rootDir
+ * @param {Record<string, unknown>} updates
+ * @returns {EcosystemState}
+ */
+function updateEcosystemState(rootDir, updates) {
+  const current = loadEcosystemState(rootDir);
+  const nextState = {
+    schema_version: Object.prototype.hasOwnProperty.call(updates, 'schema_version') ? updates.schema_version : current.schema_version,
+    applied_bundles: Object.prototype.hasOwnProperty.call(updates, 'applied_bundles') ? updates.applied_bundles : current.applied_bundles,
+    enabled_bundles: Object.prototype.hasOwnProperty.call(updates, 'enabled_bundles') ? updates.enabled_bundles : current.enabled_bundles,
+    disabled_bundles: Object.prototype.hasOwnProperty.call(updates, 'disabled_bundles') ? updates.disabled_bundles : current.disabled_bundles,
+    mode_overrides: Object.prototype.hasOwnProperty.call(updates, 'mode_overrides') ? updates.mode_overrides : current.mode_overrides,
+    automation_policy_overrides: Object.prototype.hasOwnProperty.call(updates, 'automation_policy_overrides') ? updates.automation_policy_overrides : current.automation_policy_overrides,
+    bootstrap: Object.prototype.hasOwnProperty.call(updates, 'bootstrap') ? updates.bootstrap : current.bootstrap,
+  };
+  return writeEcosystemState(rootDir, nextState);
+}
+
 module.exports = {
+  getEcosystemStatePath,
   loadEcosystemState,
+  updateEcosystemState,
+  writeEcosystemState,
 };

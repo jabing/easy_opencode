@@ -2,6 +2,7 @@ import type { PluginInput } from "@opencode-ai/plugin"
 import { spawnSync } from "child_process"
 import * as fs from "fs"
 import * as path from "path"
+import { readHookPolicy } from "../../src/core/ecosystem/hook-policy.js"
 
 type LogLevel = "debug" | "info" | "warn" | "error"
 
@@ -76,8 +77,10 @@ function resolveQualityGateScript(cwd: string): string {
 export const EOCHooksPlugin = async ({ directory }: PluginInput) => {
   const cwd = directory || process.cwd()
   const logPath = path.join(cwd, ".opencode", "eoc.log")
+  const hookPolicy = readHookPolicy(cwd)
 
   writeLog(logPath, "info", "Easy OpenCode hooks loaded")
+  writeLog(logPath, "info", `ecosystem bundles: ${hookPolicy.bundles.join(",") || "none"} quality_mode=${hookPolicy.qualityMode}`)
 
   return {
     name: "easy-opencode-hooks",
@@ -100,8 +103,9 @@ export const EOCHooksPlugin = async ({ directory }: PluginInput) => {
       },
       "session.idle": async () => {
         const qualityGateScript = resolveQualityGateScript(cwd)
-        const result = runCheck(cwd, process.execPath, [qualityGateScript])
-        writeLog(logPath, result.ok ? "info" : "warn", `quality-gate: ${result.ok ? "pass" : "non-zero"}${result.output ? ` | ${result.output.slice(0, 240)}` : ""}`)
+        const qualityArgs = hookPolicy.qualityMode === "full" ? [qualityGateScript, "--full", "--strict"] : [qualityGateScript, "--strict"]
+        const result = runCheck(cwd, process.execPath, qualityArgs)
+        writeLog(logPath, result.ok ? "info" : "warn", `quality-gate(${hookPolicy.qualityMode}): ${result.ok ? "pass" : "non-zero"}${result.output ? ` | ${result.output.slice(0, 240)}` : ""}`)
       },
     },
   }

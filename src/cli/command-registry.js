@@ -34,6 +34,7 @@ const PUBLIC_METADATA = {
   'run-tests': { tier: 'core', surface: 'public', lifecycle: 'stable', compatibility: 'stable', summary: 'Run repository tests through the unified test runner.', supports_json: false },
   'detect-project-runtime': { tier: 'core', surface: 'public', lifecycle: 'stable', compatibility: 'stable', summary: 'Detect repository runtime and framework signals.', supports_json: true, contract_name: 'detect-project-runtime' },
   'implement-task': { tier: 'core', surface: 'public', lifecycle: 'stable', compatibility: 'stable', summary: 'Run the main implementation workflow.', supports_json: false },
+  'ecosystem': { tier: 'core', surface: 'public', lifecycle: 'active', compatibility: 'stable', summary: 'Inspect and manage ecosystem bundles and bootstrap state.', supports_json: true, contract_name: 'detect-project-runtime' },
   'review-gate': { tier: 'governance', surface: 'public', lifecycle: 'stable', compatibility: 'stable', summary: 'Run review gate and optional quality checks.', supports_json: true, contract_name: 'review-gate' },
   'failure-strategy': { tier: 'governance', surface: 'public', lifecycle: 'stable', compatibility: 'stable', summary: 'Inspect routing and failure-strategy posture.', supports_json: true, contract_name: 'failure-strategy' },
   'delivery-report': { tier: 'governance', surface: 'public', lifecycle: 'stable', compatibility: 'stable', summary: 'Summarize delivery posture and recommendation level.', supports_json: true, contract_name: 'delivery-report' },

@@ -122,8 +122,8 @@ function buildCommandConfig(commandsDir, assetPrefix) {
 
 /** @param {string} assetPrefix @param {string} commandsDir */
 function buildEocConfig(assetPrefix, commandsDir) {
-  // P0 intentionally keeps command routing aligned to the existing six-command kernel.
-  // Do not register bootstrap/ecosystem command templates until their implementations exist.
+  // P1 publishes ecosystem management as an explicit surface.
+  // Keep bootstrap hidden until its dedicated implementation exists.
   const instructions = [
     `${assetPrefix}/AGENTS.md`,
     `${assetPrefix}/.opencode/instructions/INSTRUCTIONS.md`,

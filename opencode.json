@@ -233,6 +233,12 @@
       "agent": "e2e-runner",
       "subtask": true
     },
+    "ecosystem": {
+      "description": "Ecosystem Command",
+      "template": "{file:./commands/ecosystem.md}\n\n$ARGUMENTS",
+      "agent": "eoc_orchestrator",
+      "subtask": true
+    },
     "env-check": {
       "description": "Environment Check Command",
       "template": "{file:./commands/env-check.md}\n\n$ARGUMENTS",

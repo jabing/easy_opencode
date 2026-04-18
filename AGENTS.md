@@ -1,6 +1,6 @@
 # Easy OpenCode - Agent Instructions
 
-Easy OpenCode is an OpenCode plugin with 16 specialized agents, 51 skills, 58 commands, and a slimmer product kernel centered on implementation, review, quality, release evidence, and project profiling workflows.
+Easy OpenCode is an OpenCode plugin with 16 specialized agents, 51 skills, 59 commands, and a slimmer product kernel centered on implementation, review, quality, release evidence, and project profiling workflows.
 
 ## Installation
 

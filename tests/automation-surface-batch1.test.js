@@ -4,11 +4,11 @@ const fs = require('fs');
 const path = require('path');
 const { buildCommandRegistry } = require('../src/cli/command-registry.js');
 
-test('P0 does not publish bootstrap or ecosystem commands before their CLI implementations exist', () => {
+test('P1 publishes ecosystem but keeps bootstrap hidden until its dedicated CLI exists', () => {
   const entries = buildCommandRegistry(process.cwd());
   const scripts = entries.map((entry) => entry.script);
   assert.equal(scripts.includes('bootstrap'), false);
-  assert.equal(scripts.includes('ecosystem'), false);
+  assert.equal(scripts.includes('ecosystem'), true);
 });
 
 test('README documents mode-aware implement automation', () => {

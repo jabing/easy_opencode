@@ -1,6 +1,7 @@
 const fs = require('fs')
 const path = require('path')
 const { buildEocConfig } = require('../shared/opencode-config.js')
+const { bootstrapEcosystem } = require('../core/ecosystem/install-bootstrap.js')
 const { shellQuote } = require('./runtime-paths.js')
 const {
   copyDir,
@@ -21,7 +22,7 @@ const {
   writeJson,
 } = require('./install-support.js')
 
-/** @typedef {{ global: boolean, project: boolean, yes: boolean, quiet: boolean, allowSourceRepo: boolean, target: string }} InstallFlags */
+/** @typedef {{ global: boolean, project: boolean, bootstrap: boolean, yes: boolean, quiet: boolean, allowSourceRepo: boolean, target: string, bundles: string[] }} InstallFlags */
 /** @typedef {{ commands: string, skills: string, prompts: string, scripts: string, src: string, bin: string, packageJson: string, readme: string, license: string, opencodeJson: string, opencodeInstructions: string, opencodePlugins: string, opencodeHooksConfig: string, opencodeCommandPolicy: string, agentsMd: string }} SourcePaths */
 /** @typedef {{ copied: string[], missing: string[] }} CopyRuntimeResult */
 /** @typedef {{ targetConfigDir: string, assetRoot: string, assetPrefix: string, quiet: boolean, installMode: 'project'|'global', projectDir: string }} InstallTargetOptions */
@@ -405,11 +406,18 @@ async function installProject(flags) {
   logInfo(`Project directory: ${projectDir}`, quiet)
   installToTarget({ targetConfigDir, assetRoot, assetPrefix, quiet, installMode: 'project', projectDir })
   createProjectScriptShims(projectDir, assetRoot, quiet)
+  if (flags.bootstrap || (Array.isArray(flags.bundles) && flags.bundles.length > 0)) {
+    const result = bootstrapEcosystem(projectDir, flags)
+    if (result.effective_bundles.length > 0) logSuccess(`Ecosystem bundles applied: ${result.effective_bundles.join(', ')}`, quiet)
+    else logInfo('No ecosystem bundles were applied', quiet)
+    if (result.unknown_bundles.length > 0) logWarn(`Ignored unknown ecosystem bundles: ${result.unknown_bundles.join(', ')}`, quiet)
+  }
   logSuccess('Project-level installation complete', quiet)
 }
 
-/** @param {boolean} quiet */
-async function installGlobal(quiet) {
+/** @param {InstallFlags} flags */
+async function installGlobal(flags) {
+  const quiet = flags.quiet
   const globalDir = getGlobalConfigDir()
   const targetConfigDir = globalDir
   const assetRoot = path.join(globalDir, 'easy-opencode')
@@ -417,6 +425,12 @@ async function installGlobal(quiet) {
 
   logInfo(`Global config directory: ${globalDir}`, quiet)
   installToTarget({ targetConfigDir, assetRoot, assetPrefix, quiet, installMode: 'global', projectDir: globalDir })
+  if (flags.bootstrap || (Array.isArray(flags.bundles) && flags.bundles.length > 0)) {
+    const result = bootstrapEcosystem(assetRoot, flags)
+    if (result.effective_bundles.length > 0) logSuccess(`Ecosystem bundles applied: ${result.effective_bundles.join(', ')}`, quiet)
+    else logInfo('No ecosystem bundles were applied', quiet)
+    if (result.unknown_bundles.length > 0) logWarn(`Ignored unknown ecosystem bundles: ${result.unknown_bundles.join(', ')}`, quiet)
+  }
   logSuccess('Global installation complete', quiet)
 }
 
@@ -431,7 +445,7 @@ async function main() {
     }
 
     if (mode === 'global') {
-      await installGlobal(flags.quiet)
+      await installGlobal(flags)
     } else {
       await installProject(flags)
     }
@@ -462,6 +476,7 @@ module.exports = {
   installGlobal,
   installProject,
   installToTarget,
+  bootstrapEcosystem,
   isManagedShim,
   looksLikePluginSourceRepo,
   main,

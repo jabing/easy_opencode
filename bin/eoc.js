@@ -11,6 +11,7 @@ function printUsage() {
   console.log('');
   console.log('Usage:');
   console.log('  eoc <plan|implement|test|review|ship|doctor> [...args]');
+  console.log('  eoc ecosystem <status|list|recommend|enable|disable|apply> [...args]');
   console.log('  eoc mode');
   console.log('  eoc mode set <solo|team|platform>');
   console.log('  eoc commands [--public|--recommended|--all]');
@@ -48,6 +49,9 @@ function main() {
     const flags = new Set(argv.slice(1));
     printCommands({ showAll: flags.has('--all'), showPublic: flags.has('--public'), showRecommended: flags.has('--recommended') });
     process.exit(0);
+  }
+  if (command === 'ecosystem') {
+    process.exit(runSingle('ecosystem', argv.slice(1)));
   }
   if (command === 'mode') { const sub = argv[1] || 'get'; if (sub === 'get') { printMode(getMode(process.cwd())); process.exit(0); } if (sub === 'set') { const targetMode = argv[2]; if (!targetMode) { console.error('Missing mode. Expected: solo | team | platform'); process.exit(1); } const mode = setMode(process.cwd(), targetMode); printMode(mode); process.exit(0); } console.error(`Unknown mode subcommand: ${sub}`); process.exit(1); }
   const plan = buildMainCommandPlan(command, argv.slice(1), { rootDir: process.cwd() });

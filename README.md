@@ -13,7 +13,7 @@ Production-ready OpenCode plugin focused on a slimmer product kernel: stable ent
 
 - 16 specialized agents (2 visible entry agents + hidden specialists)
 - 51 skills
-- 58 commands after pruning experimental or low-signal surfaces
+- 59 commands after pruning experimental or low-signal surfaces
 - Stable main entry commands for plan / implement / test / review / ship / doctor
 - Quality guardrails with fast/full modes via `/quality-gate`
 - Executable skill manifests with discovery/scaffolding via `/skill-runner`
@@ -69,6 +69,25 @@ Easy OpenCode now treats `eoc implement` as a mode-aware automation entrypoint.
 
 This mode-aware automation stays inside the six-command kernel. Low-level orchestration scripts and future `bootstrap` / `ecosystem` surfaces remain internal until their dedicated implementations are added.
 
+## Ecosystem Management
+
+P1 adds an explicit ecosystem surface without expanding the six-command daily kernel:
+
+- `eoc ecosystem status`
+- `eoc ecosystem list`
+- `eoc ecosystem recommend`
+- `eoc ecosystem enable --bundle <id>`
+- `eoc ecosystem disable --bundle <id>`
+
+Built-in bundles currently include:
+
+- `node-service`
+- `release-governance`
+- `lsp-refactor`
+- `mcp-devtools`
+
+Managed ecosystem intent is written to `.opencode/ecosystem.json`. CLI status, install bootstrap, and hook policy derive behavior from this file so automation stays explainable and reversible.
+
 ## Install
 
 ### Prerequisites
@@ -120,6 +139,8 @@ You can also run non-interactively:
 ```bash
 eoc-install --project --yes
 eoc-install --global --yes
+eoc-install --project --yes --bootstrap
+eoc-install --project --yes --bootstrap --bundle release-governance
 ```
 
 Source installs also support an explicit target:

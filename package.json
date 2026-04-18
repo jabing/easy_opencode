@@ -1,7 +1,7 @@
 {
   "name": "easy-opencode",
   "version": "1.30.0",
-  "description": "Production-ready AI coding plugin for OpenCode with 16 specialized agents, 51 skills, 58 commands, a slim six-command main entrypoint, governed quality/release workflows, deep project profiling, reusable scaffolding skills, and auditable observability/reporting outputs.",
+  "description": "Production-ready AI coding plugin for OpenCode with 16 specialized agents, 51 skills, 59 commands, a slim six-command main entrypoint, governed quality/release workflows, deep project profiling, reusable scaffolding skills, and auditable observability/reporting outputs.",
   "bin": {
     "eoc-install": "bin/eoc-install.js",
     "eoc-script": "bin/eoc-script.js",
