@@ -2,11 +2,44 @@ const { defineWorkflow, executeWorkflow } = require('../workflow/engine.js');
 
 /** @typedef {{ dir?: string, name?: string, decision?: { summary?: string } | null }} SelectedSkill */
 /** @typedef {{ report?: { totals?: { rejected?: number } | null } | null }} SkillSelection */
-/** @typedef {{ rootDir: string, traceId?: string, profile: { runtime: string }, selectedSkill?: SelectedSkill | null, selection?: SkillSelection | null, benchmarkFeedback: { risk_level: string }, snapshot: { status?: string }, opts: Record<string, unknown>, scaffold?: { status?: string, created?: boolean } | null, run?: { run_id: string }, round?: { checks?: unknown[] }, latestRun?: Record<string, unknown>, plan?: { plan_id: string }, promptText?: string, runScaffold(): { status?: string, created?: boolean }, createCoderRun(): { run_id: string }, executeCoderRound(run: { run_id: string }): { checks?: unknown[] }, loadCoderRun(runId: string, rootDir: string): Record<string, unknown>, writePlanArtifacts(): { plan: { plan_id: string }, promptText: string } }} ImplementTaskWorkflowContext */
+/** @typedef {{ scheduler?: { enabled?: boolean } | null, verification?: { level?: string } | null, review_gate?: { enabled?: boolean } | null, explanation?: string[] | null }} AutomationPolicy */
+/** @typedef {{ rootDir: string, traceId?: string, profile: { runtime: string }, selectedSkill?: SelectedSkill | null, selection?: SkillSelection | null, benchmarkFeedback: { risk_level: string }, snapshot: { status?: string }, opts: Record<string, unknown>, automationPolicy?: AutomationPolicy | null, scaffold?: { status?: string, created?: boolean } | null, run?: { run_id: string }, round?: { checks?: unknown[] }, latestRun?: Record<string, unknown>, plan?: { plan_id?: string }, promptText?: string, runScaffold(): { status?: string, created?: boolean }, createCoderRun(): { run_id: string }, executeCoderRound(run: { run_id: string }): { checks?: unknown[] }, loadCoderRun(runId: string, rootDir: string): Record<string, unknown>, writePlanArtifacts(): { plan: { plan_id: string }, promptText: string } }} ImplementTaskWorkflowContext */
+
+/** @param {AutomationPolicy | null | undefined} policy */
+function normalizeAutomationPolicy(policy) {
+  const rawExplanation = policy && Array.isArray(policy.explanation) ? policy.explanation : [];
+  const explanation = rawExplanation.filter((item) => typeof item === 'string' && item);
+  return {
+    scheduler: {
+      enabled: !(policy && policy.scheduler && policy.scheduler.enabled === false),
+    },
+    verification: {
+      level: (policy && policy.verification && policy.verification.level) || 'fast',
+    },
+    review_gate: {
+      enabled: Boolean(policy && policy.review_gate && policy.review_gate.enabled),
+    },
+    explanation,
+  };
+}
 
 /** @param {ImplementTaskWorkflowContext} ctx */
 async function detectProjectProfileStep(ctx) {
   return { summary: `runtime=${ctx.profile.runtime}` };
+}
+
+/** @param {ImplementTaskWorkflowContext} ctx */
+async function resolveAutomationPolicyStep(ctx) {
+  ctx.automationPolicy = normalizeAutomationPolicy(ctx.automationPolicy);
+  const policy = ctx.automationPolicy;
+  return {
+    summary: [
+      `scheduler=${policy.scheduler && policy.scheduler.enabled ? 'on' : 'off'}`,
+      `verification=${policy.verification && policy.verification.level ? policy.verification.level : 'fast'}`,
+      `review_gate=${policy.review_gate && policy.review_gate.enabled ? 'on' : 'off'}`,
+      ...(policy.explanation || []),
+    ].join(' | '),
+  };
 }
 
 /** @param {ImplementTaskWorkflowContext} ctx */
@@ -46,7 +79,9 @@ async function createCoderRunStep(ctx) {
 
 /** @param {ImplementTaskWorkflowContext} ctx */
 function shouldExecuteValidationRound(ctx) {
-  return !ctx.opts['no-validate'];
+  if (ctx.opts['no-validate']) return false;
+  const level = ctx.automationPolicy && ctx.automationPolicy.verification && ctx.automationPolicy.verification.level;
+  return level !== 'off';
 }
 
 /** @param {ImplementTaskWorkflowContext} ctx */
@@ -72,6 +107,7 @@ const implementTaskWorkflow = defineWorkflow({
   version: '4.0',
   steps: [
     { id: 'detect-project-profile', title: 'Detect project profile', run: (context) => detectProjectProfileStep(/** @type {ImplementTaskWorkflowContext} */ (context)) },
+    { id: 'resolve-automation-policy', title: 'Resolve automation policy', run: (context) => resolveAutomationPolicyStep(/** @type {ImplementTaskWorkflowContext} */ (context)) },
     { id: 'select-skill', title: 'Select skill', run: (context) => selectSkillStep(/** @type {ImplementTaskWorkflowContext} */ (context)) },
     { id: 'assess-benchmark-feedback', title: 'Assess benchmark feedback', run: (context) => assessBenchmarkFeedbackStep(/** @type {ImplementTaskWorkflowContext} */ (context)) },
     { id: 'create-snapshot', title: 'Create safety snapshot', run: (context) => createSnapshotStep(/** @type {ImplementTaskWorkflowContext} */ (context)) },

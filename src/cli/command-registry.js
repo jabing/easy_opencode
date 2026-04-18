@@ -59,6 +59,8 @@ const DEPRECATION_POLICY = {
   compatibility_values: ['stable', 'compatibility', 'internal'],
 };
 
+// P0 keeps low-level orchestration and future ecosystem/bootstrap flows off the public surface
+// until dedicated implementations exist.
 const EXPERIMENTAL_SCRIPTS = new Set(['claw', 'eoc-ultrawork', 'eoc-bridge', 'eoc-start', 'eoc-scheduler']);
 const INTERNAL_PREFIXES = ['npm-', 'loop-', 'sync-', 'setup-', 'install', 'uninstall'];
 

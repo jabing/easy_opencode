@@ -59,6 +59,16 @@ eoc mode set team
 eoc doctor
 ```
 
+## Default Automation
+
+Easy OpenCode now treats `eoc implement` as a mode-aware automation entrypoint.
+
+- In `solo`, implement runs the scheduler with lightweight verification by default.
+- In `team`, implement keeps the scheduler on and enables stronger verification plus review-gate defaults.
+- In `platform`, implement keeps the strongest governance posture with review-gate behavior enabled by default.
+
+This mode-aware automation stays inside the six-command kernel. Low-level orchestration scripts and future `bootstrap` / `ecosystem` surfaces remain internal until their dedicated implementations are added.
+
 ## Install
 
 ### Prerequisites

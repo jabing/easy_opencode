@@ -1,8 +1,23 @@
 const { getMode } = require('./modes.js');
+const { buildAutomationPolicy } = require('../../core/automation/default-pipeline.js');
 
 /** @typedef {'plan' | 'implement' | 'test' | 'review' | 'ship' | 'doctor'} MainCommandId */
 /** @typedef {{ id: MainCommandId, description: string }} MainCommandDefinition */
-/** @typedef {{ rootDir?: string, mode?: string | null }} MainCommandOptions */
+/**
+ * @typedef {{
+ *   schema_version: number,
+ *   applied_bundles: string[],
+ *   enabled_bundles: string[],
+ *   disabled_bundles: string[],
+ *   mode_overrides: Record<string, unknown>,
+ *   automation_policy_overrides: Record<string, unknown>,
+ *   bootstrap: Record<string, unknown> | null,
+ *   source: string,
+ *   file_path: string,
+ * }} MainCommandEcosystemState
+ */
+/** @typedef {{ recommended_bundles: string[] }} MainCommandWorkspaceProfile */
+/** @typedef {{ rootDir?: string, mode?: string | null, ecosystemState?: MainCommandEcosystemState, workspaceProfile?: MainCommandWorkspaceProfile }} MainCommandOptions */
 
 /** @type {Record<MainCommandId, MainCommandDefinition>} */
 const MAIN_COMMANDS = {
@@ -19,7 +34,36 @@ function buildMainCommandPlan(command, argv = [], options = {}) {
   const mode = getMode(options.rootDir || process.cwd(), options.mode || null);
   switch (String(command || '').trim()) {
     case 'plan': return { command: 'plan', mode, runs: [{ script: 'project-profile', args: ['--json', ...argv] }] };
-    case 'implement': return { command: 'implement', mode, runs: [{ script: 'implement-task', args: ['run', ...argv] }] };
+    case 'implement': {
+      const ecosystemState = options.ecosystemState || {
+        schema_version: 1,
+        applied_bundles: [],
+        enabled_bundles: [],
+        disabled_bundles: [],
+        mode_overrides: {},
+        automation_policy_overrides: {},
+        bootstrap: null,
+        source: 'default',
+        file_path: '',
+      };
+      const workspaceProfile = options.workspaceProfile || {
+        recommended_bundles: Array.from(new Set([
+          ...(Array.isArray(ecosystemState.applied_bundles) ? ecosystemState.applied_bundles : []),
+          ...(Array.isArray(ecosystemState.enabled_bundles) ? ecosystemState.enabled_bundles : []),
+        ])),
+      };
+      return {
+        command: 'implement',
+        mode,
+        automation_policy: buildAutomationPolicy({
+          command: 'implement',
+          mode,
+          ecosystemState,
+          workspaceProfile,
+        }),
+        runs: [{ script: 'implement-task', args: ['run', ...argv] }],
+      };
+    }
     case 'test': return { command: 'test', mode, runs: [{ script: 'run-tests', args: [...argv] }] };
     case 'review': {
       const args = ['report'];
