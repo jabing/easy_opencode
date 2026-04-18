@@ -1,0 +1,130 @@
+{
+  "name": "add-spring-controller",
+  "description": "Scaffold a Spring controller task bundle with controller, service, MockMvc test, and API note.",
+  "origin": "EOC",
+  "level": "L3",
+  "languages": [
+    "java"
+  ],
+  "frameworks": [
+    "springboot"
+  ],
+  "triggers": [
+    "add spring controller",
+    "new java controller",
+    "add endpoint"
+  ],
+  "inputs": [
+    {
+      "name": "name",
+      "required": true
+    },
+    {
+      "name": "route_path",
+      "default": "/health"
+    },
+    {
+      "name": "package_name",
+      "default": "com.example.demo"
+    }
+  ],
+  "actions": [
+    {
+      "id": "java",
+      "type": "locator_template_bundle",
+      "files": [
+        {
+          "template": "controller.java.tpl",
+          "output": "src/main/java/{{package_path}}/{{class_name}}Controller.java",
+          "primary": true
+        },
+        {
+          "template": "service.java.tpl",
+          "output": "src/main/java/{{package_path}}/{{class_name}}Service.java"
+        },
+        {
+          "template": "controller.test.java.tpl",
+          "output": "src/test/java/{{package_path}}/{{class_name}}ControllerTest.java"
+        },
+        {
+          "template": "api.md.tpl",
+          "output": "docs/api/{{class_name}}Controller.md"
+        },
+        {
+          "template": "integration.md.tpl",
+          "output": ".opencode/task-bundles/{{class_name}}Controller.integration.md"
+        }
+      ],
+      "when": {
+        "runtime": "java"
+      },
+      "updates": [
+        {
+          "type": "ensure_block",
+          "locator": {
+            "strategy": "first_existing",
+            "label": "spring api docs index",
+            "candidates": [
+              "docs/api/index.md",
+              "src/main/resources/docs/api/index.md"
+            ],
+            "default": "docs/api/index.md",
+            "create_if_missing": true
+          },
+          "content": "- [{{class_name}}Controller](./{{class_name}}Controller.md) — `{{route_path}}`"
+        },
+        {
+          "type": "patch_framework_entry",
+          "locator": {
+            "strategy": "first_existing",
+            "label": "spring application entry",
+            "candidates": [
+              "src/main/java/{{package_path}}/Application.java",
+              "src/main/java/{{package_path}}/{{package_name_pascal}}Application.java",
+              "src/main/java/{{package_path}}/DemoApplication.java"
+            ],
+            "only_if_exists": true
+          },
+          "import_statement": "import {{package_name}}.{{class_name}}Service;",
+          "registration_statement": "@org.springframework.context.annotation.Import({{class_name}}Service.class)",
+          "registration_anchor": {
+            "regex": "@SpringBootApplication(?:\\([^)]*\\))?",
+            "flags": "m"
+          },
+          "registration_strategy": "after_anchor",
+          "registration_blank_line": false,
+          "on_missing_registration_anchor": "append"
+        },
+        {
+          "type": "register_provider",
+          "locator": {
+            "strategy": "first_existing",
+            "label": "spring bean configuration",
+            "candidates": [
+              "src/main/java/{{package_path}}/config/ApplicationBeans.java",
+              "src/main/java/{{package_path}}/config/AppConfig.java",
+              "src/main/java/{{package_path}}/config/BeansConfig.java",
+              "src/main/java/{{package_path}}/config/WebConfig.java"
+            ],
+            "only_if_exists": true
+          },
+          "import_statement": "import {{package_name}}.{{class_name}}Service;",
+          "registration_statement": "@org.springframework.context.annotation.Bean\n{{class_name}}Service {{camel_name}}Service() {\n    return new {{class_name}}Service();\n}",
+          "registration_anchor": {
+            "regex": "class\\s+[A-Za-z0-9_]+\\s*\\{",
+            "flags": "m"
+          },
+          "registration_strategy": "after_anchor",
+          "registration_indent_mode": "anchor_block",
+          "registration_indent_unit": "    ",
+          "on_missing_registration_anchor": "append"
+        }
+      ]
+    }
+  ],
+  "verify": [
+    "./mvnw test",
+    "./gradlew test"
+  ],
+  "task_family": "endpoint"
+}

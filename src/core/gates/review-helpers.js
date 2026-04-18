@@ -1,0 +1,380 @@
+// @ts-nocheck
+const fs = require('fs');
+const path = require('path');
+const crypto = require('crypto');
+const { spawnSync } = require('child_process');
+const { detectProjectProfile } = require('../project-profile.js');
+const { readLatestPlanId } = require('../../control-plane/orchestrator/memory.js');
+const { parseArgs } = require('../../shared/cli.js');
+const { tryReadJson } = require('../../shared/json.js');
+const { evaluatePatchFootprint, derivePatchDecision } = require('../implementation/edit-engine.js');
+
+const DEFAULT_TRUSTED_REVIEWERS = ['external-code-reviewer', 'external-security-reviewer'];
+const ALLOWED_EXTERNAL_VERDICTS = new Set(['APPROVE', 'APPROVE_WITH_WARNINGS', 'REJECT']);
+const INTERNAL_VERDICTS = ['ACCEPT', 'ACCEPT_WITH_FOLLOWUPS', 'BLOCK'];
+
+function resolveRoot(rootDir) {
+  return path.resolve(rootDir || process.cwd());
+}
+
+function runCmd(command, args, rootDir) {
+  const result = spawnSync(command, args, {
+    cwd: resolveRoot(rootDir),
+    shell: false,
+    windowsHide: true,
+    encoding: 'utf8',
+  });
+  return {
+    code: typeof result.status === 'number' ? result.status : 1,
+    stdout: String(result.stdout || ''),
+    stderr: String(result.stderr || ''),
+  };
+}
+
+function runGit(rootDir, args) {
+  return runCmd('git', args, rootDir);
+}
+
+function parseReviewGateArgs(argv) {
+  const first = argv[2];
+  const knownCommands = new Set(['report', 'summary', 'evidence', 'help', '--help', '-h']);
+  const cmd = knownCommands.has(first) ? first : null;
+  const start = cmd ? 3 : 2;
+  const opts = parseArgs(argv, { startIndex: start });
+  const inferred = cmd || (opts['run-id'] && (opts['code-file'] || opts['security-file'] || opts['review-dir']) ? 'evidence' : 'report');
+  return { cmd: inferred, opts };
+}
+
+function verdictFromQuality(quality) {
+  const results = Array.isArray(quality && quality.results) ? quality.results : [];
+  const fails = results.filter((result) => result.status === 'fail');
+  const warns = results.filter((result) => result.status === 'warn');
+  const securityHardFail = fails.some((result) => String(result.check || '').includes('static.scan.failures'));
+
+  const code = fails.length > 0 ? 'REJECT' : warns.length > 0 ? 'APPROVE_WITH_WARNINGS' : 'APPROVE';
+  const security = securityHardFail ? 'REJECT' : warns.length > 0 ? 'APPROVE_WITH_WARNINGS' : 'APPROVE';
+  return { code, security, fails: fails.length, warns: warns.length };
+}
+
+function runReviewDir(runRoot, runId) {
+  return path.join(runRoot, runId, 'reviews');
+}
+
+function digestFindings(findings) {
+  return crypto.createHash('sha256').update(JSON.stringify(findings || [])).digest('hex');
+}
+
+function signaturePayload(parsed, kind, verdict) {
+  return [
+    kind,
+    String(parsed.run_id || ''),
+    verdict,
+    String(parsed.reviewer || ''),
+    String(parsed.generated_at || ''),
+    digestFindings(parsed.findings || []),
+  ].join('|');
+}
+
+function loadTrustPolicy(trustPath) {
+  let parsed = {};
+  if (fs.existsSync(trustPath)) {
+    parsed = JSON.parse(fs.readFileSync(trustPath, 'utf8'));
+  }
+  const reviewers = Array.isArray(parsed.trusted_reviewers) && parsed.trusted_reviewers.length > 0
+    ? parsed.trusted_reviewers.map((item) => String(item || '').trim()).filter(Boolean)
+    : DEFAULT_TRUSTED_REVIEWERS.slice();
+  const hmacKey = String(process.env.EOC_REVIEW_HMAC_KEY || parsed.hmac_key || '').trim();
+  if (!hmacKey) {
+    throw new Error(`review trust policy requires hmac key via EOC_REVIEW_HMAC_KEY or ${trustPath}`);
+  }
+  return { trustedReviewers: new Set(reviewers), hmacKey };
+}
+
+function verifySignature(parsed, kind, verdict, hmacKey, filePath) {
+  const signature = String(parsed.signature || '').trim().toLowerCase();
+  if (!signature) throw new Error(`${kind} signature missing in ${filePath}`);
+  const payload = signaturePayload(parsed, kind, verdict);
+  const expected = crypto.createHmac('sha256', hmacKey).update(payload).digest('hex');
+  const sigBuf = Buffer.from(signature, 'hex');
+  const expBuf = Buffer.from(expected, 'hex');
+  if (sigBuf.length !== expBuf.length || !crypto.timingSafeEqual(sigBuf, expBuf)) {
+    throw new Error(`${kind} signature verification failed in ${filePath}`);
+  }
+}
+
+function createEvidenceSignature(evidence, kind, hmacKey) {
+  const verdict = String(evidence.verdict || '').toUpperCase();
+  const payload = signaturePayload(evidence, kind, verdict);
+  return crypto.createHmac('sha256', hmacKey).update(payload).digest('hex');
+}
+
+function readVerdict(filePath, kind, runId, trust) {
+  if (!fs.existsSync(filePath)) throw new Error(`${kind} evidence missing: ${filePath}`);
+  const parsed = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+  const evidenceRunId = String(parsed.run_id || '').trim();
+  if (!evidenceRunId) throw new Error(`${kind} run_id missing in ${filePath}`);
+  if (evidenceRunId !== runId) {
+    throw new Error(`${kind} run_id mismatch in ${filePath}: expected=${runId} got=${evidenceRunId}`);
+  }
+  const reviewer = String(parsed.reviewer || '').trim();
+  if (!reviewer) throw new Error(`${kind} reviewer missing in ${filePath}`);
+  if (!trust.trustedReviewers.has(reviewer)) {
+    throw new Error(`${kind} reviewer not trusted in ${filePath}: ${reviewer}`);
+  }
+  const verdict = String(parsed.verdict || '').trim().toUpperCase();
+  if (!ALLOWED_EXTERNAL_VERDICTS.has(verdict)) {
+    throw new Error(`${kind} verdict invalid in ${filePath}: ${verdict || '(empty)'}`);
+  }
+  if (!Array.isArray(parsed.findings)) {
+    throw new Error(`${kind} findings must be an array in ${filePath}`);
+  }
+  verifySignature(parsed, kind, verdict, trust.hmacKey, filePath);
+  return verdict;
+}
+
+function runReviewEvidenceGate(options = {}) {
+  const runId = String(options.runId || '').trim();
+  if (!runId) return { ok: false, detail: 'missing runId' };
+  try {
+    const root = options.root ? resolveRoot(options.root) : process.cwd();
+    const runRoot = resolveRoot(options.runRoot || path.join(root, '.opencode', 'eoc-run'));
+    const trustPath = resolveRoot(options.trustPath || path.join(runRoot, 'review-trust.json'));
+    const trust = loadTrustPolicy(trustPath);
+    const dir = options.reviewDir ? path.resolve(root, String(options.reviewDir)) : runReviewDir(runRoot, runId);
+    const codePath = options.codeFile ? path.resolve(root, String(options.codeFile)) : path.join(dir, 'code-review.json');
+    const securityPath = options.securityFile ? path.resolve(root, String(options.securityFile)) : path.join(dir, 'security-review.json');
+    const code = readVerdict(codePath, 'code-review', runId, trust);
+    const security = readVerdict(securityPath, 'security-review', runId, trust);
+    const verdicts = { code, security };
+    const ok = code !== 'REJECT' && security !== 'REJECT';
+    return { ok, detail: `code=${code} security=${security}`, verdicts, evidenceDir: dir, codePath, securityPath };
+  } catch (error) {
+    return { ok: false, detail: String(error.message || error) };
+  }
+}
+
+function readPlan(rootDir, planId, opts = {}) {
+  if (opts && opts.noPlan) return null;
+  const id = planId || readLatestPlanId(rootDir);
+  if (!id) return null;
+  return tryReadJson(path.join(resolveRoot(rootDir), '.opencode', 'implementation-plans', id, 'plan.json'));
+}
+
+function readCoderRun(rootDir, runId) {
+  if (!runId) {
+    const latest = tryReadJson(path.join(resolveRoot(rootDir), '.opencode', 'coder-loop', 'latest.json'));
+    runId = latest && latest.run_id;
+  }
+  if (!runId) return null;
+  return tryReadJson(path.join(resolveRoot(rootDir), '.opencode', 'coder-loop', `${runId}.json`));
+}
+
+function collectDiff(rootDir, staged) {
+  const args = staged ? ['diff', '--cached', '--no-ext-diff', '--unified=0'] : ['diff', '--no-ext-diff', '--unified=0'];
+  const namesArgs = staged ? ['diff', '--cached', '--name-only'] : ['diff', '--name-only'];
+  const text = runGit(rootDir, args);
+  const names = runGit(rootDir, namesArgs);
+  return {
+    text: `${text.stdout || ''}${text.stderr || ''}`,
+    files: String(names.stdout || '')
+      .split(/\r?\n/)
+      .map((line) => line.trim())
+      .filter(Boolean),
+  };
+}
+
+function buildBenchmarkScope(rootDir, plan, run) {
+  const profile = plan && plan.profile ? plan.profile : (run && run.context && run.context.profile ? run.context.profile : detectProjectProfile(rootDir));
+  const selectedSkill = plan && plan.selected_skill ? plan.selected_skill : null;
+  return {
+    objective: (plan && plan.objective) || (run && run.objective) || null,
+    runtime: profile && profile.runtime ? profile.runtime : 'unknown',
+    framework: profile && profile.framework ? profile.framework : 'unknown',
+    skill: selectedSkill && selectedSkill.dir ? selectedSkill.dir : null,
+    task_family: selectedSkill && selectedSkill.task_family ? selectedSkill.task_family : null,
+  };
+}
+
+function buildPatchFootprintEvidence(run, changed) {
+  if (!run || !run.context || !run.context.change_surface) return null;
+  const route = run.context.edit_strategy || run.context.task_route || {};
+  const evaluation = evaluatePatchFootprint({
+    footprint: { touched_files: changed.unique },
+    changeSurface: run.context.change_surface,
+    route,
+    recipe: run.repair_recipe || {},
+  });
+  return {
+    edit_mode: route.edit_mode || null,
+    allowed_files: route.allowed_files || null,
+    touched_files: changed.unique,
+    candidate_edit_files: (run.context.change_surface.candidate_edit_files || []).slice(0, 8).map((item) => item.path),
+    evaluation,
+    gate: derivePatchDecision({ assessment: evaluation, recipe: run.repair_recipe || {}, route }),
+  };
+}
+
+function assessStyleDrift(run, changed, diffText) {
+  const contract = run && run.context ? run.context.style_contract : null;
+  if (!contract) return [];
+  const findings = [];
+  const touched = changed.unique || [];
+  if (contract.controller_pattern === 'controller-service' && touched.some((file) => /(controller|route|handler|api)/i.test(file)) && !touched.some((file) => /service/i.test(file))) {
+    findings.push({
+      severity: 'LOW',
+      file: null,
+      line: null,
+      issue: 'controller/route changes do not include a service-layer touch in a controller-service project',
+      fix: 'Confirm the behavior belongs in the controller; otherwise push logic into a service module and keep the route/controller thin.',
+    });
+  }
+  if (contract.async_style === 'async-await' && /\.(then|catch)\(/.test(String(diffText || ''))) {
+    findings.push({
+      severity: 'LOW',
+      file: null,
+      line: null,
+      issue: 'diff introduces promise chaining in an async-await project',
+      fix: 'Prefer async/await style for new control flow unless the surrounding file already uses promise chaining heavily.',
+    });
+  }
+  return findings;
+}
+
+function classifyChangedFiles(files) {
+  const unique = [...new Set((files || []).map((item) => String(item || '').replace(/\\/g, '/')).filter(Boolean))].sort();
+  const tests = unique.filter((file) => /(^|\/)(tests?|__tests__)\//i.test(file) || /\.(test|spec)\.[^.]+$/i.test(file));
+  const source = unique.filter((file) => !tests.includes(file) && /\.(js|jsx|ts|tsx|py|go|java|kt|rb|php|rs|swift)$/i.test(file));
+  const sensitive = unique.filter((file) => /(auth|security|secret|token|credential|permission|role|migration|schema|database|package\.json|package-lock\.json|pnpm-lock\.yaml|yarn\.lock|pom\.xml|build\.gradle|Dockerfile|\.env|config)/i.test(file));
+  const api = unique.filter((file) => /(route|controller|handler|endpoint|api|openapi|swagger)/i.test(file));
+  return { unique, tests, source, sensitive, api };
+}
+
+function diffStats(diffText) {
+  const added = (String(diffText || '').match(/^\+(?!\+)/gm) || []).length;
+  const removed = (String(diffText || '').match(/^-(?!--)/gm) || []).length;
+  const hunks = (String(diffText || '').match(/^@@/gm) || []).length;
+  return { added, removed, hunks, total: added + removed };
+}
+
+function buildReviewPolicy(benchmarkFeedback) {
+  const bias = String((benchmarkFeedback && benchmarkFeedback.strategy_bias) || 'balanced').toLowerCase();
+  if (bias === 'conservative') {
+    return {
+      strategy_bias: 'conservative',
+      diff_sample_mode: 'deep',
+      diff_file_budget: 12,
+      diff_line_budget: 180,
+      finding_print_limit: 7,
+      surface_warn_files: 8,
+      surface_warn_lines: 320,
+      merge_posture: 'strict',
+    };
+  }
+  if (bias === 'accelerated') {
+    return {
+      strategy_bias: 'accelerated',
+      diff_sample_mode: 'light',
+      diff_file_budget: 5,
+      diff_line_budget: 60,
+      finding_print_limit: 4,
+      surface_warn_files: 16,
+      surface_warn_lines: 700,
+      merge_posture: 'fast',
+    };
+  }
+  return {
+    strategy_bias: 'balanced',
+    diff_sample_mode: 'standard',
+    diff_file_budget: 8,
+    diff_line_budget: 110,
+    finding_print_limit: 5,
+    surface_warn_files: 12,
+    surface_warn_lines: 500,
+    merge_posture: 'balanced',
+  };
+}
+
+function sampleDiffText(diffText, policy) {
+  const maxFiles = Number(policy && policy.diff_file_budget) || 8;
+  const maxLines = Number(policy && policy.diff_line_budget) || 110;
+  const raw = String(diffText || '').split(/\r?\n/);
+  const excerpt = [];
+  const sampledFiles = [];
+  let lineBudget = 0;
+  let truncated = false;
+  for (const line of raw) {
+    if (line.startsWith('diff --git ')) {
+      const match = line.match(/^diff --git a\/(.+?) b\//);
+      const nextFile = match ? match[1] : line;
+      if (sampledFiles.length >= maxFiles && !sampledFiles.includes(nextFile)) {
+        truncated = true;
+        break;
+      }
+      if (!sampledFiles.includes(nextFile)) sampledFiles.push(nextFile);
+    }
+    if (sampledFiles.length > maxFiles) {
+      truncated = true;
+      break;
+    }
+    excerpt.push(line);
+    lineBudget += 1;
+    if (lineBudget >= maxLines) {
+      truncated = raw.length > excerpt.length;
+      break;
+    }
+  }
+  return {
+    mode: String((policy && policy.diff_sample_mode) || 'standard'),
+    max_files: maxFiles,
+    max_lines: maxLines,
+    sampled_files: sampledFiles,
+    sampled_file_count: sampledFiles.length,
+    sampled_line_count: excerpt.length,
+    truncated,
+    excerpt: excerpt.join('\n').trim(),
+  };
+}
+
+function addFinding(bucket, severity, data) {
+  bucket.push({ severity, ...data });
+}
+
+function toFindingSummary(bucket) {
+  return bucket.map((item) => ({
+    file: item.file || null,
+    line: item.line || null,
+    issue: item.issue,
+    fix: item.fix || null,
+    severity: item.severity,
+  }));
+}
+
+function evidencePath(rootDir) {
+  return path.join(resolveRoot(rootDir), '.opencode', 'reviews', 'merge-gate', 'latest.json');
+}
+
+module.exports = {
+  DEFAULT_TRUSTED_REVIEWERS,
+  INTERNAL_VERDICTS,
+  addFinding,
+  assessStyleDrift,
+  buildBenchmarkScope,
+  buildPatchFootprintEvidence,
+  buildReviewPolicy,
+  classifyChangedFiles,
+  collectDiff,
+  createEvidenceSignature,
+  diffStats,
+  evidencePath,
+  parseReviewGateArgs,
+  readCoderRun,
+  readPlan,
+  resolveRoot,
+  runCmd,
+  runGit,
+  runReviewDir,
+  runReviewEvidenceGate,
+  sampleDiffText,
+  toFindingSummary,
+  verdictFromQuality,
+};

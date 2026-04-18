@@ -1,6 +1,6 @@
 ---
 description: Hash-anchored guarded line editing (annotate + apply with hash validation)
-agent: eoc_build
+agent: eoc_orchestrator
 subtask: true
 ---
 

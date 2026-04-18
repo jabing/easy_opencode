@@ -1,0 +1,13 @@
+{
+  "name": "verification-loop",
+  "description": "A comprehensive verification system for Claude Code sessions.",
+  "origin": "ECC",
+  "level": "L1",
+  "languages": [],
+  "frameworks": [],
+  "triggers": [
+    "verification loop"
+  ],
+  "actions": [],
+  "verify": []
+}

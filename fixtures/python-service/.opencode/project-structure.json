@@ -1,0 +1,53 @@
+{
+  "schema_version": "1.1",
+  "runtime": "python",
+  "language": "python",
+  "framework": "fastapi",
+  "repo_shape": "single-package",
+  "workspace_root": null,
+  "source_root_candidates": [
+    "app"
+  ],
+  "architecture_pattern": "fastapi-app-router",
+  "source_root": "app",
+  "test_root": "app/tests",
+  "docs_root": "docs/api",
+  "module_roots": {
+    "controller": "app/routers",
+    "service": "app/services",
+    "repository": "app/repositories",
+    "schema": "app/models",
+    "route": "app/routers"
+  },
+  "paths": {
+    "controller": "app/routers",
+    "service": "app/services",
+    "repository": "app/repositories",
+    "schema": "app/models",
+    "route": "app/routers",
+    "test": "app/tests",
+    "docs": "docs/api",
+    "route_index": "app/main.py",
+    "docs_index": "docs/api/index.md"
+  },
+  "conventions": {
+    "route_suffix": "_router.py",
+    "service_suffix": "_service.py",
+    "repository_suffix": "_repository.py",
+    "test_suffix": "_test.py",
+    "index_files": false
+  },
+  "detected_examples": [
+    "app/models/__init__.py",
+    "app/services/__init__.py"
+  ],
+  "confidence": "high",
+  "confidence_score": 0.86,
+  "confidence_reasons": [
+    "FastAPI-style router and service files were detected under the application package"
+  ],
+  "decision_mode": "framework-aware",
+  "decision_reasons": [
+    "using detected FastAPI application package as the source of truth"
+  ]
+}

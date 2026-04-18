@@ -1,0 +1,1681 @@
+{
+  "schema_version": "1.1",
+  "plan_id": "impl-20260416140740-bf8851",
+  "created_at": "2026-04-16T14:07:40.999Z",
+  "root_dir": "/mnt/data/batch18/fixtures/python-service",
+  "objective": "new model",
+  "profile": {
+    "profile_version": "1.2",
+    "runtime": "python",
+    "language": "python",
+    "framework": "django",
+    "package_manager": "pip",
+    "package_name": "python-service",
+    "validation": [
+      {
+        "kind": "test",
+        "command": "python -m pytest -q",
+        "source": "detected:pytest"
+      },
+      {
+        "kind": "build",
+        "command": "python manage.py check",
+        "source": "detected:django"
+      }
+    ],
+    "detected_by": "pyproject.toml",
+    "build_tool": "manage.py check",
+    "test_runner": "pytest",
+    "lint_tool": null,
+    "typecheck_tool": null,
+    "format_tool": null,
+    "app_type": "backend-service",
+    "repo_shape": "flat-package",
+    "workspace": {
+      "is_workspace": false,
+      "tool": null
+    },
+    "entrypoints": [
+      "manage.py"
+    ],
+    "config_files": [
+      "pyproject.toml"
+    ],
+    "signals": {
+      "has_manage_py": true,
+      "has_tests_dir": false,
+      "has_src_dir": false
+    },
+    "confidence": 0.88,
+    "git": false,
+    "changed_files": [],
+    "validation_by_kind": {
+      "test": "python -m pytest -q",
+      "build": "python manage.py check"
+    },
+    "validation_gaps": [
+      "lint"
+    ],
+    "profile_notes": [
+      "No lint command was detected; style regressions may need manual review.",
+      "Framework-specific conventions matter here: django.",
+      "Primary test runner appears to be pytest."
+    ]
+  },
+  "targets": [
+    "app/models/invoice.py",
+    "app/admin/invoice_admin.py",
+    "tests/test_invoice_model.py",
+    ".opencode/task-bundles/invoice-model.integration.md"
+  ],
+  "selected_skill": {
+    "name": "add-django-model",
+    "dir": "add-django-model",
+    "level": "L3",
+    "executable": true,
+    "support_tier": "tier2",
+    "task_family": "model",
+    "runtime_match": true,
+    "framework_match": true,
+    "compatibility": {
+      "runtime": "match",
+      "framework": "match",
+      "language": "match",
+      "supported_runtimes": [
+        "python"
+      ],
+      "supported_frameworks": [
+        "django"
+      ],
+      "supported_languages": [
+        "python"
+      ]
+    },
+    "decision": {
+      "accepted": true,
+      "allow_cross_runtime": false,
+      "constraints": [
+        {
+          "kind": "runtime",
+          "status": "passed",
+          "detail": "runtime match: python"
+        },
+        {
+          "kind": "framework",
+          "status": "passed",
+          "detail": "framework match: django"
+        }
+      ],
+      "positive_signals": [
+        "runtime match: python",
+        "framework match: django",
+        "language match: python"
+      ],
+      "negative_signals": [],
+      "score_breakdown": [
+        {
+          "reason": "metadata mentions \"new\"",
+          "points": 2
+        },
+        {
+          "reason": "name includes \"model\"",
+          "points": 8
+        },
+        {
+          "reason": "dir includes \"model\"",
+          "points": 7
+        },
+        {
+          "reason": "metadata mentions \"model\"",
+          "points": 2
+        },
+        {
+          "reason": "query matches trigger \"new model\"",
+          "points": 5
+        },
+        {
+          "reason": "skill is executable",
+          "points": 1
+        },
+        {
+          "reason": "runtime matches python",
+          "points": 6
+        },
+        {
+          "reason": "framework matches django",
+          "points": 5
+        },
+        {
+          "reason": "language matches python",
+          "points": 2
+        }
+      ],
+      "summary": "accepted: runtime match: python"
+    },
+    "verify": [
+      "python manage.py check",
+      "python -m pytest -q"
+    ]
+  },
+  "skill_candidates": [
+    {
+      "name": "add-django-model",
+      "dir": "add-django-model",
+      "level": "L3",
+      "executable": true,
+      "support_tier": "tier2",
+      "score": 38,
+      "runtime_match": true,
+      "framework_match": true,
+      "task_family": "model",
+      "triggers": [
+        "add django model",
+        "new model"
+      ],
+      "decision": {
+        "accepted": true,
+        "allow_cross_runtime": false,
+        "constraints": [
+          {
+            "kind": "runtime",
+            "status": "passed",
+            "detail": "runtime match: python"
+          },
+          {
+            "kind": "framework",
+            "status": "passed",
+            "detail": "framework match: django"
+          }
+        ],
+        "positive_signals": [
+          "runtime match: python",
+          "framework match: django",
+          "language match: python"
+        ],
+        "negative_signals": [],
+        "score_breakdown": [
+          {
+            "reason": "metadata mentions \"new\"",
+            "points": 2
+          },
+          {
+            "reason": "name includes \"model\"",
+            "points": 8
+          },
+          {
+            "reason": "dir includes \"model\"",
+            "points": 7
+          },
+          {
+            "reason": "metadata mentions \"model\"",
+            "points": 2
+          },
+          {
+            "reason": "query matches trigger \"new model\"",
+            "points": 5
+          },
+          {
+            "reason": "skill is executable",
+            "points": 1
+          },
+          {
+            "reason": "runtime matches python",
+            "points": 6
+          },
+          {
+            "reason": "framework matches django",
+            "points": 5
+          },
+          {
+            "reason": "language matches python",
+            "points": 2
+          }
+        ],
+        "summary": "accepted: runtime match: python"
+      },
+      "compatibility": {
+        "runtime": "match",
+        "framework": "match",
+        "language": "match",
+        "supported_runtimes": [
+          "python"
+        ],
+        "supported_frameworks": [
+          "django"
+        ],
+        "supported_languages": [
+          "python"
+        ]
+      }
+    },
+    {
+      "name": "database-migrations",
+      "dir": "database-migrations",
+      "level": "L1",
+      "executable": false,
+      "support_tier": "tier4",
+      "score": 5,
+      "runtime_match": false,
+      "framework_match": true,
+      "task_family": null,
+      "triggers": [
+        "database migrations"
+      ],
+      "decision": {
+        "accepted": true,
+        "allow_cross_runtime": false,
+        "constraints": [
+          {
+            "kind": "runtime",
+            "status": "informational",
+            "detail": "runtime unspecified by skill metadata"
+          },
+          {
+            "kind": "framework",
+            "status": "passed",
+            "detail": "framework match: django"
+          }
+        ],
+        "positive_signals": [
+          "framework match: django",
+          "language match: python"
+        ],
+        "negative_signals": [
+          "runtime unspecified by skill metadata"
+        ],
+        "score_breakdown": [
+          {
+            "reason": "framework matches django",
+            "points": 5
+          },
+          {
+            "reason": "language matches python",
+            "points": 2
+          },
+          {
+            "reason": "non-executable skills are deprioritized",
+            "points": -2
+          }
+        ],
+        "summary": "accepted: framework match: django; note runtime unspecified by skill metadata"
+      },
+      "compatibility": {
+        "runtime": "unspecified",
+        "framework": "match",
+        "language": "match",
+        "supported_runtimes": [],
+        "supported_frameworks": [
+          "django",
+          "postgres"
+        ],
+        "supported_languages": [
+          "go",
+          "python",
+          "sql"
+        ]
+      }
+    },
+    {
+      "name": "django-patterns",
+      "dir": "django-patterns",
+      "level": "L1",
+      "executable": false,
+      "support_tier": "tier4",
+      "score": 5,
+      "runtime_match": false,
+      "framework_match": true,
+      "task_family": null,
+      "triggers": [
+        "django patterns"
+      ],
+      "decision": {
+        "accepted": true,
+        "allow_cross_runtime": false,
+        "constraints": [
+          {
+            "kind": "runtime",
+            "status": "informational",
+            "detail": "runtime unspecified by skill metadata"
+          },
+          {
+            "kind": "framework",
+            "status": "passed",
+            "detail": "framework match: django"
+          }
+        ],
+        "positive_signals": [
+          "framework match: django",
+          "language match: python"
+        ],
+        "negative_signals": [
+          "runtime unspecified by skill metadata"
+        ],
+        "score_breakdown": [
+          {
+            "reason": "framework matches django",
+            "points": 5
+          },
+          {
+            "reason": "language matches python",
+            "points": 2
+          },
+          {
+            "reason": "non-executable skills are deprioritized",
+            "points": -2
+          }
+        ],
+        "summary": "accepted: framework match: django; note runtime unspecified by skill metadata"
+      },
+      "compatibility": {
+        "runtime": "unspecified",
+        "framework": "match",
+        "language": "match",
+        "supported_runtimes": [],
+        "supported_frameworks": [
+          "django"
+        ],
+        "supported_languages": [
+          "go",
+          "java",
+          "javascript",
+          "python",
+          "typescript"
+        ]
+      }
+    },
+    {
+      "name": "django-security",
+      "dir": "django-security",
+      "level": "L1",
+      "executable": false,
+      "support_tier": "tier4",
+      "score": 5,
+      "runtime_match": false,
+      "framework_match": true,
+      "task_family": null,
+      "triggers": [
+        "django security"
+      ],
+      "decision": {
+        "accepted": true,
+        "allow_cross_runtime": false,
+        "constraints": [
+          {
+            "kind": "runtime",
+            "status": "informational",
+            "detail": "runtime unspecified by skill metadata"
+          },
+          {
+            "kind": "framework",
+            "status": "passed",
+            "detail": "framework match: django"
+          }
+        ],
+        "positive_signals": [
+          "framework match: django",
+          "language match: python"
+        ],
+        "negative_signals": [
+          "runtime unspecified by skill metadata"
+        ],
+        "score_breakdown": [
+          {
+            "reason": "framework matches django",
+            "points": 5
+          },
+          {
+            "reason": "language matches python",
+            "points": 2
+          },
+          {
+            "reason": "non-executable skills are deprioritized",
+            "points": -2
+          }
+        ],
+        "summary": "accepted: framework match: django; note runtime unspecified by skill metadata"
+      },
+      "compatibility": {
+        "runtime": "unspecified",
+        "framework": "match",
+        "language": "match",
+        "supported_runtimes": [],
+        "supported_frameworks": [
+          "django"
+        ],
+        "supported_languages": [
+          "go",
+          "python"
+        ]
+      }
+    },
+    {
+      "name": "django-tdd",
+      "dir": "django-tdd",
+      "level": "L1",
+      "executable": false,
+      "support_tier": "tier4",
+      "score": 5,
+      "runtime_match": false,
+      "framework_match": true,
+      "task_family": null,
+      "triggers": [
+        "django tdd"
+      ],
+      "decision": {
+        "accepted": true,
+        "allow_cross_runtime": false,
+        "constraints": [
+          {
+            "kind": "runtime",
+            "status": "informational",
+            "detail": "runtime unspecified by skill metadata"
+          },
+          {
+            "kind": "framework",
+            "status": "passed",
+            "detail": "framework match: django"
+          }
+        ],
+        "positive_signals": [
+          "framework match: django",
+          "language match: python"
+        ],
+        "negative_signals": [
+          "runtime unspecified by skill metadata"
+        ],
+        "score_breakdown": [
+          {
+            "reason": "framework matches django",
+            "points": 5
+          },
+          {
+            "reason": "language matches python",
+            "points": 2
+          },
+          {
+            "reason": "non-executable skills are deprioritized",
+            "points": -2
+          }
+        ],
+        "summary": "accepted: framework match: django; note runtime unspecified by skill metadata"
+      },
+      "compatibility": {
+        "runtime": "unspecified",
+        "framework": "match",
+        "language": "match",
+        "supported_runtimes": [],
+        "supported_frameworks": [
+          "django"
+        ],
+        "supported_languages": [
+          "go",
+          "java",
+          "javascript",
+          "python",
+          "typescript"
+        ]
+      }
+    }
+  ],
+  "skill_selection_report": {
+    "mode": "automatic",
+    "objective": "new model",
+    "allow_cross_runtime": false,
+    "profile": {
+      "runtime": "python",
+      "language": "python",
+      "framework": "django"
+    },
+    "accepted_candidates": [
+      {
+        "rank": 1,
+        "name": "add-django-model",
+        "dir": "add-django-model",
+        "level": "L3",
+        "executable": true,
+        "support_tier": "tier2",
+        "score": 38,
+        "runtime_match": true,
+        "framework_match": true,
+        "task_family": "model",
+        "triggers": [
+          "add django model",
+          "new model"
+        ],
+        "decision": {
+          "accepted": true,
+          "allow_cross_runtime": false,
+          "constraints": [
+            {
+              "kind": "runtime",
+              "status": "passed",
+              "detail": "runtime match: python"
+            },
+            {
+              "kind": "framework",
+              "status": "passed",
+              "detail": "framework match: django"
+            }
+          ],
+          "positive_signals": [
+            "runtime match: python",
+            "framework match: django",
+            "language match: python"
+          ],
+          "negative_signals": [],
+          "score_breakdown": [
+            {
+              "reason": "metadata mentions \"new\"",
+              "points": 2
+            },
+            {
+              "reason": "name includes \"model\"",
+              "points": 8
+            },
+            {
+              "reason": "dir includes \"model\"",
+              "points": 7
+            },
+            {
+              "reason": "metadata mentions \"model\"",
+              "points": 2
+            },
+            {
+              "reason": "query matches trigger \"new model\"",
+              "points": 5
+            },
+            {
+              "reason": "skill is executable",
+              "points": 1
+            },
+            {
+              "reason": "runtime matches python",
+              "points": 6
+            },
+            {
+              "reason": "framework matches django",
+              "points": 5
+            },
+            {
+              "reason": "language matches python",
+              "points": 2
+            }
+          ],
+          "summary": "accepted: runtime match: python"
+        },
+        "compatibility": {
+          "runtime": "match",
+          "framework": "match",
+          "language": "match",
+          "supported_runtimes": [
+            "python"
+          ],
+          "supported_frameworks": [
+            "django"
+          ],
+          "supported_languages": [
+            "python"
+          ]
+        }
+      },
+      {
+        "rank": 2,
+        "name": "database-migrations",
+        "dir": "database-migrations",
+        "level": "L1",
+        "executable": false,
+        "support_tier": "tier4",
+        "score": 5,
+        "runtime_match": false,
+        "framework_match": true,
+        "task_family": null,
+        "triggers": [
+          "database migrations"
+        ],
+        "decision": {
+          "accepted": true,
+          "allow_cross_runtime": false,
+          "constraints": [
+            {
+              "kind": "runtime",
+              "status": "informational",
+              "detail": "runtime unspecified by skill metadata"
+            },
+            {
+              "kind": "framework",
+              "status": "passed",
+              "detail": "framework match: django"
+            }
+          ],
+          "positive_signals": [
+            "framework match: django",
+            "language match: python"
+          ],
+          "negative_signals": [
+            "runtime unspecified by skill metadata"
+          ],
+          "score_breakdown": [
+            {
+              "reason": "framework matches django",
+              "points": 5
+            },
+            {
+              "reason": "language matches python",
+              "points": 2
+            },
+            {
+              "reason": "non-executable skills are deprioritized",
+              "points": -2
+            }
+          ],
+          "summary": "accepted: framework match: django; note runtime unspecified by skill metadata"
+        },
+        "compatibility": {
+          "runtime": "unspecified",
+          "framework": "match",
+          "language": "match",
+          "supported_runtimes": [],
+          "supported_frameworks": [
+            "django",
+            "postgres"
+          ],
+          "supported_languages": [
+            "go",
+            "python",
+            "sql"
+          ]
+        }
+      },
+      {
+        "rank": 3,
+        "name": "django-patterns",
+        "dir": "django-patterns",
+        "level": "L1",
+        "executable": false,
+        "support_tier": "tier4",
+        "score": 5,
+        "runtime_match": false,
+        "framework_match": true,
+        "task_family": null,
+        "triggers": [
+          "django patterns"
+        ],
+        "decision": {
+          "accepted": true,
+          "allow_cross_runtime": false,
+          "constraints": [
+            {
+              "kind": "runtime",
+              "status": "informational",
+              "detail": "runtime unspecified by skill metadata"
+            },
+            {
+              "kind": "framework",
+              "status": "passed",
+              "detail": "framework match: django"
+            }
+          ],
+          "positive_signals": [
+            "framework match: django",
+            "language match: python"
+          ],
+          "negative_signals": [
+            "runtime unspecified by skill metadata"
+          ],
+          "score_breakdown": [
+            {
+              "reason": "framework matches django",
+              "points": 5
+            },
+            {
+              "reason": "language matches python",
+              "points": 2
+            },
+            {
+              "reason": "non-executable skills are deprioritized",
+              "points": -2
+            }
+          ],
+          "summary": "accepted: framework match: django; note runtime unspecified by skill metadata"
+        },
+        "compatibility": {
+          "runtime": "unspecified",
+          "framework": "match",
+          "language": "match",
+          "supported_runtimes": [],
+          "supported_frameworks": [
+            "django"
+          ],
+          "supported_languages": [
+            "go",
+            "java",
+            "javascript",
+            "python",
+            "typescript"
+          ]
+        }
+      },
+      {
+        "rank": 4,
+        "name": "django-security",
+        "dir": "django-security",
+        "level": "L1",
+        "executable": false,
+        "support_tier": "tier4",
+        "score": 5,
+        "runtime_match": false,
+        "framework_match": true,
+        "task_family": null,
+        "triggers": [
+          "django security"
+        ],
+        "decision": {
+          "accepted": true,
+          "allow_cross_runtime": false,
+          "constraints": [
+            {
+              "kind": "runtime",
+              "status": "informational",
+              "detail": "runtime unspecified by skill metadata"
+            },
+            {
+              "kind": "framework",
+              "status": "passed",
+              "detail": "framework match: django"
+            }
+          ],
+          "positive_signals": [
+            "framework match: django",
+            "language match: python"
+          ],
+          "negative_signals": [
+            "runtime unspecified by skill metadata"
+          ],
+          "score_breakdown": [
+            {
+              "reason": "framework matches django",
+              "points": 5
+            },
+            {
+              "reason": "language matches python",
+              "points": 2
+            },
+            {
+              "reason": "non-executable skills are deprioritized",
+              "points": -2
+            }
+          ],
+          "summary": "accepted: framework match: django; note runtime unspecified by skill metadata"
+        },
+        "compatibility": {
+          "runtime": "unspecified",
+          "framework": "match",
+          "language": "match",
+          "supported_runtimes": [],
+          "supported_frameworks": [
+            "django"
+          ],
+          "supported_languages": [
+            "go",
+            "python"
+          ]
+        }
+      },
+      {
+        "rank": 5,
+        "name": "django-tdd",
+        "dir": "django-tdd",
+        "level": "L1",
+        "executable": false,
+        "support_tier": "tier4",
+        "score": 5,
+        "runtime_match": false,
+        "framework_match": true,
+        "task_family": null,
+        "triggers": [
+          "django tdd"
+        ],
+        "decision": {
+          "accepted": true,
+          "allow_cross_runtime": false,
+          "constraints": [
+            {
+              "kind": "runtime",
+              "status": "informational",
+              "detail": "runtime unspecified by skill metadata"
+            },
+            {
+              "kind": "framework",
+              "status": "passed",
+              "detail": "framework match: django"
+            }
+          ],
+          "positive_signals": [
+            "framework match: django",
+            "language match: python"
+          ],
+          "negative_signals": [
+            "runtime unspecified by skill metadata"
+          ],
+          "score_breakdown": [
+            {
+              "reason": "framework matches django",
+              "points": 5
+            },
+            {
+              "reason": "language matches python",
+              "points": 2
+            },
+            {
+              "reason": "non-executable skills are deprioritized",
+              "points": -2
+            }
+          ],
+          "summary": "accepted: framework match: django; note runtime unspecified by skill metadata"
+        },
+        "compatibility": {
+          "runtime": "unspecified",
+          "framework": "match",
+          "language": "match",
+          "supported_runtimes": [],
+          "supported_frameworks": [
+            "django"
+          ],
+          "supported_languages": [
+            "go",
+            "java",
+            "javascript",
+            "python",
+            "typescript"
+          ]
+        }
+      }
+    ],
+    "rejected_candidates": [
+      {
+        "name": "add-cli-command",
+        "dir": "add-cli-command",
+        "score": 11,
+        "summary": "rejected: framework mismatch: project=django skill=node/click/cobra/picocli",
+        "compatibility": {
+          "runtime": "match",
+          "framework": "mismatch",
+          "language": "match",
+          "supported_runtimes": [
+            "node",
+            "python",
+            "go",
+            "java"
+          ],
+          "supported_frameworks": [
+            "node",
+            "click",
+            "cobra",
+            "picocli"
+          ],
+          "supported_languages": [
+            "javascript",
+            "typescript",
+            "python",
+            "go",
+            "java"
+          ]
+        },
+        "constraints": [
+          {
+            "kind": "runtime",
+            "status": "passed",
+            "detail": "runtime match: python"
+          },
+          {
+            "kind": "framework",
+            "status": "failed",
+            "detail": "framework mismatch: project=django skill=node/click/cobra/picocli"
+          }
+        ]
+      },
+      {
+        "name": "add-config-module",
+        "dir": "add-config-module",
+        "score": 11,
+        "summary": "rejected: framework mismatch: project=django skill=node/python",
+        "compatibility": {
+          "runtime": "match",
+          "framework": "mismatch",
+          "language": "match",
+          "supported_runtimes": [
+            "node",
+            "python"
+          ],
+          "supported_frameworks": [
+            "node",
+            "python"
+          ],
+          "supported_languages": [
+            "javascript",
+            "typescript",
+            "python"
+          ]
+        },
+        "constraints": [
+          {
+            "kind": "runtime",
+            "status": "passed",
+            "detail": "runtime match: python"
+          },
+          {
+            "kind": "framework",
+            "status": "failed",
+            "detail": "framework mismatch: project=django skill=node/python"
+          }
+        ]
+      },
+      {
+        "name": "add-fastapi-endpoint",
+        "dir": "add-fastapi-endpoint",
+        "score": 11,
+        "summary": "rejected: framework mismatch: project=django skill=fastapi",
+        "compatibility": {
+          "runtime": "match",
+          "framework": "mismatch",
+          "language": "match",
+          "supported_runtimes": [
+            "python"
+          ],
+          "supported_frameworks": [
+            "fastapi"
+          ],
+          "supported_languages": [
+            "python"
+          ]
+        },
+        "constraints": [
+          {
+            "kind": "runtime",
+            "status": "passed",
+            "detail": "runtime match: python"
+          },
+          {
+            "kind": "framework",
+            "status": "failed",
+            "detail": "framework mismatch: project=django skill=fastapi"
+          }
+        ]
+      },
+      {
+        "name": "add-service-module",
+        "dir": "add-service-module",
+        "score": 11,
+        "summary": "rejected: framework mismatch: project=django skill=node/python/go/springboot",
+        "compatibility": {
+          "runtime": "match",
+          "framework": "mismatch",
+          "language": "match",
+          "supported_runtimes": [
+            "node",
+            "python",
+            "go",
+            "java"
+          ],
+          "supported_frameworks": [
+            "node",
+            "python",
+            "go",
+            "springboot"
+          ],
+          "supported_languages": [
+            "javascript",
+            "typescript",
+            "python",
+            "go",
+            "java"
+          ]
+        },
+        "constraints": [
+          {
+            "kind": "runtime",
+            "status": "passed",
+            "detail": "runtime match: python"
+          },
+          {
+            "kind": "framework",
+            "status": "failed",
+            "detail": "framework mismatch: project=django skill=node/python/go/springboot"
+          }
+        ]
+      },
+      {
+        "name": "add-unit-test",
+        "dir": "add-unit-test",
+        "score": 9,
+        "summary": "rejected: framework mismatch: project=django skill=vitest/jest/pytest/go test/junit",
+        "compatibility": {
+          "runtime": "match",
+          "framework": "mismatch",
+          "language": "match",
+          "supported_runtimes": [
+            "node",
+            "python",
+            "go",
+            "java"
+          ],
+          "supported_frameworks": [
+            "vitest",
+            "jest",
+            "pytest",
+            "go test",
+            "junit"
+          ],
+          "supported_languages": [
+            "javascript",
+            "typescript",
+            "python",
+            "go",
+            "java"
+          ]
+        },
+        "constraints": [
+          {
+            "kind": "runtime",
+            "status": "passed",
+            "detail": "runtime match: python"
+          },
+          {
+            "kind": "framework",
+            "status": "failed",
+            "detail": "framework mismatch: project=django skill=vitest/jest/pytest/go test/junit"
+          }
+        ]
+      }
+    ],
+    "totals": {
+      "evaluated": 51,
+      "accepted": 7,
+      "rejected": 24
+    },
+    "selected": {
+      "name": "add-django-model",
+      "dir": "add-django-model",
+      "level": "L3",
+      "executable": true,
+      "support_tier": "tier2",
+      "score": 38,
+      "runtime_match": true,
+      "framework_match": true,
+      "task_family": "model",
+      "triggers": [
+        "add django model",
+        "new model"
+      ],
+      "decision": {
+        "accepted": true,
+        "allow_cross_runtime": false,
+        "constraints": [
+          {
+            "kind": "runtime",
+            "status": "passed",
+            "detail": "runtime match: python"
+          },
+          {
+            "kind": "framework",
+            "status": "passed",
+            "detail": "framework match: django"
+          }
+        ],
+        "positive_signals": [
+          "runtime match: python",
+          "framework match: django",
+          "language match: python"
+        ],
+        "negative_signals": [],
+        "score_breakdown": [
+          {
+            "reason": "metadata mentions \"new\"",
+            "points": 2
+          },
+          {
+            "reason": "name includes \"model\"",
+            "points": 8
+          },
+          {
+            "reason": "dir includes \"model\"",
+            "points": 7
+          },
+          {
+            "reason": "metadata mentions \"model\"",
+            "points": 2
+          },
+          {
+            "reason": "query matches trigger \"new model\"",
+            "points": 5
+          },
+          {
+            "reason": "skill is executable",
+            "points": 1
+          },
+          {
+            "reason": "runtime matches python",
+            "points": 6
+          },
+          {
+            "reason": "framework matches django",
+            "points": 5
+          },
+          {
+            "reason": "language matches python",
+            "points": 2
+          }
+        ],
+        "summary": "accepted: runtime match: python"
+      },
+      "compatibility": {
+        "runtime": "match",
+        "framework": "match",
+        "language": "match",
+        "supported_runtimes": [
+          "python"
+        ],
+        "supported_frameworks": [
+          "django"
+        ],
+        "supported_languages": [
+          "python"
+        ]
+      },
+      "verify": [
+        "python manage.py check",
+        "python -m pytest -q"
+      ]
+    }
+  },
+  "scaffold": {
+    "skill": "add-django-model",
+    "runtime": "python",
+    "dry_run": false,
+    "outputs": [
+      "app/models/invoice.py",
+      "app/admin/invoice_admin.py",
+      "tests/test_invoice_model.py",
+      ".opencode/task-bundles/invoice-model.integration.md"
+    ],
+    "output_roles": [
+      {
+        "output": "app/models/invoice.py",
+        "role": "primary"
+      },
+      {
+        "output": "app/admin/invoice_admin.py",
+        "role": "support"
+      },
+      {
+        "output": "tests/test_invoice_model.py",
+        "role": "test"
+      },
+      {
+        "output": ".opencode/task-bundles/invoice-model.integration.md",
+        "role": "guide"
+      }
+    ],
+    "verify": [
+      "python manage.py check",
+      "python -m pytest -q"
+    ],
+    "updates": [
+      {
+        "type": "ensure_block",
+        "primitive": "ensure_block",
+        "file": "docs/models/index.md",
+        "content": "- [Invoice](./invoice.md) — Django model scaffold",
+        "resolved_file": "docs/models/index.md",
+        "locator": {
+          "strategy": "first_existing",
+          "matched": true,
+          "candidates": [
+            "docs/models/index.md",
+            "docs/index.md"
+          ],
+          "label": "django model docs index"
+        },
+        "patch_strategy": "append",
+        "status": "updated",
+        "anchor": null,
+        "fallback_strategy": null,
+        "segments": null
+      },
+      {
+        "type": "ensure_module_export",
+        "primitive": "ensure_module_export",
+        "file": "app/models/__init__.py",
+        "content": "from .invoice import Invoice",
+        "resolved_file": "app/models/__init__.py",
+        "locator": {
+          "strategy": "first_existing",
+          "matched": true,
+          "candidates": [
+            "app/models/__init__.py"
+          ],
+          "label": "django model package exports"
+        },
+        "patch_strategy": "append",
+        "status": "updated",
+        "anchor": null,
+        "fallback_strategy": null,
+        "segments": [
+          {
+            "kind": "import",
+            "primitive": "add_import",
+            "changed": true,
+            "already_present": false,
+            "missing_anchor": false,
+            "fallback_strategy": null
+          },
+          {
+            "kind": "export",
+            "primitive": "ensure_module_export",
+            "changed": true,
+            "already_present": false,
+            "missing_anchor": false,
+            "fallback_strategy": null
+          }
+        ]
+      },
+      {
+        "type": "register_provider",
+        "primitive": "register_provider",
+        "file": "app/admin.py",
+        "content": "from .models.invoice import Invoice\nadmin.site.register(Invoice)",
+        "resolved_file": "app/admin.py",
+        "locator": {
+          "strategy": "first_existing",
+          "matched": true,
+          "candidates": [
+            "app/admin.py"
+          ],
+          "label": "django admin registration"
+        },
+        "patch_strategy": "append",
+        "status": "updated",
+        "anchor": {
+          "regex": "@admin\\.register|class\\s+[A-Za-z0-9_]+Admin\\(",
+          "flags": "m"
+        },
+        "fallback_strategy": "registration:append",
+        "segments": [
+          {
+            "kind": "import",
+            "primitive": "add_import",
+            "changed": true,
+            "already_present": false,
+            "missing_anchor": false,
+            "fallback_strategy": null
+          },
+          {
+            "kind": "registration",
+            "primitive": "insert_registration",
+            "changed": true,
+            "already_present": false,
+            "missing_anchor": false,
+            "fallback_strategy": "append"
+          }
+        ]
+      }
+    ],
+    "scaffold_policy": {
+      "strategy_bias": "balanced",
+      "bundle_mode": "standard",
+      "integration_mode": "apply"
+    },
+    "execution_model": {
+      "template_generation": true,
+      "structured_integration": true,
+      "locator_aware_integration": true,
+      "action_type": "locator_template_bundle"
+    },
+    "output": "app/models/invoice.py",
+    "preview": [
+      {
+        "output": "app/models/invoice.py",
+        "body": "from django.db import models\n\n\nclass Invoice(models.Model):\n    name = models.CharField(max_length=255)\n    created_at = models.DateTimeField(auto_now_add=True)\n\n    class Meta:\n        app_label = 'app'\n\n    def __str__(self) -> str:\n        return self.name\n",
+        "role": "primary"
+      },
+      {
+        "output": "app/admin/invoice_admin.py",
+        "body": "from django.contrib import admin\n\nfrom app.models.invoice import Invoice\n\n\n@admin.register(Invoice)\nclass InvoiceAdmin(admin.ModelAdmin):\n    list_display = ('id', 'name', 'created_at')\n    search_fields = ('name',)\n",
+        "role": "support"
+      },
+      {
+        "output": "tests/test_invoice_model.py",
+        "body": "from app.models.invoice import Invoice\n\n\ndef test_invoice_string_representation() -> None:\n    instance = Invoice(name='starter')\n    assert str(instance) == 'starter'\n",
+        "role": "test"
+      },
+      {
+        "output": ".opencode/task-bundles/invoice-model.integration.md",
+        "body": "# Invoice model integration guide\n\n## Follow-up checklist\n\n- Add the model to any serializers, forms, or services that should reference it.\n- Run `python manage.py makemigrations` and inspect the migration output.\n- Extend the starter test with database-backed assertions once the schema settles.\n",
+        "role": "guide"
+      }
+    ],
+    "integration_status": "applied",
+    "benchmark_feedback": {
+      "assessed_at": "2026-04-16T14:07:40.780Z",
+      "scope": {
+        "objective": "new model",
+        "runtime": "python",
+        "framework": "django",
+        "skill": "add-django-model",
+        "task_family": "model"
+      },
+      "policy": {
+        "id": "standard",
+        "label": "Standard release candidate"
+      },
+      "data_window": {
+        "run_count": 0,
+        "limit": 10
+      },
+      "risk_score": 0,
+      "risk_level": "unknown",
+      "confidence": 0,
+      "strategy_bias": "balanced",
+      "recommended_validation_mode": "standard",
+      "recommended_action": "implementation_first",
+      "review_gate_required": false,
+      "reasons": [
+        "no benchmark history available"
+      ],
+      "coverage": {
+        "status": "missing",
+        "required_dimensions": [
+          "runtime_framework",
+          "task_family",
+          "skill"
+        ],
+        "matched_dimensions": [],
+        "missing_dimensions": [
+          "runtime_framework",
+          "task_family",
+          "skill"
+        ],
+        "required_count": 3,
+        "matched_count": 0,
+        "coverage_score": 0
+      },
+      "freshness": {
+        "status": "missing",
+        "observed_at": null,
+        "age_days": null,
+        "source": "missing",
+        "source_label": null,
+        "bucket_key": null,
+        "run_id": null,
+        "matched_source_count": 0,
+        "thresholds": {
+          "fresh_days": 14,
+          "aging_days": 21,
+          "stale_days": 35
+        },
+        "policy": {
+          "id": "standard",
+          "label": "Standard release candidate"
+        }
+      },
+      "trend_evidence": {
+        "matched_count": 0,
+        "overall_direction": "unknown",
+        "buckets": []
+      },
+      "matched_buckets": {},
+      "commands": [
+        "node /mnt/data/batch18/bin/eoc-script.js benchmark-feedback report --root /mnt/data/batch18/fixtures/python-service --policy standard --json",
+        "node /mnt/data/batch18/bin/eoc-script.js benchmark-suite trend --group-by runtime-framework --json",
+        "node /mnt/data/batch18/bin/eoc-script.js benchmark-suite trend --group-by skill-family --json",
+        "node /mnt/data/batch18/bin/eoc-script.js benchmark-suite freshness --policy standard --json",
+        "node /mnt/data/batch18/bin/eoc-script.js benchmark-suite trend --group-by skill --json"
+      ],
+      "release_readiness": {
+        "status": "caution",
+        "reasons": [
+          "benchmark history is unavailable",
+          "benchmark sample size is shallow (0/5 runs)",
+          "benchmark confidence is low (0/30)",
+          "benchmark scope coverage is missing for the requested release scope",
+          "benchmark freshness cannot be established"
+        ],
+        "thresholds": {
+          "policy": {
+            "id": "standard",
+            "label": "Standard release candidate"
+          },
+          "minimum_run_count": 5,
+          "minimum_confidence": 30,
+          "minimum_coverage_dimensions": 3,
+          "coverage_requirement": "sufficient",
+          "freshness": {
+            "fresh_days": 14,
+            "aging_days": 21,
+            "stale_days": 35
+          },
+          "observed_run_count": 0,
+          "observed_confidence": 0,
+          "observed_coverage_status": "missing",
+          "observed_matched_dimensions": 0,
+          "observed_trend_direction": "unknown",
+          "observed_freshness_status": "missing",
+          "observed_freshness_age_days": null,
+          "risk_level": "unknown"
+        }
+      }
+    }
+  },
+  "scaffold_policy": {
+    "strategy_bias": "balanced",
+    "bundle_mode": "standard",
+    "integration_mode": "apply"
+  },
+  "safety": {
+    "snapshot_id": null,
+    "snapshot_status": "disabled",
+    "snapshot_reason": null,
+    "recovery_baseline": {
+      "root_dir": "/mnt/data/batch18/fixtures/python-service",
+      "collected_at": "2026-04-16T14:07:40.978Z",
+      "is_git_repo": false,
+      "branch": null,
+      "head": null,
+      "repo_root": null,
+      "dirty": false,
+      "status_entries": [],
+      "status_fingerprint": null,
+      "target_fingerprints": [
+        {
+          "path": ".opencode/task-bundles/invoice-model.integration.md",
+          "sha256": "931b0ecb118601f29eaa78eb0546645011f2cee92af41c84865546069e6a2fa3"
+        },
+        {
+          "path": "app/admin/invoice_admin.py",
+          "sha256": "da39a86884677137a95f5d78106875e281780d4a8aa19c6b67ba38c5068f5f78"
+        },
+        {
+          "path": "app/models/invoice.py",
+          "sha256": "5e53dd33f11cdbd45ac623ce56135844a62f8449ac19029aac633a2b920f3c91"
+        },
+        {
+          "path": "tests/test_invoice_model.py",
+          "sha256": "ab6443e7a1d38af795a96c847e18bd10578c744d0c0d066a58f8303dc941d5d7"
+        }
+      ]
+    }
+  },
+  "coder_loop": {
+    "run_id": "coder-20260416140740-adb39f",
+    "status": "initialized",
+    "failed_count": 0,
+    "round_count": 0,
+    "checks": [],
+    "strategy_action": null,
+    "strategy_confidence": null
+  },
+  "files": {
+    "context": ".opencode/implementation-plans/impl-20260416140740-bf8851/context.json",
+    "next_prompt": ".opencode/implementation-plans/impl-20260416140740-bf8851/next-prompt.md"
+  },
+  "workflow": {
+    "workflow_id": "implement-task",
+    "trace_id": "implement-1776348460205"
+  },
+  "benchmark_feedback": {
+    "assessed_at": "2026-04-16T14:07:40.203Z",
+    "scope": {
+      "objective": "new model",
+      "runtime": "python",
+      "framework": "django",
+      "skill": "add-django-model",
+      "task_family": "model"
+    },
+    "policy": {
+      "id": "standard",
+      "label": "Standard release candidate"
+    },
+    "data_window": {
+      "run_count": 0,
+      "limit": 10
+    },
+    "risk_score": 0,
+    "risk_level": "unknown",
+    "confidence": 0,
+    "strategy_bias": "balanced",
+    "recommended_validation_mode": "standard",
+    "recommended_action": "implementation_first",
+    "review_gate_required": false,
+    "reasons": [
+      "no benchmark history available"
+    ],
+    "coverage": {
+      "status": "missing",
+      "required_dimensions": [
+        "runtime_framework",
+        "task_family",
+        "skill"
+      ],
+      "matched_dimensions": [],
+      "missing_dimensions": [
+        "runtime_framework",
+        "task_family",
+        "skill"
+      ],
+      "required_count": 3,
+      "matched_count": 0,
+      "coverage_score": 0
+    },
+    "freshness": {
+      "status": "missing",
+      "observed_at": null,
+      "age_days": null,
+      "source": "missing",
+      "source_label": null,
+      "bucket_key": null,
+      "run_id": null,
+      "matched_source_count": 0,
+      "thresholds": {
+        "fresh_days": 14,
+        "aging_days": 21,
+        "stale_days": 35
+      },
+      "policy": {
+        "id": "standard",
+        "label": "Standard release candidate"
+      }
+    },
+    "trend_evidence": {
+      "matched_count": 0,
+      "overall_direction": "unknown",
+      "buckets": []
+    },
+    "matched_buckets": {},
+    "commands": [
+      "node /mnt/data/batch18/bin/eoc-script.js benchmark-feedback report --root /mnt/data/batch18/fixtures/python-service --policy standard --json",
+      "node /mnt/data/batch18/bin/eoc-script.js benchmark-suite trend --group-by runtime-framework --json",
+      "node /mnt/data/batch18/bin/eoc-script.js benchmark-suite trend --group-by skill-family --json",
+      "node /mnt/data/batch18/bin/eoc-script.js benchmark-suite freshness --policy standard --json",
+      "node /mnt/data/batch18/bin/eoc-script.js benchmark-suite trend --group-by skill --json"
+    ],
+    "release_readiness": {
+      "status": "caution",
+      "reasons": [
+        "benchmark history is unavailable",
+        "benchmark sample size is shallow (0/5 runs)",
+        "benchmark confidence is low (0/30)",
+        "benchmark scope coverage is missing for the requested release scope",
+        "benchmark freshness cannot be established"
+      ],
+      "thresholds": {
+        "policy": {
+          "id": "standard",
+          "label": "Standard release candidate"
+        },
+        "minimum_run_count": 5,
+        "minimum_confidence": 30,
+        "minimum_coverage_dimensions": 3,
+        "coverage_requirement": "sufficient",
+        "freshness": {
+          "fresh_days": 14,
+          "aging_days": 21,
+          "stale_days": 35
+        },
+        "observed_run_count": 0,
+        "observed_confidence": 0,
+        "observed_coverage_status": "missing",
+        "observed_matched_dimensions": 0,
+        "observed_trend_direction": "unknown",
+        "observed_freshness_status": "missing",
+        "observed_freshness_age_days": null,
+        "risk_level": "unknown"
+      }
+    }
+  },
+  "task_route": {
+    "task_kind": "local_bugfix",
+    "risk_level": "unknown",
+    "route_confidence": "low",
+    "planning_model": "small",
+    "coding_model": "primary",
+    "repair_model": "primary",
+    "context_budget": "narrow",
+    "verify_intensity": "targeted",
+    "edit_mode": "surgical",
+    "strategy_bias": "balanced",
+    "recommended_loop_mode": "implement-first",
+    "reasons": [
+      "task_kind=local_bugfix",
+      "runtime=python",
+      "risk=unknown",
+      "targets=0"
+    ]
+  },
+  "execution_policy": {
+    "strategy_bias": "balanced",
+    "validation_mode": "standard",
+    "review_gate_required": false,
+    "benchmark_risk_level": "unknown",
+    "benchmark_risk_score": 0,
+    "context_scope": "narrow",
+    "ast_edit_mode": "surgical",
+    "scaffold_bundle_mode": "standard",
+    "scaffold_integration_mode": "apply"
+  },
+  "suggested_commands": [
+    "node /mnt/data/batch18/bin/eoc-script.js project-profile --root /mnt/data/batch18/fixtures/python-service --json",
+    "node /mnt/data/batch18/bin/eoc-script.js implement-task status --plan-id impl-20260416140740-bf8851",
+    "node /mnt/data/batch18/bin/eoc-script.js implement-task next-prompt --plan-id impl-20260416140740-bf8851",
+    "node /mnt/data/batch18/bin/eoc-script.js coder-loop run --run-id coder-20260416140740-adb39f --root /mnt/data/batch18/fixtures/python-service --emit-prompt",
+    "node /mnt/data/batch18/bin/eoc-script.js skill-runner show add-django-model --json",
+    "node /mnt/data/batch18/bin/eoc-script.js failure-strategy report --run-id coder-20260416140740-adb39f --json",
+    "node /mnt/data/batch18/bin/eoc-script.js review-gate report --json",
+    "node /mnt/data/batch18/bin/eoc-script.js review-gate report --with-quality-gate --quality-mode full --json",
+    "node /mnt/data/batch18/bin/eoc-script.js delivery-report report --json",
+    "node /mnt/data/batch18/bin/eoc-script.js delivery-report report",
+    "node /mnt/data/batch18/bin/eoc-script.js benchmark-feedback report --root /mnt/data/batch18/fixtures/python-service --json",
+    "node /mnt/data/batch18/bin/eoc-script.js benchmark-suite trend --group-by runtime-framework --json",
+    "node /mnt/data/batch18/bin/eoc-script.js benchmark-suite trend --group-by skill-family --json",
+    "node /mnt/data/batch18/bin/eoc-script.js benchmark-suite trend --group-by skill --json"
+  ]
+}

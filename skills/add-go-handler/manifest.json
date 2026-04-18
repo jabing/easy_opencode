@@ -1,0 +1,108 @@
+{
+  "name": "add-go-handler",
+  "description": "Scaffold a Go HTTP task bundle with handler, route registration, test, and API note.",
+  "origin": "EOC",
+  "level": "L3",
+  "languages": [
+    "go"
+  ],
+  "frameworks": [
+    "gin",
+    "echo",
+    "fiber",
+    "chi"
+  ],
+  "triggers": [
+    "add go handler",
+    "new go endpoint",
+    "add handler"
+  ],
+  "inputs": [
+    {
+      "name": "name",
+      "required": true
+    },
+    {
+      "name": "route_path",
+      "default": "/health"
+    },
+    {
+      "name": "package",
+      "default": "http"
+    }
+  ],
+  "actions": [
+    {
+      "id": "go",
+      "type": "locator_template_bundle",
+      "files": [
+        {
+          "template": "handler.go.tpl",
+          "output": "internal/http/{{snake_name}}.go",
+          "primary": true
+        },
+        {
+          "template": "routes.go.tpl",
+          "output": "internal/http/{{snake_name}}_routes.go"
+        },
+        {
+          "template": "handler_test.go.tpl",
+          "output": "internal/http/{{snake_name}}_test.go"
+        },
+        {
+          "template": "api.md.tpl",
+          "output": "docs/http/{{snake_name}}.md"
+        },
+        {
+          "template": "integration.md.tpl",
+          "output": ".opencode/task-bundles/{{snake_name}}.integration.md"
+        }
+      ],
+      "when": {
+        "runtime": "go"
+      },
+      "updates": [
+        {
+          "type": "ensure_block",
+          "locator": {
+            "strategy": "first_existing",
+            "label": "go http docs index",
+            "candidates": [
+              "docs/http/index.md",
+              "docs/api/index.md"
+            ],
+            "default": "docs/http/index.md",
+            "create_if_missing": true
+          },
+          "content": "- [{{subject}}](./{{snake_name}}.md) \u2014 `{{route_path}}`"
+        },
+        {
+          "type": "register_route",
+          "locator": {
+            "strategy": "first_existing",
+            "label": "go http route bootstrap",
+            "candidates": [
+              "internal/http/routes.go",
+              "internal/http/router.go",
+              "internal/http/register.go"
+            ],
+            "only_if_exists": true
+          },
+          "registration_statement": "Register{{pascal_name}}Routes(mux)",
+          "registration_anchor": {
+            "regex": "func\\s+RegisterRoutes\\([^)]*mux[^)]*\\)\\s*\\{",
+            "flags": "m"
+          },
+          "registration_strategy": "after_anchor",
+          "registration_indent_mode": "anchor_block",
+          "registration_indent_unit": "\t",
+          "on_missing_registration_anchor": "append"
+        }
+      ]
+    }
+  ],
+  "verify": [
+    "go test ./..."
+  ],
+  "task_family": "endpoint"
+}

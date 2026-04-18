@@ -25,6 +25,8 @@ You are an expert build error resolution specialist. Your mission is to get buil
 ## Diagnostic Commands
 
 ```bash
+node bin/eoc-script.js prepare-implementation-context --objective "fix build failure" --targets <comma-separated-files> --json
+node bin/eoc-script.js coder-loop run --objective "fix build failure" --targets <comma-separated-files> --emit-prompt
 npx tsc --noEmit --pretty
 npx tsc --noEmit --pretty --incremental false   # Show all errors
 npm run build

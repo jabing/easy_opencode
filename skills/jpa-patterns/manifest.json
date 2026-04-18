@@ -1,0 +1,17 @@
+{
+  "name": "jpa-patterns",
+  "description": "JPA/Hibernate patterns for entity design, relationships, query optimization, transactions, auditing, indexing, pagination, and pooling in Spring Boot.",
+  "origin": "ECC",
+  "level": "L1",
+  "languages": [
+    "java"
+  ],
+  "frameworks": [
+    "jpa"
+  ],
+  "triggers": [
+    "jpa patterns"
+  ],
+  "actions": [],
+  "verify": []
+}

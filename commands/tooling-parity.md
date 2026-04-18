@@ -1,6 +1,6 @@
 ﻿---
 description: Audit public feature parity against OpenSpec, Superpowers-style workflows, and official Claude-style tooling docs
-agent: planner
+agent: eoc_planner
 subtask: true
 ---
 

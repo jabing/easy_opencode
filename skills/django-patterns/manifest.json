@@ -1,0 +1,21 @@
+{
+  "name": "django-patterns",
+  "description": "Django architecture patterns, REST API design with DRF, ORM best practices, caching, signals, middleware, and production-grade Django apps.",
+  "origin": "ECC",
+  "level": "L1",
+  "languages": [
+    "go",
+    "java",
+    "javascript",
+    "python",
+    "typescript"
+  ],
+  "frameworks": [
+    "django"
+  ],
+  "triggers": [
+    "django patterns"
+  ],
+  "actions": [],
+  "verify": []
+}

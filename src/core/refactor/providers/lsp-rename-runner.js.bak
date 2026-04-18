@@ -1,0 +1,705 @@
+#!/usr/bin/env node
+// @ts-nocheck
+// @ts-nocheck
+const fs = require('fs');
+const path = require('path');
+const { spawn } = require('child_process');
+const { pathToFileURL, fileURLToPath } = require('url');
+
+function readStdin() {
+  return new Promise((resolve, reject) => {
+    const chunks = [];
+    process.stdin.on('data', (chunk) => chunks.push(chunk));
+    process.stdin.on('end', () => resolve(Buffer.concat(chunks).toString('utf8')));
+    process.stdin.on('error', reject);
+  });
+}
+
+function fileUri(filePath) { return pathToFileURL(path.resolve(filePath)).href; }
+function uriToPath(uri) { return fileURLToPath(uri); }
+
+function detectLanguageId(language, filePath) {
+  if (language) return language;
+  const ext = path.extname(String(filePath || '')).toLowerCase();
+  if (ext === '.go') return 'go';
+  if (ext === '.java') return 'java';
+  return 'plaintext';
+}
+
+function offsetFromLineCol(text, line, col) {
+  const lines = String(text || '').split('\n');
+  const targetLine = Math.max(1, Number(line || 1));
+  const targetCol = Math.max(1, Number(col || 1));
+  let offset = 0;
+  for (let index = 1; index < targetLine; index += 1) {
+    if (index > lines.length) return String(text || '').length;
+    offset += lines[index - 1].length + 1;
+  }
+  const current = lines[Math.min(targetLine - 1, lines.length - 1)] || '';
+  return offset + Math.min(targetCol - 1, current.length);
+}
+
+function positionFromLineCol(text, line, col) {
+  const offset = offsetFromLineCol(text, line, col);
+  const prefix = String(text || '').slice(0, offset);
+  const lineIndex = prefix.split('\n').length - 1;
+  const character = prefix.length - (prefix.lastIndexOf('\n') + 1);
+  return { line: lineIndex, character };
+}
+
+function positionToOffset(text, position) {
+  const safeText = String(text || '');
+  const targetLine = Math.max(0, Number(position && position.line || 0));
+  const targetCharacter = Math.max(0, Number(position && position.character || 0));
+  let line = 0;
+  let offset = 0;
+  while (line < targetLine && offset < safeText.length) {
+    const next = safeText.indexOf('\n', offset);
+    if (next < 0) return safeText.length;
+    offset = next + 1;
+    line += 1;
+  }
+  const lineEnd = safeText.indexOf('\n', offset);
+  const maxCharacter = (lineEnd < 0 ? safeText.length : lineEnd) - offset;
+  return offset + Math.min(targetCharacter, Math.max(0, maxCharacter));
+}
+
+function applyTextEdits(text, edits) {
+  const normalized = Array.isArray(edits) ? edits.slice() : [];
+  const enriched = normalized.map((edit, index) => {
+    const start = positionToOffset(text, edit.range.start);
+    const end = positionToOffset(text, edit.range.end);
+    return { ...edit, startOffset: start, endOffset: end, index };
+  }).sort((left, right) => {
+    if (left.startOffset !== right.startOffset) return right.startOffset - left.startOffset;
+    if (left.endOffset !== right.endOffset) return right.endOffset - left.endOffset;
+    return right.index - left.index;
+  });
+  let next = text;
+  for (const edit of enriched) next = `${next.slice(0, edit.startOffset)}${edit.newText || ''}${next.slice(edit.endOffset)}`;
+  return { text: next, replacements: enriched.length };
+}
+
+class JsonRpcClient {
+  constructor(proc, handlers = {}) {
+    this.proc = proc;
+    this.handlers = handlers;
+    this.nextId = 1;
+    this.pending = new Map();
+    this.buffer = Buffer.alloc(0);
+    this.proc.stdout.on('data', (chunk) => this.onData(chunk));
+    this.proc.stderr.on('data', () => {});
+    this.proc.on('exit', (code) => {
+      const message = `language server exited with code ${code}`;
+      for (const pending of this.pending.values()) pending.reject(new Error(message));
+      this.pending.clear();
+    });
+  }
+
+  onData(chunk) {
+    this.buffer = Buffer.concat([this.buffer, Buffer.from(chunk)]);
+    while (true) {
+      const marker = this.buffer.indexOf('\r\n\r\n');
+      if (marker < 0) return;
+      const header = this.buffer.slice(0, marker).toString('utf8');
+      const match = header.match(/Content-Length:\s*(\d+)/i);
+      if (!match) throw new Error('LSP response missing Content-Length');
+      const length = Number(match[1]);
+      const start = marker + 4;
+      if (this.buffer.length < start + length) return;
+      const body = this.buffer.slice(start, start + length).toString('utf8');
+      this.buffer = this.buffer.slice(start + length);
+      const message = JSON.parse(body);
+      if (typeof message.id !== 'undefined' && this.pending.has(message.id)) {
+        const pending = this.pending.get(message.id);
+        this.pending.delete(message.id);
+        if (message.error) pending.reject(new Error(message.error.message || 'LSP request failed'));
+        else pending.resolve(message.result);
+        continue;
+      }
+      if (typeof message.method === 'string' && typeof message.id !== 'undefined') {
+        this.handleServerRequest(message).catch((error) => {
+          this.write({ jsonrpc: '2.0', id: message.id, error: { code: -32603, message: String(error && error.message || error) } });
+        });
+        continue;
+      }
+      if (typeof message.method === 'string' && typeof this.handlers.onNotification === 'function') {
+        this.handlers.onNotification(message.method, message.params || {});
+      }
+    }
+  }
+
+  async handleServerRequest(message) {
+    if (typeof this.handlers.onRequest !== 'function') {
+      this.write({ jsonrpc: '2.0', id: message.id, result: null });
+      return;
+    }
+    const result = await this.handlers.onRequest(message.method, message.params || {});
+    this.write({ jsonrpc: '2.0', id: message.id, result: typeof result === 'undefined' ? null : result });
+  }
+
+  write(message) {
+    const body = Buffer.from(JSON.stringify(message), 'utf8');
+    const header = Buffer.from(`Content-Length: ${body.length}\r\n\r\n`, 'utf8');
+    this.proc.stdin.write(Buffer.concat([header, body]));
+  }
+
+  notify(method, params) {
+    this.write({ jsonrpc: '2.0', method, params });
+  }
+
+  request(method, params, timeoutMs) {
+    const id = this.nextId += 1;
+    return new Promise((resolve, reject) => {
+      const timer = setTimeout(() => {
+        this.pending.delete(id);
+        reject(new Error(`LSP request timed out: ${method}`));
+      }, timeoutMs);
+      this.pending.set(id, {
+        resolve: (value) => { clearTimeout(timer); resolve(value); },
+        reject: (error) => { clearTimeout(timer); reject(error); },
+      });
+      this.write({ jsonrpc: '2.0', id, method, params });
+    });
+  }
+}
+
+function emptyFileState(filePath, uri) {
+  return { uri, filePath, text: '', existed: false, touched: false, deleted: false };
+}
+
+function loadFileState(states, uri) {
+  if (states.has(uri)) return states.get(uri);
+  const filePath = uriToPath(uri);
+  const exists = fs.existsSync(filePath);
+  const state = { uri, filePath, text: exists ? fs.readFileSync(filePath, 'utf8').replace(/\r\n/g, '\n') : '', existed: exists, touched: false, deleted: false };
+  states.set(uri, state);
+  return state;
+}
+
+function ensureDir(filePath) { fs.mkdirSync(path.dirname(filePath), { recursive: true }); }
+
+function normalizeServerCapabilities(capabilities) {
+  const normalized = capabilities && typeof capabilities === 'object' ? capabilities : {};
+  const renameProvider = normalized.renameProvider;
+  const renameEnabled = Boolean(renameProvider);
+  const prepareRename = renameProvider && typeof renameProvider === 'object'
+    ? Boolean(renameProvider.prepareProvider)
+    : Boolean(normalized.prepareProvider);
+  const workspaceEdit = normalized.workspace && normalized.workspace.workspaceEdit && typeof normalized.workspace.workspaceEdit === 'object'
+    ? normalized.workspace.workspaceEdit
+    : {};
+  const resourceOperations = Array.isArray(workspaceEdit.resourceOperations)
+    ? workspaceEdit.resourceOperations.map((item) => String(item))
+    : [];
+  return {
+    renameEnabled,
+    prepareRename,
+    workspaceDocumentChanges: workspaceEdit.documentChanges === true,
+    workspaceResourceOperations: resourceOperations,
+    raw: normalized,
+  };
+}
+
+function terminateServer(server) {
+  try { server.stdin.end(); } catch {}
+  try { server.kill('SIGTERM'); } catch {}
+  setTimeout(() => {
+    try { if (!server.killed) server.kill('SIGKILL'); } catch {}
+  }, 200).unref();
+}
+
+
+function previewTextDocumentEdit(item) {
+  const uri = item && item.textDocument && item.textDocument.uri;
+  return {
+    kind: 'textDocumentEdit',
+    uri: uri || '',
+    filePath: uri ? uriToPath(uri) : '',
+    editCount: Array.isArray(item && item.edits) ? item.edits.length : 0,
+  };
+}
+
+function summarizeWorkspaceEdit(edit) {
+  const summary = {
+    textDocumentEdits: 0,
+    textEditCount: 0,
+    createCount: 0,
+    renameCount: 0,
+    deleteCount: 0,
+    resourceOpCount: 0,
+    touchedFiles: 0,
+    files: [],
+  };
+  const seenEntries = new Set();
+  const pushFile = (entry) => {
+    if (!entry || !entry.filePath) return;
+    const key = `${entry.kind}:${entry.filePath}:${entry.targetPath || ''}`;
+    if (seenEntries.has(key)) return;
+    seenEntries.add(key);
+    summary.files.push(entry);
+  };
+  const sequence = [];
+  if (edit && edit.changes) {
+    for (const [uri, edits] of Object.entries(edit.changes)) sequence.push({ kind: 'textDocumentEdit', textDocument: { uri }, edits });
+  }
+  if (edit && Array.isArray(edit.documentChanges)) sequence.push(...edit.documentChanges);
+  for (const item of sequence) {
+    if (!item) continue;
+    if (item.kind === 'create') {
+      summary.createCount += 1;
+      summary.resourceOpCount += 1;
+      pushFile({ kind: 'create', uri: item.uri, filePath: uriToPath(item.uri) });
+      continue;
+    }
+    if (item.kind === 'rename') {
+      summary.renameCount += 1;
+      summary.resourceOpCount += 1;
+      pushFile({ kind: 'rename', uri: item.oldUri, filePath: uriToPath(item.oldUri), targetPath: uriToPath(item.newUri) });
+      continue;
+    }
+    if (item.kind === 'delete') {
+      summary.deleteCount += 1;
+      summary.resourceOpCount += 1;
+      pushFile({ kind: 'delete', uri: item.uri, filePath: uriToPath(item.uri) });
+      continue;
+    }
+    const preview = previewTextDocumentEdit(item);
+    summary.textDocumentEdits += 1;
+    summary.textEditCount += Number(preview.editCount || 0);
+    pushFile(preview);
+  }
+  const touched = new Set();
+  for (const entry of summary.files) {
+    if (entry.filePath) touched.add(entry.filePath);
+    if (entry.targetPath) touched.add(entry.targetPath);
+  }
+  summary.touchedFiles = touched.size;
+  return summary;
+}
+
+function normalizeWorkspaceRoots(workspaceRoots) {
+  const values = Array.isArray(workspaceRoots) ? workspaceRoots : [workspaceRoots];
+  return Array.from(new Set(values.map((item) => path.resolve(String(item || '')).replace(/[\/]+$/, '')).filter(Boolean)));
+}
+
+function isWithinWorkspaceRoots(filePath, workspaceRoots) {
+  const resolvedPath = path.resolve(String(filePath || ''));
+  const roots = normalizeWorkspaceRoots(workspaceRoots);
+  if (roots.length === 0) return true;
+  return roots.some((root) => {
+    if (resolvedPath === root) return true;
+    const relative = path.relative(root, resolvedPath);
+    return relative && !relative.startsWith('..') && !path.isAbsolute(relative);
+  });
+}
+
+function collectWorkspaceEditPaths(edit) {
+  const items = [];
+  const sequence = [];
+  if (edit && edit.changes) {
+    for (const [uri, edits] of Object.entries(edit.changes)) sequence.push({ kind: 'textDocumentEdit', textDocument: { uri }, edits });
+  }
+  if (edit && Array.isArray(edit.documentChanges)) sequence.push(...edit.documentChanges);
+  for (const item of sequence) {
+    if (!item) continue;
+    if (item.kind === 'create' || item.kind === 'delete') {
+      if (item.uri) items.push({ kind: item.kind, filePath: uriToPath(item.uri) });
+      continue;
+    }
+    if (item.kind === 'rename') {
+      if (item.oldUri) items.push({ kind: 'rename-source', filePath: uriToPath(item.oldUri) });
+      if (item.newUri) items.push({ kind: 'rename-target', filePath: uriToPath(item.newUri) });
+      continue;
+    }
+    const uri = item.textDocument && item.textDocument.uri;
+    if (uri) items.push({ kind: 'text', filePath: uriToPath(uri) });
+  }
+  return items;
+}
+
+function validateWorkspaceEdit(edit, limits = {}, workspaceRoots = []) {
+  const summary = summarizeWorkspaceEdit(edit);
+  const normalizedWorkspaceRoots = normalizeWorkspaceRoots(workspaceRoots);
+  const outOfWorkspace = collectWorkspaceEditPaths(edit).filter((entry) => !isWithinWorkspaceRoots(entry.filePath, normalizedWorkspaceRoots));
+  const editsByUri = new Map();
+  const sequence = [];
+  if (edit && edit.changes) {
+    for (const [uri, edits] of Object.entries(edit.changes)) sequence.push({ kind: 'textDocumentEdit', textDocument: { uri }, edits });
+  }
+  if (edit && Array.isArray(edit.documentChanges)) sequence.push(...edit.documentChanges);
+  for (const item of sequence) {
+    if (!item || item.kind === 'create' || item.kind === 'rename' || item.kind === 'delete') continue;
+    const uri = item.textDocument && item.textDocument.uri;
+    if (!uri) continue;
+    const current = editsByUri.get(uri) || [];
+    current.push(...(Array.isArray(item.edits) ? item.edits : []));
+    editsByUri.set(uri, current);
+  }
+  const overlapping = [];
+  for (const [uri, edits] of editsByUri.entries()) {
+    const sorted = edits.map((entry, index) => ({
+      index,
+      startLine: Number(entry && entry.range && entry.range.start && entry.range.start.line || 0),
+      startChar: Number(entry && entry.range && entry.range.start && entry.range.start.character || 0),
+      endLine: Number(entry && entry.range && entry.range.end && entry.range.end.line || 0),
+      endChar: Number(entry && entry.range && entry.range.end && entry.range.end.character || 0),
+    })).sort((left, right) => {
+      if (left.startLine !== right.startLine) return left.startLine - right.startLine;
+      if (left.startChar !== right.startChar) return left.startChar - right.startChar;
+      if (left.endLine !== right.endLine) return left.endLine - right.endLine;
+      return left.endChar - right.endChar;
+    });
+    for (let index = 1; index < sorted.length; index += 1) {
+      const previous = sorted[index - 1];
+      const current = sorted[index];
+      const overlaps = current.startLine < previous.endLine || (current.startLine === previous.endLine && current.startChar < previous.endChar);
+      if (overlaps) {
+        overlapping.push({ uri, first: previous.index, second: current.index });
+        break;
+      }
+    }
+  }
+  const maxChangedFiles = Number(limits.maxChangedFiles || 0);
+  const maxChangedNodes = Number(limits.maxChangedNodes || 0);
+  if (outOfWorkspace.length > 0) {
+    const error = new Error(`workspace edit escapes workspace roots via ${outOfWorkspace[0].kind}: ${outOfWorkspace[0].filePath}`);
+    error.error_kind = 'workspace_scope_violation';
+    error.preview = summary;
+    error.workspace_roots = normalizedWorkspaceRoots;
+    error.out_of_workspace = outOfWorkspace;
+    throw error;
+  }
+  if (overlapping.length > 0) {
+    const error = new Error(`workspace edit contains overlapping text edits for ${overlapping[0].uri}`);
+    error.error_kind = 'edit_conflict';
+    error.preview = summary;
+    error.overlaps = overlapping;
+    throw error;
+  }
+  if (maxChangedFiles > 0 && summary.touchedFiles > maxChangedFiles) {
+    const error = new Error(`workspace edit exceeds changed file budget (${summary.touchedFiles} > ${maxChangedFiles})`);
+    error.error_kind = 'edit_budget_exceeded';
+    error.preview = summary;
+    throw error;
+  }
+  if (maxChangedNodes > 0 && (summary.textEditCount + summary.resourceOpCount) > maxChangedNodes) {
+    const error = new Error(`workspace edit exceeds changed node budget (${summary.textEditCount + summary.resourceOpCount} > ${maxChangedNodes})`);
+    error.error_kind = 'edit_budget_exceeded';
+    error.preview = summary;
+    throw error;
+  }
+  return summary;
+}
+
+function applyWorkspaceEdit(baseDir, edit, dryRun, primaryUri, limits = {}, workspaceRoots = []) {
+  const preview = validateWorkspaceEdit(edit, limits, workspaceRoots);
+  const states = new Map();
+  const changedPaths = new Set();
+  let changedNodes = 0;
+  if (primaryUri) loadFileState(states, primaryUri);
+
+  const sequence = [];
+  if (edit && edit.changes) {
+    for (const [uri, edits] of Object.entries(edit.changes)) sequence.push({ kind: 'textDocumentEdit', textDocument: { uri }, edits });
+  }
+  if (edit && Array.isArray(edit.documentChanges)) sequence.push(...edit.documentChanges);
+
+  for (const item of sequence) {
+    if (!item) continue;
+    if (item.kind === 'create') {
+      const uri = item.uri;
+      const filePath = uriToPath(uri);
+      const overwrite = Boolean(item.options && item.options.overwrite);
+      const ignoreIfExists = Boolean(item.options && item.options.ignoreIfExists);
+      const exists = fs.existsSync(filePath);
+      if (exists && ignoreIfExists && !overwrite) continue;
+      if (exists && !overwrite) {
+        const error = new Error(`workspace edit create target already exists: ${filePath}`);
+        error.error_kind = 'edit_conflict';
+        error.preview = preview;
+        throw error;
+      }
+      const state = emptyFileState(filePath, uri);
+      state.touched = !exists || overwrite;
+      state.existed = exists;
+      states.set(uri, state);
+      if (state.touched) {
+        changedPaths.add(filePath);
+        changedNodes += 1;
+      }
+      continue;
+    }
+    if (item.kind === 'rename') {
+      const oldUri = item.oldUri;
+      const newUri = item.newUri;
+      const current = loadFileState(states, oldUri);
+      const nextPath = uriToPath(newUri);
+      const overwrite = Boolean(item.options && item.options.overwrite);
+      const ignoreIfExists = Boolean(item.options && item.options.ignoreIfExists);
+      const targetExists = fs.existsSync(nextPath);
+      if (targetExists && ignoreIfExists && !overwrite) continue;
+      if (targetExists && !overwrite) {
+        const error = new Error(`workspace edit rename target already exists: ${nextPath}`);
+        error.error_kind = 'edit_conflict';
+        error.preview = preview;
+        throw error;
+      }
+      const nextState = { uri: newUri, filePath: nextPath, text: current.text, existed: targetExists, touched: true, deleted: false };
+      current.deleted = true;
+      current.touched = true;
+      states.set(newUri, nextState);
+      changedPaths.add(current.filePath);
+      changedPaths.add(nextPath);
+      changedNodes += 1;
+      continue;
+    }
+    if (item.kind === 'delete') {
+      const current = loadFileState(states, item.uri);
+      const ignoreIfNotExists = Boolean(item.options && item.options.ignoreIfNotExists);
+      if (!current.existed && ignoreIfNotExists) continue;
+      current.deleted = true;
+      current.touched = true;
+      changedPaths.add(current.filePath);
+      changedNodes += 1;
+      continue;
+    }
+    const uri = item.textDocument && item.textDocument.uri;
+    if (!uri) continue;
+    const current = loadFileState(states, uri);
+    const result = applyTextEdits(current.text, item.edits || []);
+    current.text = result.text;
+    current.touched = current.touched || result.replacements > 0;
+    if (result.replacements > 0) changedPaths.add(current.filePath);
+    changedNodes += result.replacements;
+  }
+
+  if (!dryRun) {
+    for (const state of states.values()) {
+      if (!state.touched) continue;
+      if (state.deleted) {
+        fs.rmSync(state.filePath, { force: true });
+        continue;
+      }
+      ensureDir(state.filePath);
+      fs.writeFileSync(state.filePath, state.text, 'utf8');
+    }
+  }
+
+  return { changedFiles: changedPaths.size, changedNodes, preview };
+}
+
+function summarizeDiagnostics(diagnostics) {
+  const summary = { error: 0, warning: 0, information: 0, hint: 0 };
+  for (const diagnostic of Array.isArray(diagnostics) ? diagnostics : []) {
+    const severity = Number(diagnostic && diagnostic.severity || 0);
+    if (severity === 1) summary.error += 1;
+    else if (severity === 2) summary.warning += 1;
+    else if (severity === 3) summary.information += 1;
+    else if (severity === 4) summary.hint += 1;
+  }
+  return summary;
+}
+
+function classifyRunnerError(error) {
+  if (error && error.error_kind) return error.error_kind;
+  const normalized = String(error && error.message || error || '').toLowerCase();
+  if (normalized.includes('preparerename')) return 'prepare_rename_rejected';
+  if (normalized.includes('renameprovider')) return 'capability_missing';
+  if (normalized.includes('workspace/applyedit')) return 'apply_edit_rejected';
+  if (normalized.includes('escapes workspace roots')) return 'workspace_scope_violation';
+  if (normalized.includes('exceeds changed file budget') || normalized.includes('exceeds changed node budget')) return 'edit_budget_exceeded';
+  if (normalized.includes('overlapping text edits') || normalized.includes('target already exists')) return 'edit_conflict';
+  if (normalized.includes('timed out')) return 'timeout';
+  if (normalized.includes('parse')) return 'protocol_parse_error';
+  return 'request_failed';
+}
+
+function getSettingsSection(settings, section) {
+  const normalized = String(section || '').trim();
+  if (!normalized) return settings;
+  const segments = normalized.split('.').filter(Boolean);
+  let current = settings;
+  for (const segment of segments) {
+    if (!current || typeof current !== 'object' || Array.isArray(current) || !Object.prototype.hasOwnProperty.call(current, segment)) return null;
+    current = current[segment];
+  }
+  return current;
+}
+
+async function main() {
+  const raw = await readStdin();
+  const payload = JSON.parse(raw || '{}');
+  const filePath = path.resolve(String(payload.file || ''));
+  const baseDir = path.resolve(String(payload.baseDir || path.dirname(filePath)));
+  const workspaceRoot = path.resolve(String(payload.workspace && payload.workspace.rootDir || baseDir));
+  const workspaceFolders = Array.isArray(payload.workspace && payload.workspace.workspaceFolders)
+    ? payload.workspace.workspaceFolders.map((item) => path.resolve(String(item)))
+    : [workspaceRoot];
+  const settings = payload.settings && typeof payload.settings === 'object' && !Array.isArray(payload.settings)
+    ? payload.settings
+    : {};
+  const limits = payload.limits && typeof payload.limits === 'object' && !Array.isArray(payload.limits)
+    ? payload.limits
+    : {};
+  const original = fs.readFileSync(filePath, 'utf8').replace(/\r\n/g, '\n');
+  const rootUri = fileUri(workspaceRoot);
+  const targetUri = fileUri(filePath);
+  const languageId = detectLanguageId(payload.language, filePath);
+  const position = positionFromLineCol(original, payload.line, payload.col);
+  const serverRequestState = {
+    handled: 0,
+    applyEditRequests: 0,
+    workspaceConfigurationRequested: false,
+    applied: { changedFiles: 0, changedNodes: 0 },
+    diagnostics: [],
+    serverMessages: [],
+  };
+  const server = spawn(payload.server.command, payload.server.args || [], {
+    cwd: payload.server.cwd || workspaceRoot,
+    env: { ...process.env, ...(payload.server.env || {}) },
+    stdio: ['pipe', 'pipe', 'pipe'],
+  });
+  const client = new JsonRpcClient(server, {
+    onRequest: async (method, params) => {
+      serverRequestState.handled += 1;
+      if (method === 'workspace/configuration') {
+        serverRequestState.workspaceConfigurationRequested = true;
+        const items = Array.isArray(params && params.items) ? params.items : [];
+        return items.map((item) => getSettingsSection(settings, item && item.section));
+      }
+      if (method === 'workspace/workspaceFolders') {
+        return workspaceFolders.map((folderPath) => ({ uri: fileUri(folderPath), name: path.basename(folderPath) || 'workspace' }));
+      }
+      if (method === 'window/workDoneProgress/create') return null;
+      if (method === 'client/registerCapability') return null;
+      if (method === 'client/unregisterCapability') return null;
+      if (method === 'window/showMessageRequest') return null;
+      if (method === 'workspace/applyEdit') {
+        serverRequestState.applyEditRequests += 1;
+        try {
+          const applied = applyWorkspaceEdit(baseDir, params && params.edit ? params.edit : {}, payload.dryRun === true, targetUri, limits, workspaceFolders);
+          serverRequestState.applied.changedFiles += applied.changedFiles;
+          serverRequestState.applied.changedNodes += applied.changedNodes;
+          serverRequestState.lastPreview = applied.preview || null;
+          return { applied: true };
+        } catch (error) {
+          return { applied: false, failureReason: String(error && error.message || error) };
+        }
+      }
+      return null;
+    },
+    onNotification: (method, params) => {
+      if (method === 'textDocument/publishDiagnostics') {
+        const diagnostics = Array.isArray(params && params.diagnostics) ? params.diagnostics : [];
+        serverRequestState.diagnostics.push(...diagnostics);
+        return;
+      }
+      if (method === 'window/logMessage' || method === 'window/showMessage') {
+        serverRequestState.serverMessages.push({ method, type: Number(params && params.type || 0), message: String(params && params.message || '') });
+      }
+    },
+  });
+  try {
+    const initializeResult = await client.request('initialize', {
+      processId: process.pid,
+      clientInfo: { name: 'easy-opencode', version: 'lsp-round3' },
+      rootUri,
+      rootPath: workspaceRoot,
+      workspaceFolders: workspaceFolders.map((folderPath) => ({ uri: fileUri(folderPath), name: path.basename(folderPath) || 'workspace' })),
+      capabilities: {
+        workspace: {
+          applyEdit: true,
+          workspaceFolders: true,
+          configuration: true,
+          didChangeConfiguration: { dynamicRegistration: false },
+          workspaceEdit: { documentChanges: true, resourceOperations: ['create', 'rename', 'delete'] },
+        },
+        window: { workDoneProgress: true },
+        textDocument: { rename: { prepareSupport: true } },
+      },
+      initializationOptions: payload.initializationOptions || {},
+    }, payload.timeoutMs);
+    const negotiated = normalizeServerCapabilities(initializeResult && initializeResult.capabilities);
+    if (!negotiated.renameEnabled) throw new Error('language server does not advertise renameProvider');
+    client.notify('initialized', {});
+    client.notify('workspace/didChangeConfiguration', { settings });
+    client.notify('textDocument/didOpen', {
+      textDocument: {
+        uri: targetUri,
+        languageId,
+        version: 1,
+        text: original,
+      },
+    });
+    if (negotiated.prepareRename) {
+      const prepared = await client.request('textDocument/prepareRename', {
+        textDocument: { uri: targetUri },
+        position,
+      }, payload.timeoutMs);
+      if (!prepared) throw new Error('language server rejected prepareRename for target symbol');
+    }
+    const edit = await client.request('textDocument/rename', {
+      textDocument: { uri: targetUri },
+      position,
+      newName: payload.toName,
+    }, payload.timeoutMs);
+    const applied = edit ? applyWorkspaceEdit(baseDir, edit || {}, payload.dryRun === true, targetUri, limits, workspaceFolders) : { changedFiles: 0, changedNodes: 0, preview: summarizeWorkspaceEdit(edit || {}) };
+    try { client.notify('textDocument/didClose', { textDocument: { uri: targetUri } }); } catch {}
+    try { await client.request('shutdown', null, payload.timeoutMs); } catch {}
+    try { client.notify('exit', {}); } catch {}
+    terminateServer(server);
+    process.stdout.write(JSON.stringify({
+      ok: true,
+      serverLabel: path.basename(payload.server.command || ''),
+      prepareRenameApplied: negotiated.prepareRename,
+      workspaceDocumentChanges: negotiated.workspaceDocumentChanges,
+      workspaceResourceOperations: negotiated.workspaceResourceOperations,
+      serverCapabilities: negotiated.raw,
+      workspaceRoot,
+      workspaceFolders,
+      workspaceScopeRoots: normalizeWorkspaceRoots(workspaceFolders),
+      serverRequestsHandled: serverRequestState.handled,
+      workspaceConfigurationRequested: serverRequestState.workspaceConfigurationRequested,
+      applyEditRequests: serverRequestState.applyEditRequests,
+      diagnosticCount: serverRequestState.diagnostics.length,
+      diagnosticSummary: summarizeDiagnostics(serverRequestState.diagnostics),
+      serverMessages: serverRequestState.serverMessages,
+      changedFiles: applied.changedFiles + serverRequestState.applied.changedFiles,
+      changedNodes: applied.changedNodes + serverRequestState.applied.changedNodes,
+      editPreview: applied.preview || serverRequestState.lastPreview || summarizeWorkspaceEdit(edit || {}),
+      editBudget: {
+        maxChangedFiles: Number(limits.maxChangedFiles || 0),
+        maxChangedNodes: Number(limits.maxChangedNodes || 0),
+      },
+    }));
+  } catch (error) {
+    try { client.notify('exit', {}); } catch {}
+    terminateServer(server);
+    process.stderr.write(JSON.stringify({
+      ok: false,
+      error: String(error && error.message || error),
+      error_kind: classifyRunnerError(error),
+      diagnosticCount: serverRequestState.diagnostics.length,
+      diagnosticSummary: summarizeDiagnostics(serverRequestState.diagnostics),
+      serverMessages: serverRequestState.serverMessages,
+      workspaceRoot,
+      workspaceFolders,
+      workspaceScopeRoots: normalizeWorkspaceRoots(workspaceFolders),
+      serverRequestsHandled: serverRequestState.handled,
+      workspaceConfigurationRequested: serverRequestState.workspaceConfigurationRequested,
+      applyEditRequests: serverRequestState.applyEditRequests,
+      editPreview: error && error.preview ? error.preview : (serverRequestState.lastPreview || null),
+      editBudget: {
+        maxChangedFiles: Number(limits.maxChangedFiles || 0),
+        maxChangedNodes: Number(limits.maxChangedNodes || 0),
+      },
+    }));
+    process.exit(1);
+  }
+}
+
+main().catch((error) => {
+  process.stderr.write(String(error && error.message || error));
+  process.exit(1);
+});

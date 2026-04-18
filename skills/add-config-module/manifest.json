@@ -1,0 +1,140 @@
+{
+  "name": "add-config-module",
+  "description": "Scaffold a config task bundle with config module, starter test, env example support, docs, and integration guide.",
+  "origin": "EOC",
+  "level": "L3",
+  "languages": [
+    "javascript",
+    "typescript",
+    "python"
+  ],
+  "frameworks": [
+    "node",
+    "python"
+  ],
+  "triggers": [
+    "add config module",
+    "new config wrapper"
+  ],
+  "inputs": [
+    {
+      "name": "name",
+      "required": true
+    },
+    {
+      "name": "env_key",
+      "default": "APP_VALUE"
+    },
+    {
+      "name": "subject",
+      "default": "App"
+    }
+  ],
+  "actions": [
+    {
+      "id": "node",
+      "type": "template_bundle",
+      "when": {
+        "runtime": "node"
+      },
+      "files": [
+        {
+          "template": "node.config.tpl",
+          "output": "src/config/{{kebab_name}}.ts",
+          "primary": true
+        },
+        {
+          "template": "node.config.test.tpl",
+          "output": "tests/config/{{kebab_name}}.test.ts"
+        },
+        {
+          "template": "env.example.tpl",
+          "output": ".opencode/task-bundles/{{kebab_name}}.env.example"
+        },
+        {
+          "template": "config.md.tpl",
+          "output": "docs/config/{{kebab_name}}.md"
+        },
+        {
+          "template": "integration.md.tpl",
+          "output": ".opencode/task-bundles/{{kebab_name}}-config.integration.md"
+        }
+      ],
+      "updates": [
+        {
+          "type": "ensure_block",
+          "file": "docs/config/index.md",
+          "content": "- [{{subject}} config](./{{kebab_name}}.md) \u2014 `{{env_key}}`",
+          "create_if_missing": true
+        },
+        {
+          "type": "ensure_line",
+          "file": ".env.example",
+          "content": "{{env_key}}=change-me",
+          "create_if_missing": true
+        },
+        {
+          "type": "ensure_line",
+          "file": "src/config/index.ts",
+          "content": "export * from './{{kebab_name}}';",
+          "only_if_exists": true
+        }
+      ]
+    },
+    {
+      "id": "python",
+      "type": "template_bundle",
+      "when": {
+        "runtime": "python"
+      },
+      "files": [
+        {
+          "template": "python.config.tpl",
+          "output": "app/config/{{snake_name}}.py",
+          "primary": true
+        },
+        {
+          "template": "python.config.test.tpl",
+          "output": "tests/config/test_{{snake_name}}.py"
+        },
+        {
+          "template": "env.example.tpl",
+          "output": ".opencode/task-bundles/{{snake_name}}.env.example"
+        },
+        {
+          "template": "config.md.tpl",
+          "output": "docs/config/{{snake_name}}.md"
+        },
+        {
+          "template": "integration.md.tpl",
+          "output": ".opencode/task-bundles/{{snake_name}}-config.integration.md"
+        }
+      ],
+      "updates": [
+        {
+          "type": "ensure_block",
+          "file": "docs/config/index.md",
+          "content": "- [{{subject}} config](./{{snake_name}}.md) \u2014 `{{env_key}}`",
+          "create_if_missing": true
+        },
+        {
+          "type": "ensure_line",
+          "file": ".env.example",
+          "content": "{{env_key}}=change-me",
+          "create_if_missing": true
+        },
+        {
+          "type": "ensure_line",
+          "file": "app/config/__init__.py",
+          "content": "from .{{snake_name}} import read_{{snake_name}}_config",
+          "only_if_exists": true
+        }
+      ]
+    }
+  ],
+  "verify": [
+    "npm run build",
+    "pytest -q"
+  ],
+  "task_family": "config"
+}

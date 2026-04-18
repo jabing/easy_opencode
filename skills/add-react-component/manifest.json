@@ -1,0 +1,39 @@
+{
+  "name": "add-react-component",
+  "description": "Scaffold a React component starter.",
+  "origin": "EOC",
+  "level": "L3",
+  "languages": [
+    "javascript",
+    "typescript"
+  ],
+  "frameworks": [
+    "react"
+  ],
+  "triggers": [
+    "add react component",
+    "new ui component"
+  ],
+  "inputs": [
+    {
+      "name": "subject",
+      "required": true
+    }
+  ],
+  "actions": [
+    {
+      "id": "node",
+      "type": "template_scaffold",
+      "template": "component.tsx.tpl",
+      "default_output": "src/components/{{subject}}.tsx",
+      "when": {
+        "runtime": "node"
+      }
+    }
+  ],
+  "verify": [
+    "npm run build",
+    "npm test"
+  ],
+  "task_family": "component"
+}

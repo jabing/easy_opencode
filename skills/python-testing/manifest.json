@@ -1,0 +1,15 @@
+{
+  "name": "python-testing",
+  "description": "Python testing strategies using pytest, TDD methodology, fixtures, mocking, parametrization, and coverage requirements.",
+  "origin": "ECC",
+  "level": "L1",
+  "languages": [
+    "python"
+  ],
+  "frameworks": [],
+  "triggers": [
+    "python testing"
+  ],
+  "actions": [],
+  "verify": []
+}

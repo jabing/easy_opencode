@@ -2,6 +2,8 @@
 const fs = require('fs');
 const path = require('path');
 
+const { formatManagedInvocation } = require('../src/cli/runtime-paths.js');
+
 const RUN_DIR = path.join(process.cwd(), '.opencode', 'eoc-run');
 
 function runPath(runId) { return path.join(RUN_DIR, `${runId}.json`); }
@@ -19,7 +21,7 @@ function durationMs(start, end) {
 function main() {
   try {
     const runId = process.argv[2];
-    if (!runId) throw new Error('Usage: node scripts/eoc-metrics.js <run-id>');
+    if (!runId) throw new Error(`Usage: ${formatManagedInvocation('eoc-metrics', ['<run-id>'])}`);
     const run = getRun(runId);
     const sch = run.scheduler;
     if (!sch) {

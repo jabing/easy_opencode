@@ -1,6 +1,6 @@
 ---
 description: Generate skills from git history analysis
-agent: build
+agent: eoc_orchestrator
 ---
 
 # Skill Create Command

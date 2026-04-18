@@ -1,6 +1,6 @@
 ---
 description: Save verification state and progress checkpoint
-agent: build
+agent: eoc_orchestrator
 ---
 
 # Checkpoint Command

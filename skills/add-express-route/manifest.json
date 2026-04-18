@@ -1,0 +1,83 @@
+{
+  "name": "add-express-route",
+  "description": "Scaffold an Express route task bundle with route module, service, mount helper, route test, and API note.",
+  "origin": "EOC",
+  "level": "L3",
+  "languages": [
+    "javascript",
+    "typescript"
+  ],
+  "frameworks": [
+    "express"
+  ],
+  "triggers": [
+    "add express route",
+    "new route handler",
+    "add endpoint"
+  ],
+  "inputs": [
+    {
+      "name": "name",
+      "required": true
+    },
+    {
+      "name": "route_path",
+      "default": "/health"
+    }
+  ],
+  "actions": [
+    {
+      "id": "node",
+      "type": "template_bundle",
+      "files": [
+        {
+          "template": "route.ts.tpl",
+          "output": "src/routes/{{kebab_name}}.ts",
+          "primary": true
+        },
+        {
+          "template": "service.ts.tpl",
+          "output": "src/services/{{kebab_name}}.service.ts"
+        },
+        {
+          "template": "mount.ts.tpl",
+          "output": "src/routes/{{kebab_name}}.mount.ts"
+        },
+        {
+          "template": "route.test.ts.tpl",
+          "output": "tests/routes/{{kebab_name}}.test.ts"
+        },
+        {
+          "template": "api.md.tpl",
+          "output": "docs/api/{{kebab_name}}.md"
+        },
+        {
+          "template": "integration.md.tpl",
+          "output": ".opencode/task-bundles/{{kebab_name}}.integration.md"
+        }
+      ],
+      "when": {
+        "runtime": "node"
+      },
+      "updates": [
+        {
+          "type": "ensure_block",
+          "file": "docs/api/index.md",
+          "content": "- [{{subject}}](./{{kebab_name}}.md) \u2014 `{{route_path}}`",
+          "create_if_missing": true
+        },
+        {
+          "type": "ensure_line",
+          "file": "src/routes/index.ts",
+          "content": "export { mount{{pascal_name}}Route } from './{{kebab_name}}.mount';",
+          "only_if_exists": true
+        }
+      ]
+    }
+  ],
+  "verify": [
+    "npm run build",
+    "npm test"
+  ],
+  "task_family": "endpoint"
+}

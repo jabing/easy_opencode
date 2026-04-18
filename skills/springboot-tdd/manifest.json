@@ -1,0 +1,17 @@
+{
+  "name": "springboot-tdd",
+  "description": "Test-driven development for Spring Boot using JUnit 5, Mockito, MockMvc, Testcontainers, and JaCoCo. Use when adding features, fixing bugs, or refactoring.",
+  "origin": "ECC",
+  "level": "L1",
+  "languages": [
+    "java"
+  ],
+  "frameworks": [
+    "springboot"
+  ],
+  "triggers": [
+    "springboot tdd"
+  ],
+  "actions": [],
+  "verify": []
+}

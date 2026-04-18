@@ -1,6 +1,6 @@
 ---
 description: Run verification loop to validate implementation
-agent: build
+agent: eoc_orchestrator
 ---
 
 # Verify Command

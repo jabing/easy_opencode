@@ -1,30 +1,38 @@
 #!/usr/bin/env node
-const fs = require('fs');
-const path = require('path');
-const os = require('os');
+const fs = require('fs')
+const path = require('path')
+const os = require('os')
+const { formatManagedInvocation } = require('../src/cli/runtime-paths.js')
 
 function getSessionsDir() {
-  return path.join(os.homedir(), '.opencode', 'sessions');
+  return path.join(os.homedir(), '.opencode', 'sessions')
 }
 
 function getSessionFiles() {
-  const dir = getSessionsDir();
-  if (!fs.existsSync(dir)) return [];
+  const dir = getSessionsDir()
+  if (!fs.existsSync(dir)) return []
   return fs.readdirSync(dir)
-    .filter(f => f.endsWith('.json'))
-    .map(f => ({ path: path.join(dir, f), name: f }))
-    .sort((a, b) => b - a);
+    .filter((file) => file.endsWith('.json'))
+    .map((file) => {
+      const fullPath = path.join(dir, file)
+      const stat = fs.statSync(fullPath)
+      return { path: fullPath, name: file, mtimeMs: stat.mtimeMs }
+    })
+    .sort((a, b) => b.mtimeMs - a.mtimeMs)
 }
 
 function listSessions() {
-  const files = getSessionFiles();
-  console.log('=== Sessions ===');
-  console.log('Total:', files.length);
-  files.slice(0, 10).forEach((f, i) => {
-    console.log((i + 1) + '. ' + f.name);
-  });
+  const files = getSessionFiles()
+  console.log('=== Sessions ===')
+  console.log('Directory:', getSessionsDir())
+  console.log('Total:', files.length)
+  files.slice(0, 10).forEach((file, index) => {
+    console.log(`${index + 1}. ${file.name}`)
+  })
 }
 
-const cmd = process.argv[2];
-if (cmd === 'list') listSessions();
-else console.log('Usage: node session-validator.js list');
+const cmd = process.argv[2]
+if (cmd === 'list') listSessions()
+else console.log(`Usage: ${formatManagedInvocation('session-validator', ['list'])}`)
+
+module.exports = { getSessionFiles, listSessions }

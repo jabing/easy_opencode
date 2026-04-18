@@ -1,1 +1,13 @@
-# Loop Start Command\n\nStart an autonomous loop for repetitive tasks.\n\n## Usage\n\n/loop-start <task>          # Start loop with task\n/loop-start --stop          # Stop current loop\n/loop-start --status        # Check loop status\n\n## Implementation\n\nRuns: node scripts/loop-start.js\n
+# Loop Start Command
+
+Start an autonomous loop for repetitive tasks.
+
+## Usage
+
+/loop-start <task>          # Start loop with task
+/loop-start --stop          # Stop current loop
+/loop-start --status        # Check loop status
+
+## Implementation
+
+Runs: node scripts/loop-start.js

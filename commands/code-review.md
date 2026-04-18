@@ -1,6 +1,6 @@
 ---
 description: Review code for quality, security, and maintainability
-agent: code-reviewer
+agent: eoc_code_reviewer
 subtask: true
 ---
 
@@ -14,7 +14,8 @@ Review code changes for quality, security, and maintainability: $ARGUMENTS
 2. **Map impacted scope**: changed files and behavioral surface
 3. **Analyze each file** with surrounding context
 4. **Generate structured report** with severity and impact
-5. **Return explicit verdict**: APPROVE / APPROVE_WITH_WARNINGS / BLOCK
+5. **Return explicit verdict**: ACCEPT / ACCEPT_WITH_FOLLOWUPS / BLOCK
+6. **Emit a machine-readable handoff block** for the next coder loop
 
 ## Check Categories
 
@@ -62,14 +63,28 @@ Fix: [How to fix]
 ## Decision Rules
 
 - **CRITICAL or HIGH issues**: Block commit, require fixes
-- **MEDIUM issues**: Recommend fixes before merge
+- **MEDIUM issues**: Merge only with explicit follow-ups
 - **LOW issues**: Optional improvements
 
 Final output must include:
 
 ```
-Verdict: APPROVE | APPROVE_WITH_WARNINGS | BLOCK
+Verdict: ACCEPT | ACCEPT_WITH_FOLLOWUPS | BLOCK
 Reason: [One paragraph]
+```
+
+And then a fenced JSON block:
+
+```json
+{
+  "verdict": "ACCEPT|ACCEPT_WITH_FOLLOWUPS|BLOCK",
+  "correctness": [],
+  "test_gap": [],
+  "interface_risk": [],
+  "style_issue": [],
+  "perf_risk": [],
+  "security_risk": []
+}
 ```
 
 ---

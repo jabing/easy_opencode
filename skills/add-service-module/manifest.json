@@ -1,0 +1,191 @@
+{
+  "name": "add-service-module",
+  "description": "Scaffold a service task bundle with service module, starter test, docs, and integration guide for common runtimes.",
+  "origin": "EOC",
+  "level": "L3",
+  "languages": [
+    "javascript",
+    "typescript",
+    "python",
+    "go",
+    "java"
+  ],
+  "frameworks": [
+    "node",
+    "python",
+    "go",
+    "springboot"
+  ],
+  "triggers": [
+    "add service",
+    "create service module",
+    "new service class"
+  ],
+  "inputs": [
+    {
+      "name": "name",
+      "required": true
+    },
+    {
+      "name": "subject",
+      "required": true
+    }
+  ],
+  "actions": [
+    {
+      "id": "node",
+      "type": "template_bundle",
+      "when": {
+        "runtime": "node"
+      },
+      "files": [
+        {
+          "template": "node.service.tpl",
+          "output": "src/services/{{kebab_name}}.service.ts",
+          "primary": true
+        },
+        {
+          "template": "node.service.test.tpl",
+          "output": "tests/services/{{kebab_name}}.service.test.ts"
+        },
+        {
+          "template": "service.md.tpl",
+          "output": "docs/services/{{kebab_name}}.md"
+        },
+        {
+          "template": "integration.md.tpl",
+          "output": ".opencode/task-bundles/{{kebab_name}}-service.integration.md"
+        }
+      ],
+      "updates": [
+        {
+          "type": "ensure_block",
+          "file": "docs/services/index.md",
+          "content": "- [{{class_name}}Service](./{{kebab_name}}.md) \u2014 service module scaffold",
+          "create_if_missing": true
+        },
+        {
+          "type": "ensure_line",
+          "file": "src/services/index.ts",
+          "content": "export { {{class_name}}Service } from './{{kebab_name}}.service';",
+          "only_if_exists": true
+        }
+      ]
+    },
+    {
+      "id": "python",
+      "type": "template_bundle",
+      "when": {
+        "runtime": "python"
+      },
+      "files": [
+        {
+          "template": "python.service.tpl",
+          "output": "app/services/{{snake_name}}_service.py",
+          "primary": true
+        },
+        {
+          "template": "python.service.test.tpl",
+          "output": "tests/services/test_{{snake_name}}_service.py"
+        },
+        {
+          "template": "service.md.tpl",
+          "output": "docs/services/{{snake_name}}.md"
+        },
+        {
+          "template": "integration.md.tpl",
+          "output": ".opencode/task-bundles/{{snake_name}}-service.integration.md"
+        }
+      ],
+      "updates": [
+        {
+          "type": "ensure_block",
+          "file": "docs/services/index.md",
+          "content": "- [{{class_name}}Service](./{{snake_name}}.md) \u2014 service module scaffold",
+          "create_if_missing": true
+        },
+        {
+          "type": "ensure_line",
+          "file": "app/services/__init__.py",
+          "content": "from .{{snake_name}}_service import {{class_name}}Service",
+          "only_if_exists": true
+        }
+      ]
+    },
+    {
+      "id": "go",
+      "type": "template_bundle",
+      "when": {
+        "runtime": "go"
+      },
+      "files": [
+        {
+          "template": "go.service.tpl",
+          "output": "internal/{{snake_name}}/service.go",
+          "primary": true
+        },
+        {
+          "template": "go.service.test.tpl",
+          "output": "internal/{{snake_name}}/service_test.go"
+        },
+        {
+          "template": "service.md.tpl",
+          "output": "docs/services/{{snake_name}}.md"
+        },
+        {
+          "template": "integration.md.tpl",
+          "output": ".opencode/task-bundles/{{snake_name}}-service.integration.md"
+        }
+      ],
+      "updates": [
+        {
+          "type": "ensure_block",
+          "file": "docs/services/index.md",
+          "content": "- [{{class_name}}Service](./{{snake_name}}.md) \u2014 service module scaffold",
+          "create_if_missing": true
+        }
+      ]
+    },
+    {
+      "id": "java",
+      "type": "template_bundle",
+      "when": {
+        "runtime": "java"
+      },
+      "files": [
+        {
+          "template": "java.service.tpl",
+          "output": "src/main/java/{{package_path}}/{{class_name}}Service.java",
+          "primary": true
+        },
+        {
+          "template": "java.service.test.tpl",
+          "output": "src/test/java/{{package_path}}/{{class_name}}ServiceTest.java"
+        },
+        {
+          "template": "service.md.tpl",
+          "output": "docs/services/{{class_name}}Service.md"
+        },
+        {
+          "template": "integration.md.tpl",
+          "output": ".opencode/task-bundles/{{class_name}}Service.integration.md"
+        }
+      ],
+      "updates": [
+        {
+          "type": "ensure_block",
+          "file": "docs/services/index.md",
+          "content": "- [{{class_name}}Service](./{{class_name}}Service.md) \u2014 service module scaffold",
+          "create_if_missing": true
+        }
+      ]
+    }
+  ],
+  "verify": [
+    "npm run build",
+    "pytest -q",
+    "go test ./...",
+    "./gradlew build"
+  ],
+  "task_family": "service"
+}

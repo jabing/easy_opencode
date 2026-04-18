@@ -1,46 +1,18 @@
-# Raw directory - development artifacts
-raw/
-
-# Error screenshots
-error.png
-
-# Node modules
 node_modules/
-
-# Build output
 dist/
 build/
-
-# IDE
-.idea/
-.vscode/
-*.swp
-*.swo
-
-# OS
-.DS_Store
-Thumbs.db
-
-# Environment
-.env
-.env.local
-.env.*.local
-
-# Logs
-*.log
-npm-debug.log*
-
-# Cache
-.cache/
-.parcel-cache/
-nul
-__pycache__/
-*.pyc
-
-# Generated artifacts
-tests/coverage/
 coverage/
-*.tgz
-opencode.json
-.opencode/easy-opencode/
+*.log
+.DS_Store
+
+# Generated OpenCode runtime state
+.opencode/coder-loop/
+.opencode/implementation/
+.opencode/implementation-plans/
+.opencode/observability/
+.opencode/orchestrator/
+.opencode/reviews/
+.opencode/delivery/
 .opencode/eoc-run/
+.opencode/task-bundles/
+.opencode/package-manager.json

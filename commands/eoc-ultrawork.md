@@ -1,6 +1,6 @@
 ---
 description: One-command end-to-end delivery (plan packet -> execution -> quality -> review -> release gate)
-agent: eoc_build
+agent: eoc_orchestrator
 subtask: true
 ---
 
@@ -12,13 +12,13 @@ Run the full gated flow automatically with minimal manual intervention.
 
 ```bash
 # Execute from packet
-node scripts/eoc-ultrawork.js --packet packet.json --code-review reviews/code-review.json --security-review reviews/security-review.json --docs-evidence reviews/docs-evidence.json --archive-evidence reviews/archive-evidence.json --plan-id PLAN-2026-0412
+node scripts/eoc-ultrawork.js --packet packet.json --scope-evidence reviews/scope-evidence.json --implementation-evidence reviews/implementation-evidence.json --code-review reviews/code-review.json --security-review reviews/security-review.json --docs-evidence reviews/docs-evidence.json --archive-evidence reviews/archive-evidence.json --plan-id PLAN-2026-0412
 
 # Execute from planner markdown/json piped to stdin
-cat plan-output.md | node scripts/eoc-ultrawork.js --stdin --code-review reviews/code-review.json --security-review reviews/security-review.json --docs-evidence reviews/docs-evidence.json --archive-evidence reviews/archive-evidence.json
+cat plan-output.md | node scripts/eoc-ultrawork.js --stdin --scope-evidence reviews/scope-evidence.json --implementation-evidence reviews/implementation-evidence.json --code-review reviews/code-review.json --security-review reviews/security-review.json --docs-evidence reviews/docs-evidence.json --archive-evidence reviews/archive-evidence.json
 
 # Simulate scheduler execution
-node scripts/eoc-ultrawork.js --packet packet.json --simulate --code-review reviews/code-review.json --security-review reviews/security-review.json --docs-evidence reviews/docs-evidence.json --archive-evidence reviews/archive-evidence.json
+node scripts/eoc-ultrawork.js --packet packet.json --simulate --scope-evidence reviews/scope-evidence.json --implementation-evidence reviews/implementation-evidence.json --code-review reviews/code-review.json --security-review reviews/security-review.json --docs-evidence reviews/docs-evidence.json --archive-evidence reviews/archive-evidence.json
 ```
 
 ## What It Does
@@ -36,6 +36,8 @@ node scripts/eoc-ultrawork.js --packet packet.json --simulate --code-review revi
 - Blocks commands containing unsafe shell operators (`|`, `;`, redirection, etc.)
 - Requires scheduler status `completed` before moving to quality gate
 - Requires coverage check and review gate to pass before release gate
-- Requires external review evidence files with `source: external`
+- Requires external review evidence files with trusted reviewer identity + valid HMAC signature
+- Requires scope/implementation evidence files with matching `run_id`
 - Requires docs/archive evidence files with matching `run_id`
+- Review trust policy is configured via `.opencode/eoc-run/review-trust.json` (see `docs/REVIEW_TRUST.md`)
 - Blocks release gate unless all prior gates are satisfied

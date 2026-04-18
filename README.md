@@ -1,29 +1,56 @@
 # Easy OpenCode
 
-Production-ready OpenCode plugin with multi-agent workflows, reusable skills, slash commands, and hook automation.
+Production-ready OpenCode plugin focused on a slimmer product kernel: stable entry commands, governed delivery checks, reusable implementation skills, and auditable release/reporting workflows.
+
+## Entry Agent Workflow
+
+- `eoc_orchestrator` is the default entry for implement/fix/refactor/test work and should prefer `/implement-task`.
+- `eoc_code_reviewer` stays as the dedicated review/audit entry.
+- `eoc_planner` is now a hidden specialist used for plan-only, ambiguous, or high-risk multi-step changes.
+
 
 ## What You Get
 
-- 15 specialized agents (3 primary + hidden specialists)
+- 16 specialized agents (2 visible entry agents + hidden specialists)
 - 51 skills
-- 62 commands
-- Hook plugin for formatting, checks, and guardrails
-- Gate-controlled delivery flow via `/eoc-start`
-- DAG concurrency orchestration via `/eoc-parallel`
-- Run observability via `/eoc-metrics`
-- Plan-to-execution bridge via `/eoc-bridge`
-- One-command gated orchestration via `/eoc-ultrawork`
+- 58 commands after pruning experimental or low-signal surfaces
+- Stable main entry commands for plan / implement / test / review / ship / doctor
 - Quality guardrails with fast/full modes via `/quality-gate`
-- Skill source/version tracking via `/skill-registry`
-- Hash-anchored guarded edit flow via `/hashline-edit`
-- AST codemod refactor entry via `/ast-rewrite`
-- CI quality workflow via `.github/workflows/ci.yml` (`npm run quality-gate:full`)
-- Multi-workflow CI for smoke matrix, skills drift, security scan, and release gates
-- OpenSpec-style spec-first commands (`/openspec-proposal`, `/openspec-apply`, `/openspec-archive`)
-- Superpowers-style execution commands (`/superpowers-brainstorm`, `/superpowers-plan`, `/superpowers-execute`)
-- Vue bigscreen elite workflow via `/vue-bigscreen`
-- One-command Vue bigscreen scaffold via `/vue-bigscreen-init`
-- Professional UX audit workflow via `/ui-ux-review`
+- Executable skill manifests with discovery/scaffolding via `/skill-runner`
+- End-to-end implementation packets and repair briefs via `/implement-task`
+- Deep project profiling and runtime detection for Node, Python, Go, and Java
+- Structured review, release evidence, observability, and preflight reporting
+- Hook automation and installable OpenCode integration assets
+
+## Main Entry Commands
+
+For day-to-day use, prefer the slim main entrypoint instead of memorizing dozens of lower-level commands:
+
+- `eoc plan`
+- `eoc implement`
+- `eoc test`
+- `eoc review`
+- `eoc ship`
+- `eoc doctor`
+
+These map onto the existing kernel and keep advanced commands available without making them the default user path.
+
+## Operating Modes
+
+Easy OpenCode now supports three operating modes:
+
+- `solo`: shortest path for one developer
+- `team`: stronger review and release defaults
+- `platform`: full governance posture
+
+Examples:
+
+```bash
+eoc mode
+eoc mode set solo
+eoc mode set team
+eoc doctor
+```
 
 ## Install
 
@@ -51,10 +78,17 @@ eoc-install
 
 ### Option 2: from source
 
+Clone the repository, then run the installer **from your target project** or pass an explicit target directory:
+
 ```bash
 git clone https://github.com/jabing/easy_opencode.git
-cd easy_opencode
-node scripts/install.js
+
+# from your target project
+cd /path/to/your-project
+node /path/to/easy_opencode/scripts/install.js --project --yes
+
+# or from anywhere with an explicit target
+node /path/to/easy_opencode/scripts/install.js --project --yes --target /path/to/your-project
 ```
 
 ## Installation Modes
@@ -70,6 +104,35 @@ You can also run non-interactively:
 eoc-install --project --yes
 eoc-install --global --yes
 ```
+
+Source installs also support an explicit target:
+
+```bash
+node /path/to/easy_opencode/scripts/install.js --project --yes --target /path/to/your-project
+```
+
+## Development vs Installed Mode
+
+This repository contains a **development-mode** `opencode.json` for running Easy OpenCode from the plugin source tree itself.
+
+The installer writes a separate **installed-mode** configuration for the target project or global OpenCode directory:
+
+- Development mode uses repository-relative paths such as `./commands/...` and `./prompts/...`
+- Installed mode uses isolated asset paths such as `./.opencode/easy-opencode/...` or `./easy-opencode/...`
+
+Do not run project-mode install from inside the plugin source repository unless you intentionally want to test installed mode there. Use `--target` to install into another project.
+
+## Repository Validation Scripts
+
+For repository maintenance, prefer the explicit check commands:
+
+- `npm run check:metadata` for plugin metadata/config synchronization
+- `npm run syntax-check` for source parse validation
+- `npm run check:repo` for repository asset/config consistency
+- `npm run lint` as a compatibility bridge (`check:metadata` + `syntax-check`)
+- `npm run build` as a compatibility bridge (`check:repo` + `npm pack --dry-run`)
+
+The legacy direct checks are still available as `npm run lint:legacy` and `npm run build:legacy` while downstream scripts migrate.
 
 ## Verify
 
@@ -107,3 +170,8 @@ scripts/    Installer, uninstaller, diagnostics
 ## License
 
 MIT
+
+## Test stability
+
+- `npm run test:stability` validates the unified `npm test` entry repeatedly.
+- `npm run test:stability:json` emits `test_stability_summary`.

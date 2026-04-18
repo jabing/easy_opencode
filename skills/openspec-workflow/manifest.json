@@ -1,0 +1,13 @@
+{
+  "name": "openspec-workflow",
+  "description": "",
+  "origin": "",
+  "level": "L1",
+  "languages": [],
+  "frameworks": [],
+  "triggers": [
+    "openspec workflow"
+  ],
+  "actions": [],
+  "verify": []
+}

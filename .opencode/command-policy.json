@@ -1,0 +1,36 @@
+{
+  "allowed_executables": [
+    "node",
+    "node.exe",
+    "npm",
+    "npm.cmd",
+    "npx",
+    "npx.cmd",
+    "pnpm",
+    "pnpm.cmd",
+    "yarn",
+    "yarn.cmd",
+    "git",
+    "git.exe",
+    "python",
+    "python.exe",
+    "python3"
+  ],
+  "allow_shell_executables": false,
+  "blocked_arg_patterns": {
+    "pwsh": ["^-c$", "^-command$", "^-enc$", "^-encodedcommand$"],
+    "pwsh.exe": ["^-c$", "^-command$", "^-enc$", "^-encodedcommand$"],
+    "powershell": ["^-c$", "^-command$", "^-enc$", "^-encodedcommand$"],
+    "powershell.exe": ["^-c$", "^-command$", "^-enc$", "^-encodedcommand$"],
+    "cmd": ["^/c$"],
+    "cmd.exe": ["^/c$"],
+    "bash": ["^-c$"],
+    "sh": ["^-c$"]
+  },
+  "max_tasks": 48,
+  "max_concurrency": 6,
+  "max_timeout_sec": 1800,
+  "max_retries": 2,
+  "max_command_length": 240,
+  "max_task_id_length": 48
+}

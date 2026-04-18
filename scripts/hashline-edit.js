@@ -2,11 +2,12 @@
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
+const { formatManagedInvocation } = require('../src/cli/runtime-paths.js');
 
 function usage() {
   console.log('Usage:');
-  console.log('  node scripts/hashline-edit.js annotate --file <path>');
-  console.log('  node scripts/hashline-edit.js apply --file <path> --patch <json>');
+  console.log(`  ${formatManagedInvocation('hashline-edit', ['annotate', '--file', '<path>'])}`);
+  console.log(`  ${formatManagedInvocation('hashline-edit', ['apply', '--file', '<path>', '--patch', '<json>'])}`);
   console.log('');
   console.log('Patch JSON format:');
   console.log('{ "edits": [ { "line": 12, "hash": "abc123ef", "text": "new line content" } ] }');

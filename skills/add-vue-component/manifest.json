@@ -1,0 +1,39 @@
+{
+  "name": "add-vue-component",
+  "description": "Scaffold a Vue single-file component starter.",
+  "origin": "EOC",
+  "level": "L3",
+  "languages": [
+    "javascript",
+    "typescript"
+  ],
+  "frameworks": [
+    "vue"
+  ],
+  "triggers": [
+    "add vue component",
+    "new vue component"
+  ],
+  "inputs": [
+    {
+      "name": "subject",
+      "required": true
+    }
+  ],
+  "actions": [
+    {
+      "id": "node",
+      "type": "template_scaffold",
+      "template": "component.vue.tpl",
+      "default_output": "src/components/{{subject}}.vue",
+      "when": {
+        "runtime": "node"
+      }
+    }
+  ],
+  "verify": [
+    "npm run build",
+    "npm test"
+  ],
+  "task_family": "component"
+}

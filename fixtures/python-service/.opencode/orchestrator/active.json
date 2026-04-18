@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.2",
+  "root_dir": "/mnt/data/batch18/fixtures/python-service",
+  "updated_at": "2026-04-16T14:07:41.006Z",
+  "active_flow": "implementation",
+  "latest_ids": {
+    "coder_run_id": "coder-20260416140740-adb39f",
+    "kernel_run_id": "impl-impl-20260416140740-bf8851",
+    "implementation_plan_id": "impl-20260416140740-bf8851"
+  },
+  "active": {
+    "flow": "implementation",
+    "objective": "new model",
+    "plan_id": "impl-20260416140740-bf8851",
+    "coder_run_id": "coder-20260416140740-adb39f",
+    "status": "initialized",
+    "kernel_run_id": "impl-impl-20260416140740-bf8851",
+    "updated_at": "2026-04-16T14:07:41.006Z"
+  }
+}

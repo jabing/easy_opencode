@@ -1,0 +1,13 @@
+{
+  "name": "eval-harness",
+  "description": "Formal evaluation framework for Claude Code sessions implementing eval-driven development (EDD) principles",
+  "origin": "ECC",
+  "level": "L1",
+  "languages": [],
+  "frameworks": [],
+  "triggers": [
+    "eval harness"
+  ],
+  "actions": [],
+  "verify": []
+}

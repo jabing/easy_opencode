@@ -22,7 +22,7 @@ Follow these gates in order:
 4. **Gate 4: Risk Review**
    - Apply checklist from CRITICAL to LOW.
 5. **Gate 5: Decision**
-   - Return explicit verdict: `APPROVE`, `APPROVE_WITH_WARNINGS`, or `BLOCK`.
+   - Return explicit verdict: `ACCEPT`, `ACCEPT_WITH_FOLLOWUPS`, or `BLOCK`.
 
 ## Confidence Filtering
 
@@ -69,9 +69,9 @@ Follow these gates in order:
 
 ## Approval Criteria
 
-- `APPROVE`: no CRITICAL/HIGH issues
-- `APPROVE_WITH_WARNINGS`: no CRITICAL, some HIGH/MEDIUM with workaround
-- `BLOCK`: any CRITICAL, or high-confidence HIGH issues that can break behavior
+- `ACCEPT`: no CRITICAL/HIGH issues and validation is green
+- `ACCEPT_WITH_FOLLOWUPS`: no CRITICAL, some MEDIUM/LOW follow-ups remain
+- `BLOCK`: any CRITICAL, any unresolved HIGH issue, or validation still failing
 
 ## Required Output Format
 
@@ -85,5 +85,22 @@ Follow these gates in order:
 - `Fix: ...`
 
 ### Verdict
-- `APPROVE | APPROVE_WITH_WARNINGS | BLOCK`
+- `ACCEPT | ACCEPT_WITH_FOLLOWUPS | BLOCK`
 - `Reason: ...`
+
+### Review JSON
+Return a fenced `json` block with this schema:
+
+```json
+{
+  "verdict": "ACCEPT|ACCEPT_WITH_FOLLOWUPS|BLOCK",
+  "correctness": [],
+  "test_gap": [],
+  "interface_risk": [],
+  "style_issue": [],
+  "perf_risk": [],
+  "security_risk": []
+}
+```
+
+Each array should contain concise issue objects with `file`, `line`, `issue`, and `fix` when applicable.

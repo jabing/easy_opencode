@@ -1,0 +1,46 @@
+{
+  "schema_version": "1.0",
+  "coding_style": "functional",
+  "api_style": "rest",
+  "test_framework": "pytest",
+  "validation_lib": "unknown",
+  "orm": "unknown",
+  "auth_strategy": "unknown",
+  "error_pattern": "standard-errors",
+  "naming": {
+    "file_case": "kebab",
+    "symbol_case": "pascal-camel",
+    "feature_container": "features"
+  },
+  "preferred_feature_shape": [
+    "route",
+    "controller",
+    "service",
+    "repository",
+    "schema",
+    "test"
+  ],
+  "shared_error_module": null,
+  "global_error_middleware": null,
+  "app_entrypoint": null,
+  "preferred_test_command": null,
+  "preferred_test_commands": {
+    "default": null,
+    "ci": null,
+    "watch": null,
+    "coverage": null
+  },
+  "preferred_test_runner_profile": {
+    "default": null,
+    "ci": null,
+    "watch": null,
+    "coverage": null
+  },
+  "style_profile": {
+    "controller_pattern": "flat-handlers",
+    "async_style": "sync-or-callback",
+    "test_style": "xunit",
+    "validation_style": "inline-guards",
+    "symbol_density": 4
+  }
+}

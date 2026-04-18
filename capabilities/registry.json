@@ -1,0 +1,5073 @@
+{
+  "generated_at": "2026-04-16T09:10:32.025Z",
+  "root_dir": "/mnt/data/batch14",
+  "counts": {
+    "total": 131,
+    "agents": 16,
+    "skills": 51,
+    "scripts": 64,
+    "aliases": 38,
+    "by_source_type": {
+      "agent": 16,
+      "script": 64,
+      "skill": 51
+    },
+    "by_execution_mode": {
+      "agent": 16,
+      "script": 64,
+      "hybrid": 15,
+      "document": 36
+    },
+    "by_kind": {
+      "planner": 14,
+      "transformer": 3,
+      "general": 57,
+      "verifier": 20,
+      "implementer": 23,
+      "releaser": 5,
+      "reviewer": 9
+    },
+    "by_support_tier": {
+      "tier4": 113,
+      "tier2": 14,
+      "tier1": 4
+    }
+  },
+  "capabilities": [
+    {
+      "id": "agent:architect",
+      "source_type": "agent",
+      "source_ref": "architect",
+      "name": "architect",
+      "description": "Architecture and scalability specialist",
+      "kind": "planner",
+      "execution_mode": "agent",
+      "hidden": true,
+      "entrypoint": "{file:./prompts/agents/architect.md}",
+      "prompt_file": "./prompts/agents/architect.md",
+      "tools": {
+        "read": true,
+        "bash": true,
+        "write": false,
+        "edit": false
+      },
+      "aliases": [],
+      "metadata": {
+        "mode": null
+      }
+    },
+    {
+      "id": "agent:build-error-resolver",
+      "source_type": "agent",
+      "source_ref": "build-error-resolver",
+      "name": "build-error-resolver",
+      "description": "Build and type error fixer",
+      "kind": "transformer",
+      "execution_mode": "agent",
+      "hidden": true,
+      "entrypoint": "{file:./prompts/agents/build-error-resolver.md}",
+      "prompt_file": "./prompts/agents/build-error-resolver.md",
+      "tools": {
+        "read": true,
+        "write": true,
+        "edit": true,
+        "bash": true
+      },
+      "aliases": [
+        "command:build-fix"
+      ],
+      "metadata": {
+        "mode": null
+      }
+    },
+    {
+      "id": "agent:database-reviewer",
+      "source_type": "agent",
+      "source_ref": "database-reviewer",
+      "name": "database-reviewer",
+      "description": "Database schema and SQL specialist",
+      "kind": "planner",
+      "execution_mode": "agent",
+      "hidden": true,
+      "entrypoint": "{file:./prompts/agents/database-reviewer.md}",
+      "prompt_file": "./prompts/agents/database-reviewer.md",
+      "tools": {
+        "read": true,
+        "bash": true,
+        "write": false,
+        "edit": false
+      },
+      "aliases": [],
+      "metadata": {
+        "mode": null
+      }
+    },
+    {
+      "id": "agent:doc-updater",
+      "source_type": "agent",
+      "source_ref": "doc-updater",
+      "name": "doc-updater",
+      "description": "Documentation updater",
+      "kind": "general",
+      "execution_mode": "agent",
+      "hidden": true,
+      "entrypoint": "{file:./prompts/agents/doc-updater.md}",
+      "prompt_file": "./prompts/agents/doc-updater.md",
+      "tools": {
+        "read": true,
+        "write": true,
+        "edit": true,
+        "bash": true
+      },
+      "aliases": [
+        "command:openspec-archive",
+        "command:update-codemaps",
+        "command:update-docs"
+      ],
+      "metadata": {
+        "mode": null
+      }
+    },
+    {
+      "id": "agent:e2e-runner",
+      "source_type": "agent",
+      "source_ref": "e2e-runner",
+      "name": "e2e-runner",
+      "description": "Playwright E2E specialist",
+      "kind": "planner",
+      "execution_mode": "agent",
+      "hidden": true,
+      "entrypoint": "{file:./prompts/agents/e2e-runner.md}",
+      "prompt_file": "./prompts/agents/e2e-runner.md",
+      "tools": {
+        "read": true,
+        "write": true,
+        "edit": true,
+        "bash": true
+      },
+      "aliases": [
+        "command:e2e"
+      ],
+      "metadata": {
+        "mode": null
+      }
+    },
+    {
+      "id": "agent:eoc_code_reviewer",
+      "source_type": "agent",
+      "source_ref": "eoc_code_reviewer",
+      "name": "eoc_code_reviewer",
+      "description": "EOC code review specialist",
+      "kind": "planner",
+      "execution_mode": "agent",
+      "hidden": false,
+      "entrypoint": "{file:./prompts/agents/code-reviewer.md}",
+      "prompt_file": "./prompts/agents/code-reviewer.md",
+      "tools": {
+        "read": true,
+        "bash": true,
+        "write": false,
+        "edit": false
+      },
+      "aliases": [
+        "command:code-review",
+        "command:review-gate"
+      ],
+      "metadata": {
+        "mode": "primary"
+      }
+    },
+    {
+      "id": "agent:eoc_orchestrator",
+      "source_type": "agent",
+      "source_ref": "eoc_orchestrator",
+      "name": "eoc_orchestrator",
+      "description": "EOC default execution orchestrator",
+      "kind": "general",
+      "execution_mode": "agent",
+      "hidden": false,
+      "entrypoint": "{file:./prompts/agents/eoc-orchestrator.md}",
+      "prompt_file": "./prompts/agents/eoc-orchestrator.md",
+      "tools": {
+        "write": true,
+        "edit": true,
+        "bash": true,
+        "read": true
+      },
+      "aliases": [
+        "command:checkpoint",
+        "command:delivery-report",
+        "command:env-check",
+        "command:eoc-parallel",
+        "command:eoc-ultrawork",
+        "command:eval",
+        "command:feature-acceptance",
+        "command:generate-feature",
+        "command:hashline-edit",
+        "command:implement-task",
+        "command:quality-gate",
+        "command:release-evidence",
+        "command:setup-pm",
+        "command:skill-create",
+        "command:verify"
+      ],
+      "metadata": {
+        "mode": "primary"
+      }
+    },
+    {
+      "id": "agent:eoc_planner",
+      "source_type": "agent",
+      "source_ref": "eoc_planner",
+      "name": "eoc_planner",
+      "description": "EOC planning specialist",
+      "kind": "planner",
+      "execution_mode": "agent",
+      "hidden": true,
+      "entrypoint": "{file:./prompts/agents/planner.md}",
+      "prompt_file": "./prompts/agents/planner.md",
+      "tools": {
+        "read": true,
+        "bash": true,
+        "write": false,
+        "edit": false
+      },
+      "aliases": [
+        "command:openspec-proposal",
+        "command:orchestrate",
+        "command:plan",
+        "command:tooling-parity"
+      ],
+      "metadata": {
+        "mode": null
+      }
+    },
+    {
+      "id": "agent:go-build-resolver",
+      "source_type": "agent",
+      "source_ref": "go-build-resolver",
+      "name": "go-build-resolver",
+      "description": "Go build error specialist",
+      "kind": "planner",
+      "execution_mode": "agent",
+      "hidden": true,
+      "entrypoint": "{file:./prompts/agents/go-build-resolver.md}",
+      "prompt_file": "./prompts/agents/go-build-resolver.md",
+      "tools": {
+        "read": true,
+        "write": true,
+        "edit": true,
+        "bash": true
+      },
+      "aliases": [
+        "command:go-build"
+      ],
+      "metadata": {
+        "mode": null
+      }
+    },
+    {
+      "id": "agent:go-reviewer",
+      "source_type": "agent",
+      "source_ref": "go-reviewer",
+      "name": "go-reviewer",
+      "description": "Go code review specialist",
+      "kind": "planner",
+      "execution_mode": "agent",
+      "hidden": true,
+      "entrypoint": "{file:./prompts/agents/go-reviewer.md}",
+      "prompt_file": "./prompts/agents/go-reviewer.md",
+      "tools": {
+        "read": true,
+        "bash": true,
+        "write": false,
+        "edit": false
+      },
+      "aliases": [
+        "command:go-review"
+      ],
+      "metadata": {
+        "mode": null
+      }
+    },
+    {
+      "id": "agent:python-reviewer",
+      "source_type": "agent",
+      "source_ref": "python-reviewer",
+      "name": "python-reviewer",
+      "description": "Python code review specialist",
+      "kind": "planner",
+      "execution_mode": "agent",
+      "hidden": true,
+      "entrypoint": "{file:./prompts/agents/python-reviewer.md}",
+      "prompt_file": "./prompts/agents/python-reviewer.md",
+      "tools": {
+        "read": true,
+        "bash": true,
+        "write": false,
+        "edit": false
+      },
+      "aliases": [
+        "command:python-review"
+      ],
+      "metadata": {
+        "mode": null
+      }
+    },
+    {
+      "id": "agent:refactor-cleaner",
+      "source_type": "agent",
+      "source_ref": "refactor-cleaner",
+      "name": "refactor-cleaner",
+      "description": "Refactoring and cleanup specialist",
+      "kind": "planner",
+      "execution_mode": "agent",
+      "hidden": true,
+      "entrypoint": "{file:./prompts/agents/refactor-cleaner.md}",
+      "prompt_file": "./prompts/agents/refactor-cleaner.md",
+      "tools": {
+        "read": true,
+        "write": true,
+        "edit": true,
+        "bash": true
+      },
+      "aliases": [
+        "command:ast-rewrite",
+        "command:refactor-clean"
+      ],
+      "metadata": {
+        "mode": null
+      }
+    },
+    {
+      "id": "agent:repo-aware-coder",
+      "source_type": "agent",
+      "source_ref": "repo-aware-coder",
+      "name": "repo-aware-coder",
+      "description": "Repo-aware implementation specialist",
+      "kind": "planner",
+      "execution_mode": "agent",
+      "hidden": true,
+      "entrypoint": "{file:./prompts/agents/repo-aware-coder.md}",
+      "prompt_file": "./prompts/agents/repo-aware-coder.md",
+      "tools": {
+        "read": true,
+        "write": true,
+        "edit": true,
+        "bash": true
+      },
+      "aliases": [
+        "command:project-profile"
+      ],
+      "metadata": {
+        "mode": null
+      }
+    },
+    {
+      "id": "agent:security-reviewer",
+      "source_type": "agent",
+      "source_ref": "security-reviewer",
+      "name": "security-reviewer",
+      "description": "Security review specialist",
+      "kind": "planner",
+      "execution_mode": "agent",
+      "hidden": true,
+      "entrypoint": "{file:./prompts/agents/security-reviewer.md}",
+      "prompt_file": "./prompts/agents/security-reviewer.md",
+      "tools": {
+        "read": true,
+        "bash": true,
+        "write": false,
+        "edit": false
+      },
+      "aliases": [
+        "command:security"
+      ],
+      "metadata": {
+        "mode": null
+      }
+    },
+    {
+      "id": "agent:tdd-guide",
+      "source_type": "agent",
+      "source_ref": "tdd-guide",
+      "name": "tdd-guide",
+      "description": "TDD specialist",
+      "kind": "planner",
+      "execution_mode": "agent",
+      "hidden": true,
+      "entrypoint": "{file:./prompts/agents/tdd-guide.md}",
+      "prompt_file": "./prompts/agents/tdd-guide.md",
+      "tools": {
+        "read": true,
+        "write": true,
+        "edit": true,
+        "bash": true
+      },
+      "aliases": [
+        "command:go-test",
+        "command:openspec-apply",
+        "command:tdd",
+        "command:test-coverage"
+      ],
+      "metadata": {
+        "mode": null
+      }
+    },
+    {
+      "id": "agent:ts-coder",
+      "source_type": "agent",
+      "source_ref": "ts-coder",
+      "name": "ts-coder",
+      "description": "TypeScript and JavaScript implementation specialist",
+      "kind": "planner",
+      "execution_mode": "agent",
+      "hidden": true,
+      "entrypoint": "{file:./prompts/agents/coder-ts.md}",
+      "prompt_file": "./prompts/agents/coder-ts.md",
+      "tools": {
+        "read": true,
+        "write": true,
+        "edit": true,
+        "bash": true
+      },
+      "aliases": [
+        "command:coder-loop"
+      ],
+      "metadata": {
+        "mode": null
+      }
+    },
+    {
+      "id": "script:analyze-project-structure",
+      "source_type": "script",
+      "source_ref": "analyze-project-structure.js",
+      "name": "analyze-project-structure",
+      "description": "",
+      "kind": "general",
+      "execution_mode": "script",
+      "support_tier": "tier4",
+      "hidden": false,
+      "entrypoint": "scripts/analyze-project-structure.js",
+      "prompt_file": null,
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "support_scope": {
+          "runtimes": [],
+          "frameworks": [],
+          "languages": [],
+          "provider_ids": []
+        },
+        "acceptance": {}
+      }
+    },
+    {
+      "id": "script:ast-rewrite",
+      "source_type": "script",
+      "source_ref": "ast-rewrite.js",
+      "name": "ast-rewrite",
+      "description": "",
+      "kind": "transformer",
+      "execution_mode": "script",
+      "support_tier": "tier2",
+      "hidden": false,
+      "entrypoint": "scripts/ast-rewrite.js",
+      "prompt_file": null,
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "support_scope": {
+          "languages": [
+            "javascript",
+            "typescript",
+            "python",
+            "go",
+            "java"
+          ],
+          "ast_languages": [
+            "javascript",
+            "typescript",
+            "python"
+          ],
+          "indexed_languages": [
+            "go",
+            "java"
+          ],
+          "lsp_experimental_languages": [
+            "go",
+            "java"
+          ],
+          "provider_ids": [
+            "typescript-semantic",
+            "python-semantic",
+            "go-semantic",
+            "java-semantic"
+          ],
+          "required_primitives": [
+            "rename_symbol",
+            "add_import",
+            "remove_import",
+            "ensure_export"
+          ],
+          "required_indexed_primitives": [
+            "rename_at",
+            "rename_symbol",
+            "add_import",
+            "remove_import",
+            "ensure_export"
+          ],
+          "target_languages": [
+            "typescript",
+            "javascript",
+            "python",
+            "go",
+            "java"
+          ]
+        },
+        "acceptance": {
+          "accepted_languages": [
+            "javascript",
+            "typescript",
+            "python"
+          ],
+          "indexed_languages": [
+            "go",
+            "java"
+          ],
+          "lsp_experimental_languages": [
+            "go",
+            "java"
+          ],
+          "cross_file_indexed_languages": [
+            "go",
+            "java"
+          ],
+          "lsp_capable_provider_ids": [
+            "go-semantic",
+            "java-semantic"
+          ],
+          "extended_languages": [
+            "javascript",
+            "typescript",
+            "python",
+            "go",
+            "java"
+          ],
+          "missing_languages": [],
+          "provider_profiles": [
+            {
+              "id": "typescript-semantic",
+              "execution_mode": "semantic_ast",
+              "support_tier": "tier1",
+              "supported_languages": [
+                "javascript",
+                "typescript"
+              ],
+              "supported_primitives": [
+                "rename_at",
+                "rename_symbol",
+                "add_import",
+                "remove_import",
+                "ensure_export"
+              ],
+              "missing_primitives": [],
+              "missing_indexed_primitives": [],
+              "cross_file_symbol_graph": false,
+              "ambiguity_safe": false,
+              "conflict_safe_failures": false,
+              "experimental_lsp_backend": false,
+              "lsp_server_command": null,
+              "lsp_capability_negotiation": false,
+              "lsp_prepare_rename_support": false,
+              "lsp_workspace_resource_ops_support": false,
+              "lsp_server_requests_support": false,
+              "lsp_workspace_configuration_support": false,
+              "lsp_project_root_detection": false,
+              "lsp_server_probe_support": false,
+              "lsp_failure_classification": false,
+              "lsp_diagnostics_capture": false,
+              "lsp_edit_preview_support": false,
+              "lsp_edit_budget_guards": false,
+              "lsp_workspace_scope_guards": false,
+              "lsp_production_readiness_harness": false,
+              "lsp_real_server_required_for_claim": false,
+              "backend_modes": [
+                "semantic_ast"
+              ],
+              "lsp_available": false
+            },
+            {
+              "id": "python-semantic",
+              "execution_mode": "semantic_ast",
+              "support_tier": "tier1",
+              "supported_languages": [
+                "python"
+              ],
+              "supported_primitives": [
+                "rename_symbol",
+                "add_import",
+                "remove_import",
+                "ensure_export"
+              ],
+              "missing_primitives": [],
+              "missing_indexed_primitives": [
+                "rename_at"
+              ],
+              "cross_file_symbol_graph": false,
+              "ambiguity_safe": false,
+              "conflict_safe_failures": false,
+              "experimental_lsp_backend": false,
+              "lsp_server_command": null,
+              "lsp_capability_negotiation": false,
+              "lsp_prepare_rename_support": false,
+              "lsp_workspace_resource_ops_support": false,
+              "lsp_server_requests_support": false,
+              "lsp_workspace_configuration_support": false,
+              "lsp_project_root_detection": false,
+              "lsp_server_probe_support": false,
+              "lsp_failure_classification": false,
+              "lsp_diagnostics_capture": false,
+              "lsp_edit_preview_support": false,
+              "lsp_edit_budget_guards": false,
+              "lsp_workspace_scope_guards": false,
+              "lsp_production_readiness_harness": false,
+              "lsp_real_server_required_for_claim": false,
+              "backend_modes": [
+                "semantic_ast"
+              ],
+              "lsp_available": false
+            },
+            {
+              "id": "go-semantic",
+              "execution_mode": "indexed_symbol",
+              "support_tier": "tier2",
+              "supported_languages": [
+                "go"
+              ],
+              "supported_primitives": [
+                "rename_at",
+                "rename_symbol",
+                "add_import",
+                "remove_import",
+                "ensure_export"
+              ],
+              "missing_primitives": [],
+              "missing_indexed_primitives": [],
+              "cross_file_symbol_graph": true,
+              "ambiguity_safe": true,
+              "conflict_safe_failures": true,
+              "experimental_lsp_backend": true,
+              "lsp_server_command": "gopls",
+              "lsp_capability_negotiation": true,
+              "lsp_prepare_rename_support": true,
+              "lsp_workspace_resource_ops_support": true,
+              "lsp_server_requests_support": true,
+              "lsp_workspace_configuration_support": true,
+              "lsp_project_root_detection": true,
+              "lsp_server_probe_support": true,
+              "lsp_failure_classification": true,
+              "lsp_diagnostics_capture": true,
+              "lsp_edit_preview_support": true,
+              "lsp_edit_budget_guards": true,
+              "lsp_workspace_scope_guards": true,
+              "lsp_production_readiness_harness": true,
+              "lsp_real_server_required_for_claim": true,
+              "backend_modes": [
+                "indexed_symbol",
+                "semantic_ast"
+              ],
+              "lsp_available": false
+            },
+            {
+              "id": "java-semantic",
+              "execution_mode": "indexed_symbol",
+              "support_tier": "tier2",
+              "supported_languages": [
+                "java"
+              ],
+              "supported_primitives": [
+                "rename_at",
+                "rename_symbol",
+                "add_import",
+                "remove_import",
+                "ensure_export"
+              ],
+              "missing_primitives": [],
+              "missing_indexed_primitives": [],
+              "cross_file_symbol_graph": true,
+              "ambiguity_safe": true,
+              "conflict_safe_failures": true,
+              "experimental_lsp_backend": true,
+              "lsp_server_command": "jdtls",
+              "lsp_capability_negotiation": true,
+              "lsp_prepare_rename_support": true,
+              "lsp_workspace_resource_ops_support": true,
+              "lsp_server_requests_support": true,
+              "lsp_workspace_configuration_support": true,
+              "lsp_project_root_detection": true,
+              "lsp_server_probe_support": true,
+              "lsp_failure_classification": true,
+              "lsp_diagnostics_capture": true,
+              "lsp_edit_preview_support": true,
+              "lsp_edit_budget_guards": true,
+              "lsp_workspace_scope_guards": true,
+              "lsp_production_readiness_harness": true,
+              "lsp_real_server_required_for_claim": true,
+              "backend_modes": [
+                "indexed_symbol",
+                "semantic_ast"
+              ],
+              "lsp_available": false
+            },
+            {
+              "id": "text-fallback",
+              "execution_mode": "text_fallback",
+              "support_tier": "tier3",
+              "supported_languages": [
+                "javascript",
+                "typescript",
+                "python",
+                "go",
+                "java"
+              ],
+              "supported_primitives": [
+                "rename_symbol"
+              ],
+              "missing_primitives": [
+                "add_import",
+                "remove_import",
+                "ensure_export"
+              ],
+              "missing_indexed_primitives": [
+                "rename_at",
+                "add_import",
+                "remove_import",
+                "ensure_export"
+              ],
+              "cross_file_symbol_graph": false,
+              "ambiguity_safe": false,
+              "conflict_safe_failures": false,
+              "experimental_lsp_backend": false,
+              "lsp_server_command": null,
+              "lsp_capability_negotiation": false,
+              "lsp_prepare_rename_support": false,
+              "lsp_workspace_resource_ops_support": false,
+              "lsp_server_requests_support": false,
+              "lsp_workspace_configuration_support": false,
+              "lsp_project_root_detection": false,
+              "lsp_server_probe_support": false,
+              "lsp_failure_classification": false,
+              "lsp_diagnostics_capture": false,
+              "lsp_edit_preview_support": false,
+              "lsp_edit_budget_guards": false,
+              "lsp_workspace_scope_guards": false,
+              "lsp_production_readiness_harness": false,
+              "lsp_real_server_required_for_claim": false,
+              "backend_modes": [
+                "text_fallback"
+              ],
+              "lsp_available": false
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "script:benchmark-feedback",
+      "source_type": "script",
+      "source_ref": "benchmark-feedback.js",
+      "name": "benchmark-feedback",
+      "description": "",
+      "kind": "general",
+      "execution_mode": "script",
+      "support_tier": "tier4",
+      "hidden": false,
+      "entrypoint": "scripts/benchmark-feedback.js",
+      "prompt_file": null,
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "support_scope": {
+          "runtimes": [],
+          "frameworks": [],
+          "languages": [],
+          "provider_ids": []
+        },
+        "acceptance": {}
+      }
+    },
+    {
+      "id": "script:benchmark-suite",
+      "source_type": "script",
+      "source_ref": "benchmark-suite.js",
+      "name": "benchmark-suite",
+      "description": "",
+      "kind": "general",
+      "execution_mode": "script",
+      "support_tier": "tier4",
+      "hidden": false,
+      "entrypoint": "scripts/benchmark-suite.js",
+      "prompt_file": null,
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "support_scope": {
+          "runtimes": [],
+          "frameworks": [],
+          "languages": [],
+          "provider_ids": []
+        },
+        "acceptance": {}
+      }
+    },
+    {
+      "id": "script:build-check",
+      "source_type": "script",
+      "source_ref": "build-check.js",
+      "name": "build-check",
+      "description": "",
+      "kind": "verifier",
+      "execution_mode": "script",
+      "support_tier": "tier4",
+      "hidden": false,
+      "entrypoint": "scripts/build-check.js",
+      "prompt_file": null,
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "support_scope": {
+          "runtimes": [],
+          "frameworks": [],
+          "languages": [],
+          "provider_ids": []
+        },
+        "acceptance": {}
+      }
+    },
+    {
+      "id": "script:capability-registry",
+      "source_type": "script",
+      "source_ref": "capability-registry.js",
+      "name": "capability-registry",
+      "description": "",
+      "kind": "general",
+      "execution_mode": "script",
+      "support_tier": "tier4",
+      "hidden": false,
+      "entrypoint": "scripts/capability-registry.js",
+      "prompt_file": null,
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "support_scope": {
+          "runtimes": [],
+          "frameworks": [],
+          "languages": [],
+          "provider_ids": []
+        },
+        "acceptance": {}
+      }
+    },
+    {
+      "id": "script:coder-loop",
+      "source_type": "script",
+      "source_ref": "coder-loop.js",
+      "name": "coder-loop",
+      "description": "",
+      "kind": "implementer",
+      "execution_mode": "script",
+      "support_tier": "tier4",
+      "hidden": false,
+      "entrypoint": "scripts/coder-loop.js",
+      "prompt_file": null,
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "support_scope": {
+          "runtimes": [],
+          "frameworks": [],
+          "languages": [],
+          "provider_ids": []
+        },
+        "acceptance": {}
+      }
+    },
+    {
+      "id": "script:command-registry",
+      "source_type": "script",
+      "source_ref": "command-registry.js",
+      "name": "command-registry",
+      "description": "",
+      "kind": "general",
+      "execution_mode": "script",
+      "support_tier": "tier4",
+      "hidden": false,
+      "entrypoint": "scripts/command-registry.js",
+      "prompt_file": null,
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "support_scope": {
+          "runtimes": [],
+          "frameworks": [],
+          "languages": [],
+          "provider_ids": []
+        },
+        "acceptance": {}
+      }
+    },
+    {
+      "id": "script:coverage-check",
+      "source_type": "script",
+      "source_ref": "coverage-check.js",
+      "name": "coverage-check",
+      "description": "",
+      "kind": "verifier",
+      "execution_mode": "script",
+      "support_tier": "tier4",
+      "hidden": false,
+      "entrypoint": "scripts/coverage-check.js",
+      "prompt_file": null,
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "support_scope": {
+          "runtimes": [],
+          "frameworks": [],
+          "languages": [],
+          "provider_ids": []
+        },
+        "acceptance": {}
+      }
+    },
+    {
+      "id": "script:create-check",
+      "source_type": "script",
+      "source_ref": "create-check.js",
+      "name": "create-check",
+      "description": "",
+      "kind": "verifier",
+      "execution_mode": "script",
+      "support_tier": "tier4",
+      "hidden": false,
+      "entrypoint": "scripts/create-check.js",
+      "prompt_file": null,
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "support_scope": {
+          "runtimes": [],
+          "frameworks": [],
+          "languages": [],
+          "provider_ids": []
+        },
+        "acceptance": {}
+      }
+    },
+    {
+      "id": "script:create-command",
+      "source_type": "script",
+      "source_ref": "create-command.js",
+      "name": "create-command",
+      "description": "",
+      "kind": "implementer",
+      "execution_mode": "script",
+      "support_tier": "tier4",
+      "hidden": false,
+      "entrypoint": "scripts/create-command.js",
+      "prompt_file": null,
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "support_scope": {
+          "runtimes": [],
+          "frameworks": [],
+          "languages": [],
+          "provider_ids": []
+        },
+        "acceptance": {}
+      }
+    },
+    {
+      "id": "script:create-gate",
+      "source_type": "script",
+      "source_ref": "create-gate.js",
+      "name": "create-gate",
+      "description": "",
+      "kind": "verifier",
+      "execution_mode": "script",
+      "support_tier": "tier4",
+      "hidden": false,
+      "entrypoint": "scripts/create-gate.js",
+      "prompt_file": null,
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "support_scope": {
+          "runtimes": [],
+          "frameworks": [],
+          "languages": [],
+          "provider_ids": []
+        },
+        "acceptance": {}
+      }
+    },
+    {
+      "id": "script:create-runner",
+      "source_type": "script",
+      "source_ref": "create-runner.js",
+      "name": "create-runner",
+      "description": "",
+      "kind": "implementer",
+      "execution_mode": "script",
+      "support_tier": "tier4",
+      "hidden": false,
+      "entrypoint": "scripts/create-runner.js",
+      "prompt_file": null,
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "support_scope": {
+          "runtimes": [],
+          "frameworks": [],
+          "languages": [],
+          "provider_ids": []
+        },
+        "acceptance": {}
+      }
+    },
+    {
+      "id": "script:debug-fix-loop",
+      "source_type": "script",
+      "source_ref": "debug-fix-loop.js",
+      "name": "debug-fix-loop",
+      "description": "",
+      "kind": "transformer",
+      "execution_mode": "script",
+      "support_tier": "tier4",
+      "hidden": false,
+      "entrypoint": "scripts/debug-fix-loop.js",
+      "prompt_file": null,
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "support_scope": {
+          "runtimes": [],
+          "frameworks": [],
+          "languages": [],
+          "provider_ids": []
+        },
+        "acceptance": {}
+      }
+    },
+    {
+      "id": "script:delivery-report",
+      "source_type": "script",
+      "source_ref": "delivery-report.js",
+      "name": "delivery-report",
+      "description": "",
+      "kind": "releaser",
+      "execution_mode": "script",
+      "support_tier": "tier4",
+      "hidden": false,
+      "entrypoint": "scripts/delivery-report.js",
+      "prompt_file": null,
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "support_scope": {
+          "runtimes": [],
+          "frameworks": [],
+          "languages": [],
+          "provider_ids": []
+        },
+        "acceptance": {}
+      }
+    },
+    {
+      "id": "script:detect-project-runtime",
+      "source_type": "script",
+      "source_ref": "detect-project-runtime.js",
+      "name": "detect-project-runtime",
+      "description": "",
+      "kind": "general",
+      "execution_mode": "script",
+      "support_tier": "tier4",
+      "hidden": false,
+      "entrypoint": "scripts/detect-project-runtime.js",
+      "prompt_file": null,
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "support_scope": {
+          "runtimes": [],
+          "frameworks": [],
+          "languages": [],
+          "provider_ids": []
+        },
+        "acceptance": {}
+      }
+    },
+    {
+      "id": "script:enrich-implementation-context",
+      "source_type": "script",
+      "source_ref": "enrich-implementation-context.js",
+      "name": "enrich-implementation-context",
+      "description": "",
+      "kind": "implementer",
+      "execution_mode": "script",
+      "support_tier": "tier4",
+      "hidden": false,
+      "entrypoint": "scripts/enrich-implementation-context.js",
+      "prompt_file": null,
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "support_scope": {
+          "runtimes": [],
+          "frameworks": [],
+          "languages": [],
+          "provider_ids": []
+        },
+        "acceptance": {}
+      }
+    },
+    {
+      "id": "script:env-check",
+      "source_type": "script",
+      "source_ref": "env-check.js",
+      "name": "env-check",
+      "description": "",
+      "kind": "verifier",
+      "execution_mode": "script",
+      "support_tier": "tier4",
+      "hidden": false,
+      "entrypoint": "scripts/env-check.js",
+      "prompt_file": null,
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "support_scope": {
+          "runtimes": [],
+          "frameworks": [],
+          "languages": [],
+          "provider_ids": []
+        },
+        "acceptance": {}
+      }
+    },
+    {
+      "id": "script:eoc-bridge",
+      "source_type": "script",
+      "source_ref": "eoc-bridge.js",
+      "name": "eoc-bridge",
+      "description": "",
+      "kind": "general",
+      "execution_mode": "script",
+      "support_tier": "tier4",
+      "hidden": false,
+      "entrypoint": "scripts/eoc-bridge.js",
+      "prompt_file": null,
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "support_scope": {
+          "runtimes": [],
+          "frameworks": [],
+          "languages": [],
+          "provider_ids": []
+        },
+        "acceptance": {}
+      }
+    },
+    {
+      "id": "script:eoc-metrics",
+      "source_type": "script",
+      "source_ref": "eoc-metrics.js",
+      "name": "eoc-metrics",
+      "description": "",
+      "kind": "general",
+      "execution_mode": "script",
+      "support_tier": "tier4",
+      "hidden": false,
+      "entrypoint": "scripts/eoc-metrics.js",
+      "prompt_file": null,
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "support_scope": {
+          "runtimes": [],
+          "frameworks": [],
+          "languages": [],
+          "provider_ids": []
+        },
+        "acceptance": {}
+      }
+    },
+    {
+      "id": "script:eoc-scheduler",
+      "source_type": "script",
+      "source_ref": "eoc-scheduler.js",
+      "name": "eoc-scheduler",
+      "description": "",
+      "kind": "general",
+      "execution_mode": "script",
+      "support_tier": "tier4",
+      "hidden": false,
+      "entrypoint": "scripts/eoc-scheduler.js",
+      "prompt_file": null,
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "support_scope": {
+          "runtimes": [],
+          "frameworks": [],
+          "languages": [],
+          "provider_ids": []
+        },
+        "acceptance": {}
+      }
+    },
+    {
+      "id": "script:eoc-start",
+      "source_type": "script",
+      "source_ref": "eoc-start.js",
+      "name": "eoc-start",
+      "description": "",
+      "kind": "general",
+      "execution_mode": "script",
+      "support_tier": "tier4",
+      "hidden": false,
+      "entrypoint": "scripts/eoc-start.js",
+      "prompt_file": null,
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "support_scope": {
+          "runtimes": [],
+          "frameworks": [],
+          "languages": [],
+          "provider_ids": []
+        },
+        "acceptance": {}
+      }
+    },
+    {
+      "id": "script:eoc-ultrawork",
+      "source_type": "script",
+      "source_ref": "eoc-ultrawork.js",
+      "name": "eoc-ultrawork",
+      "description": "",
+      "kind": "general",
+      "execution_mode": "script",
+      "support_tier": "tier4",
+      "hidden": false,
+      "entrypoint": "scripts/eoc-ultrawork.js",
+      "prompt_file": null,
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "support_scope": {
+          "runtimes": [],
+          "frameworks": [],
+          "languages": [],
+          "provider_ids": []
+        },
+        "acceptance": {}
+      }
+    },
+    {
+      "id": "script:failure-strategy",
+      "source_type": "script",
+      "source_ref": "failure-strategy.js",
+      "name": "failure-strategy",
+      "description": "",
+      "kind": "general",
+      "execution_mode": "script",
+      "support_tier": "tier4",
+      "hidden": false,
+      "entrypoint": "scripts/failure-strategy.js",
+      "prompt_file": null,
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "support_scope": {
+          "runtimes": [],
+          "frameworks": [],
+          "languages": [],
+          "provider_ids": []
+        },
+        "acceptance": {}
+      }
+    },
+    {
+      "id": "script:feature-acceptance",
+      "source_type": "script",
+      "source_ref": "feature-acceptance.js",
+      "name": "feature-acceptance",
+      "description": "",
+      "kind": "general",
+      "execution_mode": "script",
+      "support_tier": "tier4",
+      "hidden": false,
+      "entrypoint": "scripts/feature-acceptance.js",
+      "prompt_file": null,
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "support_scope": {
+          "runtimes": [],
+          "frameworks": [],
+          "languages": [],
+          "provider_ids": []
+        },
+        "acceptance": {}
+      }
+    },
+    {
+      "id": "script:generate-feature",
+      "source_type": "script",
+      "source_ref": "generate-feature.js",
+      "name": "generate-feature",
+      "description": "",
+      "kind": "general",
+      "execution_mode": "script",
+      "support_tier": "tier1",
+      "hidden": false,
+      "entrypoint": "scripts/generate-feature.js",
+      "prompt_file": null,
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "support_scope": {
+          "runtimes": [
+            "node",
+            "python",
+            "go"
+          ],
+          "frameworks": [
+            "node",
+            "express",
+            "fastify",
+            "nest",
+            "nestjs",
+            "koa",
+            "fastapi",
+            "go",
+            "net/http",
+            "gin",
+            "chi",
+            "fiber",
+            "echo"
+          ],
+          "provider_ids": [
+            "node-feature-bundle",
+            "fastapi-feature-bundle",
+            "go-feature-bundle"
+          ]
+        },
+        "acceptance": {
+          "provider_count": 3,
+          "delivery": "primary-feature-flow"
+        }
+      }
+    },
+    {
+      "id": "script:harness-audit",
+      "source_type": "script",
+      "source_ref": "harness-audit.js",
+      "name": "harness-audit",
+      "description": "",
+      "kind": "reviewer",
+      "execution_mode": "script",
+      "support_tier": "tier4",
+      "hidden": false,
+      "entrypoint": "scripts/harness-audit.js",
+      "prompt_file": null,
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "support_scope": {
+          "runtimes": [],
+          "frameworks": [],
+          "languages": [],
+          "provider_ids": []
+        },
+        "acceptance": {}
+      }
+    },
+    {
+      "id": "script:hashline-edit",
+      "source_type": "script",
+      "source_ref": "hashline-edit.js",
+      "name": "hashline-edit",
+      "description": "",
+      "kind": "general",
+      "execution_mode": "script",
+      "support_tier": "tier4",
+      "hidden": false,
+      "entrypoint": "scripts/hashline-edit.js",
+      "prompt_file": null,
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "support_scope": {
+          "runtimes": [],
+          "frameworks": [],
+          "languages": [],
+          "provider_ids": []
+        },
+        "acceptance": {}
+      }
+    },
+    {
+      "id": "script:historical-debt-audit",
+      "source_type": "script",
+      "source_ref": "historical-debt-audit.js",
+      "name": "historical-debt-audit",
+      "description": "",
+      "kind": "reviewer",
+      "execution_mode": "script",
+      "support_tier": "tier4",
+      "hidden": false,
+      "entrypoint": "scripts/historical-debt-audit.js",
+      "prompt_file": null,
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "support_scope": {
+          "runtimes": [],
+          "frameworks": [],
+          "languages": [],
+          "provider_ids": []
+        },
+        "acceptance": {}
+      }
+    },
+    {
+      "id": "script:hooks-config",
+      "source_type": "script",
+      "source_ref": "hooks-config.js",
+      "name": "hooks-config",
+      "description": "",
+      "kind": "general",
+      "execution_mode": "script",
+      "support_tier": "tier4",
+      "hidden": false,
+      "entrypoint": "scripts/hooks-config.js",
+      "prompt_file": null,
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "support_scope": {
+          "runtimes": [],
+          "frameworks": [],
+          "languages": [],
+          "provider_ids": []
+        },
+        "acceptance": {}
+      }
+    },
+    {
+      "id": "script:implement-task",
+      "source_type": "script",
+      "source_ref": "implement-task.js",
+      "name": "implement-task",
+      "description": "",
+      "kind": "implementer",
+      "execution_mode": "script",
+      "support_tier": "tier4",
+      "hidden": false,
+      "entrypoint": "scripts/implement-task.js",
+      "prompt_file": null,
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "support_scope": {
+          "runtimes": [],
+          "frameworks": [],
+          "languages": [],
+          "provider_ids": []
+        },
+        "acceptance": {}
+      }
+    },
+    {
+      "id": "script:internal-tools",
+      "source_type": "script",
+      "source_ref": "internal-tools.js",
+      "name": "internal-tools",
+      "description": "",
+      "kind": "general",
+      "execution_mode": "script",
+      "support_tier": "tier4",
+      "hidden": false,
+      "entrypoint": "scripts/internal-tools.js",
+      "prompt_file": null,
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "support_scope": {
+          "runtimes": [],
+          "frameworks": [],
+          "languages": [],
+          "provider_ids": []
+        },
+        "acceptance": {}
+      }
+    },
+    {
+      "id": "script:loop-start",
+      "source_type": "script",
+      "source_ref": "loop-start.js",
+      "name": "loop-start",
+      "description": "",
+      "kind": "general",
+      "execution_mode": "script",
+      "support_tier": "tier4",
+      "hidden": false,
+      "entrypoint": "scripts/loop-start.js",
+      "prompt_file": null,
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "support_scope": {
+          "runtimes": [],
+          "frameworks": [],
+          "languages": [],
+          "provider_ids": []
+        },
+        "acceptance": {}
+      }
+    },
+    {
+      "id": "script:loop-status",
+      "source_type": "script",
+      "source_ref": "loop-status.js",
+      "name": "loop-status",
+      "description": "",
+      "kind": "general",
+      "execution_mode": "script",
+      "support_tier": "tier4",
+      "hidden": false,
+      "entrypoint": "scripts/loop-status.js",
+      "prompt_file": null,
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "support_scope": {
+          "runtimes": [],
+          "frameworks": [],
+          "languages": [],
+          "provider_ids": []
+        },
+        "acceptance": {}
+      }
+    },
+    {
+      "id": "script:lsp-production-readiness",
+      "source_type": "script",
+      "source_ref": "lsp-production-readiness.js",
+      "name": "lsp-production-readiness",
+      "description": "",
+      "kind": "verifier",
+      "execution_mode": "script",
+      "support_tier": "tier4",
+      "hidden": false,
+      "entrypoint": "scripts/lsp-production-readiness.js",
+      "prompt_file": null,
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "support_scope": {
+          "runtimes": [],
+          "frameworks": [],
+          "languages": [],
+          "provider_ids": []
+        },
+        "acceptance": {}
+      }
+    },
+    {
+      "id": "script:metadata-check",
+      "source_type": "script",
+      "source_ref": "metadata-check.js",
+      "name": "metadata-check",
+      "description": "",
+      "kind": "verifier",
+      "execution_mode": "script",
+      "support_tier": "tier4",
+      "hidden": false,
+      "entrypoint": "scripts/metadata-check.js",
+      "prompt_file": null,
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "support_scope": {
+          "runtimes": [],
+          "frameworks": [],
+          "languages": [],
+          "provider_ids": []
+        },
+        "acceptance": {}
+      }
+    },
+    {
+      "id": "script:model-route",
+      "source_type": "script",
+      "source_ref": "model-route.js",
+      "name": "model-route",
+      "description": "",
+      "kind": "implementer",
+      "execution_mode": "script",
+      "support_tier": "tier4",
+      "hidden": false,
+      "entrypoint": "scripts/model-route.js",
+      "prompt_file": null,
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "support_scope": {
+          "runtimes": [],
+          "frameworks": [],
+          "languages": [],
+          "provider_ids": []
+        },
+        "acceptance": {}
+      }
+    },
+    {
+      "id": "script:observability-report",
+      "source_type": "script",
+      "source_ref": "observability-report.js",
+      "name": "observability-report",
+      "description": "",
+      "kind": "general",
+      "execution_mode": "script",
+      "support_tier": "tier4",
+      "hidden": false,
+      "entrypoint": "scripts/observability-report.js",
+      "prompt_file": null,
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "support_scope": {
+          "runtimes": [],
+          "frameworks": [],
+          "languages": [],
+          "provider_ids": []
+        },
+        "acceptance": {}
+      }
+    },
+    {
+      "id": "script:orchestrator-state",
+      "source_type": "script",
+      "source_ref": "orchestrator-state.js",
+      "name": "orchestrator-state",
+      "description": "",
+      "kind": "general",
+      "execution_mode": "script",
+      "support_tier": "tier4",
+      "hidden": false,
+      "entrypoint": "scripts/orchestrator-state.js",
+      "prompt_file": null,
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "support_scope": {
+          "runtimes": [],
+          "frameworks": [],
+          "languages": [],
+          "provider_ids": []
+        },
+        "acceptance": {}
+      }
+    },
+    {
+      "id": "script:package-hygiene",
+      "source_type": "script",
+      "source_ref": "package-hygiene.js",
+      "name": "package-hygiene",
+      "description": "",
+      "kind": "general",
+      "execution_mode": "script",
+      "support_tier": "tier4",
+      "hidden": false,
+      "entrypoint": "scripts/package-hygiene.js",
+      "prompt_file": null,
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "support_scope": {
+          "runtimes": [],
+          "frameworks": [],
+          "languages": [],
+          "provider_ids": []
+        },
+        "acceptance": {}
+      }
+    },
+    {
+      "id": "script:platform-report",
+      "source_type": "script",
+      "source_ref": "platform-report.js",
+      "name": "platform-report",
+      "description": "",
+      "kind": "general",
+      "execution_mode": "script",
+      "support_tier": "tier4",
+      "hidden": false,
+      "entrypoint": "scripts/platform-report.js",
+      "prompt_file": null,
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "support_scope": {
+          "runtimes": [],
+          "frameworks": [],
+          "languages": [],
+          "provider_ids": []
+        },
+        "acceptance": {}
+      }
+    },
+    {
+      "id": "script:preflight-production",
+      "source_type": "script",
+      "source_ref": "preflight-production.js",
+      "name": "preflight-production",
+      "description": "",
+      "kind": "verifier",
+      "execution_mode": "script",
+      "support_tier": "tier4",
+      "hidden": false,
+      "entrypoint": "scripts/preflight-production.js",
+      "prompt_file": null,
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "support_scope": {
+          "runtimes": [],
+          "frameworks": [],
+          "languages": [],
+          "provider_ids": []
+        },
+        "acceptance": {}
+      }
+    },
+    {
+      "id": "script:prepare-implementation-context",
+      "source_type": "script",
+      "source_ref": "prepare-implementation-context.js",
+      "name": "prepare-implementation-context",
+      "description": "",
+      "kind": "implementer",
+      "execution_mode": "script",
+      "support_tier": "tier4",
+      "hidden": false,
+      "entrypoint": "scripts/prepare-implementation-context.js",
+      "prompt_file": null,
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "support_scope": {
+          "runtimes": [],
+          "frameworks": [],
+          "languages": [],
+          "provider_ids": []
+        },
+        "acceptance": {}
+      }
+    },
+    {
+      "id": "script:project-profile",
+      "source_type": "script",
+      "source_ref": "project-profile.js",
+      "name": "project-profile",
+      "description": "",
+      "kind": "general",
+      "execution_mode": "script",
+      "support_tier": "tier4",
+      "hidden": false,
+      "entrypoint": "scripts/project-profile.js",
+      "prompt_file": null,
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "support_scope": {
+          "runtimes": [],
+          "frameworks": [],
+          "languages": [],
+          "provider_ids": []
+        },
+        "acceptance": {}
+      }
+    },
+    {
+      "id": "script:quality-gate",
+      "source_type": "script",
+      "source_ref": "quality-gate.js",
+      "name": "quality-gate",
+      "description": "",
+      "kind": "verifier",
+      "execution_mode": "script",
+      "support_tier": "tier4",
+      "hidden": false,
+      "entrypoint": "scripts/quality-gate.js",
+      "prompt_file": null,
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "support_scope": {
+          "runtimes": [],
+          "frameworks": [],
+          "languages": [],
+          "provider_ids": []
+        },
+        "acceptance": {}
+      }
+    },
+    {
+      "id": "script:release-audit-export",
+      "source_type": "script",
+      "source_ref": "release-audit-export.js",
+      "name": "release-audit-export",
+      "description": "",
+      "kind": "reviewer",
+      "execution_mode": "script",
+      "support_tier": "tier4",
+      "hidden": false,
+      "entrypoint": "scripts/release-audit-export.js",
+      "prompt_file": null,
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "support_scope": {
+          "runtimes": [],
+          "frameworks": [],
+          "languages": [],
+          "provider_ids": []
+        },
+        "acceptance": {}
+      }
+    },
+    {
+      "id": "script:release-check",
+      "source_type": "script",
+      "source_ref": "release-check.js",
+      "name": "release-check",
+      "description": "",
+      "kind": "verifier",
+      "execution_mode": "script",
+      "support_tier": "tier4",
+      "hidden": false,
+      "entrypoint": "scripts/release-check.js",
+      "prompt_file": null,
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "support_scope": {
+          "runtimes": [],
+          "frameworks": [],
+          "languages": [],
+          "provider_ids": []
+        },
+        "acceptance": {}
+      }
+    },
+    {
+      "id": "script:release-evidence",
+      "source_type": "script",
+      "source_ref": "release-evidence.js",
+      "name": "release-evidence",
+      "description": "",
+      "kind": "releaser",
+      "execution_mode": "script",
+      "support_tier": "tier4",
+      "hidden": false,
+      "entrypoint": "scripts/release-evidence.js",
+      "prompt_file": null,
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "support_scope": {
+          "runtimes": [],
+          "frameworks": [],
+          "languages": [],
+          "provider_ids": []
+        },
+        "acceptance": {}
+      }
+    },
+    {
+      "id": "script:release-override",
+      "source_type": "script",
+      "source_ref": "release-override.js",
+      "name": "release-override",
+      "description": "",
+      "kind": "releaser",
+      "execution_mode": "script",
+      "support_tier": "tier4",
+      "hidden": false,
+      "entrypoint": "scripts/release-override.js",
+      "prompt_file": null,
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "support_scope": {
+          "runtimes": [],
+          "frameworks": [],
+          "languages": [],
+          "provider_ids": []
+        },
+        "acceptance": {}
+      }
+    },
+    {
+      "id": "script:release-rehearsal",
+      "source_type": "script",
+      "source_ref": "release-rehearsal.js",
+      "name": "release-rehearsal",
+      "description": "",
+      "kind": "releaser",
+      "execution_mode": "script",
+      "support_tier": "tier4",
+      "hidden": false,
+      "entrypoint": "scripts/release-rehearsal.js",
+      "prompt_file": null,
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "support_scope": {
+          "runtimes": [],
+          "frameworks": [],
+          "languages": [],
+          "provider_ids": []
+        },
+        "acceptance": {}
+      }
+    },
+    {
+      "id": "script:review-gate",
+      "source_type": "script",
+      "source_ref": "review-gate.js",
+      "name": "review-gate",
+      "description": "",
+      "kind": "reviewer",
+      "execution_mode": "script",
+      "support_tier": "tier4",
+      "hidden": false,
+      "entrypoint": "scripts/review-gate.js",
+      "prompt_file": null,
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "support_scope": {
+          "runtimes": [],
+          "frameworks": [],
+          "languages": [],
+          "provider_ids": []
+        },
+        "acceptance": {}
+      }
+    },
+    {
+      "id": "script:run-tests",
+      "source_type": "script",
+      "source_ref": "run-tests.js",
+      "name": "run-tests",
+      "description": "",
+      "kind": "verifier",
+      "execution_mode": "script",
+      "support_tier": "tier4",
+      "hidden": false,
+      "entrypoint": "scripts/run-tests.js",
+      "prompt_file": null,
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "support_scope": {
+          "runtimes": [],
+          "frameworks": [],
+          "languages": [],
+          "provider_ids": []
+        },
+        "acceptance": {}
+      }
+    },
+    {
+      "id": "script:safe-apply",
+      "source_type": "script",
+      "source_ref": "safe-apply.js",
+      "name": "safe-apply",
+      "description": "",
+      "kind": "general",
+      "execution_mode": "script",
+      "support_tier": "tier4",
+      "hidden": false,
+      "entrypoint": "scripts/safe-apply.js",
+      "prompt_file": null,
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "support_scope": {
+          "runtimes": [],
+          "frameworks": [],
+          "languages": [],
+          "provider_ids": []
+        },
+        "acceptance": {}
+      }
+    },
+    {
+      "id": "script:session-validator",
+      "source_type": "script",
+      "source_ref": "session-validator.js",
+      "name": "session-validator",
+      "description": "",
+      "kind": "general",
+      "execution_mode": "script",
+      "support_tier": "tier4",
+      "hidden": false,
+      "entrypoint": "scripts/session-validator.js",
+      "prompt_file": null,
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "support_scope": {
+          "runtimes": [],
+          "frameworks": [],
+          "languages": [],
+          "provider_ids": []
+        },
+        "acceptance": {}
+      }
+    },
+    {
+      "id": "script:setup-package-manager",
+      "source_type": "script",
+      "source_ref": "setup-package-manager.js",
+      "name": "setup-package-manager",
+      "description": "",
+      "kind": "general",
+      "execution_mode": "script",
+      "support_tier": "tier4",
+      "hidden": false,
+      "entrypoint": "scripts/setup-package-manager.js",
+      "prompt_file": null,
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "support_scope": {
+          "runtimes": [],
+          "frameworks": [],
+          "languages": [],
+          "provider_ids": []
+        },
+        "acceptance": {}
+      }
+    },
+    {
+      "id": "script:skill-registry",
+      "source_type": "script",
+      "source_ref": "skill-registry.js",
+      "name": "skill-registry",
+      "description": "",
+      "kind": "general",
+      "execution_mode": "script",
+      "support_tier": "tier4",
+      "hidden": false,
+      "entrypoint": "scripts/skill-registry.js",
+      "prompt_file": null,
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "support_scope": {
+          "runtimes": [],
+          "frameworks": [],
+          "languages": [],
+          "provider_ids": []
+        },
+        "acceptance": {}
+      }
+    },
+    {
+      "id": "script:skill-runner",
+      "source_type": "script",
+      "source_ref": "skill-runner.js",
+      "name": "skill-runner",
+      "description": "",
+      "kind": "implementer",
+      "execution_mode": "script",
+      "support_tier": "tier2",
+      "hidden": false,
+      "entrypoint": "scripts/skill-runner.js",
+      "prompt_file": null,
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "support_scope": {
+          "runtimes": [
+            "python",
+            "go",
+            "java"
+          ],
+          "languages": [
+            "python",
+            "go",
+            "java"
+          ],
+          "frameworks": [
+            "django",
+            "fastapi",
+            "gin",
+            "echo",
+            "fiber",
+            "chi",
+            "springboot"
+          ],
+          "skill_ids": [
+            "add-django-model",
+            "add-fastapi-endpoint",
+            "add-go-handler",
+            "add-spring-controller"
+          ]
+        },
+        "acceptance": {
+          "accepted_skill_count": 4
+        }
+      }
+    },
+    {
+      "id": "script:support-tier-audit",
+      "source_type": "script",
+      "source_ref": "support-tier-audit.js",
+      "name": "support-tier-audit",
+      "description": "",
+      "kind": "reviewer",
+      "execution_mode": "script",
+      "support_tier": "tier4",
+      "hidden": false,
+      "entrypoint": "scripts/support-tier-audit.js",
+      "prompt_file": null,
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "support_scope": {
+          "runtimes": [],
+          "frameworks": [],
+          "languages": [],
+          "provider_ids": []
+        },
+        "acceptance": {}
+      }
+    },
+    {
+      "id": "script:sync-opencode-config",
+      "source_type": "script",
+      "source_ref": "sync-opencode-config.js",
+      "name": "sync-opencode-config",
+      "description": "",
+      "kind": "general",
+      "execution_mode": "script",
+      "support_tier": "tier4",
+      "hidden": false,
+      "entrypoint": "scripts/sync-opencode-config.js",
+      "prompt_file": null,
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "support_scope": {
+          "runtimes": [],
+          "frameworks": [],
+          "languages": [],
+          "provider_ids": []
+        },
+        "acceptance": {}
+      }
+    },
+    {
+      "id": "script:sync-project-memory",
+      "source_type": "script",
+      "source_ref": "sync-project-memory.js",
+      "name": "sync-project-memory",
+      "description": "",
+      "kind": "general",
+      "execution_mode": "script",
+      "support_tier": "tier4",
+      "hidden": false,
+      "entrypoint": "scripts/sync-project-memory.js",
+      "prompt_file": null,
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "support_scope": {
+          "runtimes": [],
+          "frameworks": [],
+          "languages": [],
+          "provider_ids": []
+        },
+        "acceptance": {}
+      }
+    },
+    {
+      "id": "script:syntax-check",
+      "source_type": "script",
+      "source_ref": "syntax-check.js",
+      "name": "syntax-check",
+      "description": "",
+      "kind": "verifier",
+      "execution_mode": "script",
+      "support_tier": "tier4",
+      "hidden": false,
+      "entrypoint": "scripts/syntax-check.js",
+      "prompt_file": null,
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "support_scope": {
+          "runtimes": [],
+          "frameworks": [],
+          "languages": [],
+          "provider_ids": []
+        },
+        "acceptance": {}
+      }
+    },
+    {
+      "id": "script:test-stability",
+      "source_type": "script",
+      "source_ref": "test-stability.js",
+      "name": "test-stability",
+      "description": "",
+      "kind": "verifier",
+      "execution_mode": "script",
+      "support_tier": "tier4",
+      "hidden": false,
+      "entrypoint": "scripts/test-stability.js",
+      "prompt_file": null,
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "support_scope": {
+          "runtimes": [],
+          "frameworks": [],
+          "languages": [],
+          "provider_ids": []
+        },
+        "acceptance": {}
+      }
+    },
+    {
+      "id": "script:ts-typecheck",
+      "source_type": "script",
+      "source_ref": "ts-typecheck.js",
+      "name": "ts-typecheck",
+      "description": "",
+      "kind": "verifier",
+      "execution_mode": "script",
+      "support_tier": "tier4",
+      "hidden": false,
+      "entrypoint": "scripts/ts-typecheck.js",
+      "prompt_file": null,
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "support_scope": {
+          "runtimes": [],
+          "frameworks": [],
+          "languages": [],
+          "provider_ids": []
+        },
+        "acceptance": {}
+      }
+    },
+    {
+      "id": "script:typecheck",
+      "source_type": "script",
+      "source_ref": "typecheck.js",
+      "name": "typecheck",
+      "description": "",
+      "kind": "verifier",
+      "execution_mode": "script",
+      "support_tier": "tier4",
+      "hidden": false,
+      "entrypoint": "scripts/typecheck.js",
+      "prompt_file": null,
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "support_scope": {
+          "runtimes": [],
+          "frameworks": [],
+          "languages": [],
+          "provider_ids": []
+        },
+        "acceptance": {}
+      }
+    },
+    {
+      "id": "skill:add-cli-command",
+      "source_type": "skill",
+      "source_ref": "add-cli-command",
+      "name": "add-cli-command",
+      "description": "Scaffold a starter CLI command for the detected runtime.",
+      "kind": "implementer",
+      "execution_mode": "hybrid",
+      "support_tier": "tier2",
+      "hidden": false,
+      "entrypoint": "skills/add-cli-command/SKILL.md",
+      "prompt_file": "skills/add-cli-command/SKILL.md",
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "level": "L3",
+        "executable": true,
+        "task_family": "cli",
+        "support_scope": {
+          "runtimes": [
+            "node",
+            "python",
+            "go",
+            "java"
+          ],
+          "languages": [
+            "javascript",
+            "typescript",
+            "python",
+            "go",
+            "java"
+          ],
+          "frameworks": [
+            "node",
+            "click",
+            "cobra",
+            "picocli"
+          ]
+        },
+        "runtimes": [
+          "node",
+          "python",
+          "go",
+          "java"
+        ],
+        "languages": [
+          "javascript",
+          "typescript",
+          "python",
+          "go",
+          "java"
+        ],
+        "frameworks": [
+          "node",
+          "click",
+          "cobra",
+          "picocli"
+        ],
+        "verify": [
+          "npm run build",
+          "python -m compileall .",
+          "go test ./...",
+          "./gradlew build"
+        ],
+        "actions": [
+          {
+            "id": "node",
+            "type": "template_scaffold"
+          },
+          {
+            "id": "python",
+            "type": "template_scaffold"
+          },
+          {
+            "id": "go",
+            "type": "template_scaffold"
+          },
+          {
+            "id": "java",
+            "type": "template_scaffold"
+          }
+        ],
+        "files": {
+          "skill": "skills/add-cli-command/SKILL.md",
+          "manifest": "skills/add-cli-command/manifest.json"
+        }
+      }
+    },
+    {
+      "id": "skill:add-config-module",
+      "source_type": "skill",
+      "source_ref": "add-config-module",
+      "name": "add-config-module",
+      "description": "Scaffold a config task bundle with config module, starter test, env example support, docs, and integration guide.",
+      "kind": "implementer",
+      "execution_mode": "hybrid",
+      "support_tier": "tier2",
+      "hidden": false,
+      "entrypoint": "skills/add-config-module/SKILL.md",
+      "prompt_file": "skills/add-config-module/SKILL.md",
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "level": "L3",
+        "executable": true,
+        "task_family": "config",
+        "support_scope": {
+          "runtimes": [
+            "node",
+            "python"
+          ],
+          "languages": [
+            "javascript",
+            "typescript",
+            "python"
+          ],
+          "frameworks": [
+            "node",
+            "python"
+          ]
+        },
+        "runtimes": [
+          "node",
+          "python"
+        ],
+        "languages": [
+          "javascript",
+          "typescript",
+          "python"
+        ],
+        "frameworks": [
+          "node",
+          "python"
+        ],
+        "verify": [
+          "npm run build",
+          "pytest -q"
+        ],
+        "actions": [
+          {
+            "id": "node",
+            "type": "template_bundle"
+          },
+          {
+            "id": "python",
+            "type": "template_bundle"
+          }
+        ],
+        "files": {
+          "skill": "skills/add-config-module/SKILL.md",
+          "manifest": "skills/add-config-module/manifest.json"
+        }
+      }
+    },
+    {
+      "id": "skill:add-django-model",
+      "source_type": "skill",
+      "source_ref": "add-django-model",
+      "name": "add-django-model",
+      "description": "Scaffold a Django model task bundle with model module, admin registration support, starter test, docs, and integration guide.",
+      "kind": "implementer",
+      "execution_mode": "hybrid",
+      "support_tier": "tier2",
+      "hidden": false,
+      "entrypoint": "skills/add-django-model/SKILL.md",
+      "prompt_file": "skills/add-django-model/SKILL.md",
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "level": "L3",
+        "executable": true,
+        "task_family": "model",
+        "support_scope": {
+          "runtimes": [
+            "python"
+          ],
+          "languages": [
+            "python"
+          ],
+          "frameworks": [
+            "django"
+          ]
+        },
+        "runtimes": [
+          "python"
+        ],
+        "languages": [
+          "python"
+        ],
+        "frameworks": [
+          "django"
+        ],
+        "verify": [
+          "python manage.py makemigrations --check || true",
+          "pytest -q"
+        ],
+        "actions": [
+          {
+            "id": "python",
+            "type": "locator_template_bundle"
+          }
+        ],
+        "files": {
+          "skill": "skills/add-django-model/SKILL.md",
+          "manifest": "skills/add-django-model/manifest.json"
+        }
+      }
+    },
+    {
+      "id": "skill:add-env-example",
+      "source_type": "skill",
+      "source_ref": "add-env-example",
+      "name": "add-env-example",
+      "description": "Scaffold an env example snippet with a required variable.",
+      "kind": "implementer",
+      "execution_mode": "hybrid",
+      "support_tier": "tier2",
+      "hidden": false,
+      "entrypoint": "skills/add-env-example/SKILL.md",
+      "prompt_file": "skills/add-env-example/SKILL.md",
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "level": "L3",
+        "executable": true,
+        "task_family": "config",
+        "support_scope": {
+          "runtimes": [],
+          "languages": [
+            "shell"
+          ],
+          "frameworks": [
+            "dotenv"
+          ]
+        },
+        "runtimes": [],
+        "languages": [
+          "shell"
+        ],
+        "frameworks": [
+          "dotenv"
+        ],
+        "verify": [
+          "cat .env.example"
+        ],
+        "actions": [
+          {
+            "id": "generic",
+            "type": "template_scaffold"
+          }
+        ],
+        "files": {
+          "skill": "skills/add-env-example/SKILL.md",
+          "manifest": "skills/add-env-example/manifest.json"
+        }
+      }
+    },
+    {
+      "id": "skill:add-express-route",
+      "source_type": "skill",
+      "source_ref": "add-express-route",
+      "name": "add-express-route",
+      "description": "Scaffold an Express route task bundle with route module, service, mount helper, route test, and API note.",
+      "kind": "implementer",
+      "execution_mode": "hybrid",
+      "support_tier": "tier2",
+      "hidden": false,
+      "entrypoint": "skills/add-express-route/SKILL.md",
+      "prompt_file": "skills/add-express-route/SKILL.md",
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "level": "L3",
+        "executable": true,
+        "task_family": "endpoint",
+        "support_scope": {
+          "runtimes": [
+            "node"
+          ],
+          "languages": [
+            "javascript",
+            "typescript"
+          ],
+          "frameworks": [
+            "express"
+          ]
+        },
+        "runtimes": [
+          "node"
+        ],
+        "languages": [
+          "javascript",
+          "typescript"
+        ],
+        "frameworks": [
+          "express"
+        ],
+        "verify": [
+          "npm run build",
+          "npm test"
+        ],
+        "actions": [
+          {
+            "id": "node",
+            "type": "template_bundle"
+          }
+        ],
+        "files": {
+          "skill": "skills/add-express-route/SKILL.md",
+          "manifest": "skills/add-express-route/manifest.json"
+        }
+      }
+    },
+    {
+      "id": "skill:add-fastapi-endpoint",
+      "source_type": "skill",
+      "source_ref": "add-fastapi-endpoint",
+      "name": "add-fastapi-endpoint",
+      "description": "Scaffold a FastAPI endpoint task bundle with router, service, wiring helper, pytest, and API note.",
+      "kind": "implementer",
+      "execution_mode": "hybrid",
+      "support_tier": "tier2",
+      "hidden": false,
+      "entrypoint": "skills/add-fastapi-endpoint/SKILL.md",
+      "prompt_file": "skills/add-fastapi-endpoint/SKILL.md",
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "level": "L3",
+        "executable": true,
+        "task_family": "endpoint",
+        "support_scope": {
+          "runtimes": [
+            "python"
+          ],
+          "languages": [
+            "python"
+          ],
+          "frameworks": [
+            "fastapi"
+          ]
+        },
+        "runtimes": [
+          "python"
+        ],
+        "languages": [
+          "python"
+        ],
+        "frameworks": [
+          "fastapi"
+        ],
+        "verify": [
+          "python -m pytest -q"
+        ],
+        "actions": [
+          {
+            "id": "python",
+            "type": "locator_template_bundle"
+          }
+        ],
+        "files": {
+          "skill": "skills/add-fastapi-endpoint/SKILL.md",
+          "manifest": "skills/add-fastapi-endpoint/manifest.json"
+        }
+      }
+    },
+    {
+      "id": "skill:add-go-handler",
+      "source_type": "skill",
+      "source_ref": "add-go-handler",
+      "name": "add-go-handler",
+      "description": "Scaffold a Go HTTP task bundle with handler, route registration, test, and API note.",
+      "kind": "implementer",
+      "execution_mode": "hybrid",
+      "support_tier": "tier2",
+      "hidden": false,
+      "entrypoint": "skills/add-go-handler/SKILL.md",
+      "prompt_file": "skills/add-go-handler/SKILL.md",
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "level": "L3",
+        "executable": true,
+        "task_family": "endpoint",
+        "support_scope": {
+          "runtimes": [
+            "go"
+          ],
+          "languages": [
+            "go"
+          ],
+          "frameworks": [
+            "gin",
+            "echo",
+            "fiber",
+            "chi"
+          ]
+        },
+        "runtimes": [
+          "go"
+        ],
+        "languages": [
+          "go"
+        ],
+        "frameworks": [
+          "gin",
+          "echo",
+          "fiber",
+          "chi"
+        ],
+        "verify": [
+          "go test ./..."
+        ],
+        "actions": [
+          {
+            "id": "go",
+            "type": "locator_template_bundle"
+          }
+        ],
+        "files": {
+          "skill": "skills/add-go-handler/SKILL.md",
+          "manifest": "skills/add-go-handler/manifest.json"
+        }
+      }
+    },
+    {
+      "id": "skill:add-react-component",
+      "source_type": "skill",
+      "source_ref": "add-react-component",
+      "name": "add-react-component",
+      "description": "Scaffold a React component starter.",
+      "kind": "implementer",
+      "execution_mode": "hybrid",
+      "support_tier": "tier2",
+      "hidden": false,
+      "entrypoint": "skills/add-react-component/SKILL.md",
+      "prompt_file": "skills/add-react-component/SKILL.md",
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "level": "L3",
+        "executable": true,
+        "task_family": "component",
+        "support_scope": {
+          "runtimes": [
+            "node"
+          ],
+          "languages": [
+            "javascript",
+            "typescript"
+          ],
+          "frameworks": [
+            "react"
+          ]
+        },
+        "runtimes": [
+          "node"
+        ],
+        "languages": [
+          "javascript",
+          "typescript"
+        ],
+        "frameworks": [
+          "react"
+        ],
+        "verify": [
+          "npm run build",
+          "npm test"
+        ],
+        "actions": [
+          {
+            "id": "node",
+            "type": "template_scaffold"
+          }
+        ],
+        "files": {
+          "skill": "skills/add-react-component/SKILL.md",
+          "manifest": "skills/add-react-component/manifest.json"
+        }
+      }
+    },
+    {
+      "id": "skill:add-service-module",
+      "source_type": "skill",
+      "source_ref": "add-service-module",
+      "name": "add-service-module",
+      "description": "Scaffold a service task bundle with service module, starter test, docs, and integration guide for common runtimes.",
+      "kind": "implementer",
+      "execution_mode": "hybrid",
+      "support_tier": "tier2",
+      "hidden": false,
+      "entrypoint": "skills/add-service-module/SKILL.md",
+      "prompt_file": "skills/add-service-module/SKILL.md",
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "level": "L3",
+        "executable": true,
+        "task_family": "service",
+        "support_scope": {
+          "runtimes": [
+            "node",
+            "python",
+            "go",
+            "java"
+          ],
+          "languages": [
+            "javascript",
+            "typescript",
+            "python",
+            "go",
+            "java"
+          ],
+          "frameworks": [
+            "node",
+            "python",
+            "go",
+            "springboot"
+          ]
+        },
+        "runtimes": [
+          "node",
+          "python",
+          "go",
+          "java"
+        ],
+        "languages": [
+          "javascript",
+          "typescript",
+          "python",
+          "go",
+          "java"
+        ],
+        "frameworks": [
+          "node",
+          "python",
+          "go",
+          "springboot"
+        ],
+        "verify": [
+          "npm run build",
+          "pytest -q",
+          "go test ./...",
+          "./gradlew build"
+        ],
+        "actions": [
+          {
+            "id": "node",
+            "type": "template_bundle"
+          },
+          {
+            "id": "python",
+            "type": "template_bundle"
+          },
+          {
+            "id": "go",
+            "type": "template_bundle"
+          },
+          {
+            "id": "java",
+            "type": "template_bundle"
+          }
+        ],
+        "files": {
+          "skill": "skills/add-service-module/SKILL.md",
+          "manifest": "skills/add-service-module/manifest.json"
+        }
+      }
+    },
+    {
+      "id": "skill:add-spring-controller",
+      "source_type": "skill",
+      "source_ref": "add-spring-controller",
+      "name": "add-spring-controller",
+      "description": "Scaffold a Spring controller task bundle with controller, service, MockMvc test, and API note.",
+      "kind": "implementer",
+      "execution_mode": "hybrid",
+      "support_tier": "tier2",
+      "hidden": false,
+      "entrypoint": "skills/add-spring-controller/SKILL.md",
+      "prompt_file": "skills/add-spring-controller/SKILL.md",
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "level": "L3",
+        "executable": true,
+        "task_family": "endpoint",
+        "support_scope": {
+          "runtimes": [
+            "java"
+          ],
+          "languages": [
+            "java"
+          ],
+          "frameworks": [
+            "springboot"
+          ]
+        },
+        "runtimes": [
+          "java"
+        ],
+        "languages": [
+          "java"
+        ],
+        "frameworks": [
+          "springboot"
+        ],
+        "verify": [
+          "./mvnw test",
+          "./gradlew test"
+        ],
+        "actions": [
+          {
+            "id": "java",
+            "type": "locator_template_bundle"
+          }
+        ],
+        "files": {
+          "skill": "skills/add-spring-controller/SKILL.md",
+          "manifest": "skills/add-spring-controller/manifest.json"
+        }
+      }
+    },
+    {
+      "id": "skill:add-unit-test",
+      "source_type": "skill",
+      "source_ref": "add-unit-test",
+      "name": "add-unit-test",
+      "description": "Scaffold a unit-test task bundle with starter test, fixture/testdata support, docs, and integration guide.",
+      "kind": "verifier",
+      "execution_mode": "hybrid",
+      "support_tier": "tier2",
+      "hidden": false,
+      "entrypoint": "skills/add-unit-test/SKILL.md",
+      "prompt_file": "skills/add-unit-test/SKILL.md",
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "level": "L3",
+        "executable": true,
+        "task_family": "test",
+        "support_scope": {
+          "runtimes": [
+            "node",
+            "python",
+            "go",
+            "java"
+          ],
+          "languages": [
+            "javascript",
+            "typescript",
+            "python",
+            "go",
+            "java"
+          ],
+          "frameworks": [
+            "vitest",
+            "jest",
+            "pytest",
+            "go test",
+            "junit"
+          ]
+        },
+        "runtimes": [
+          "node",
+          "python",
+          "go",
+          "java"
+        ],
+        "languages": [
+          "javascript",
+          "typescript",
+          "python",
+          "go",
+          "java"
+        ],
+        "frameworks": [
+          "vitest",
+          "jest",
+          "pytest",
+          "go test",
+          "junit"
+        ],
+        "verify": [
+          "npm test",
+          "pytest -q",
+          "go test ./...",
+          "./gradlew test"
+        ],
+        "actions": [
+          {
+            "id": "node",
+            "type": "template_bundle"
+          },
+          {
+            "id": "python",
+            "type": "template_bundle"
+          },
+          {
+            "id": "go",
+            "type": "template_bundle"
+          },
+          {
+            "id": "java",
+            "type": "template_bundle"
+          }
+        ],
+        "files": {
+          "skill": "skills/add-unit-test/SKILL.md",
+          "manifest": "skills/add-unit-test/manifest.json"
+        }
+      }
+    },
+    {
+      "id": "skill:add-vue-component",
+      "source_type": "skill",
+      "source_ref": "add-vue-component",
+      "name": "add-vue-component",
+      "description": "Scaffold a Vue single-file component starter.",
+      "kind": "implementer",
+      "execution_mode": "hybrid",
+      "support_tier": "tier2",
+      "hidden": false,
+      "entrypoint": "skills/add-vue-component/SKILL.md",
+      "prompt_file": "skills/add-vue-component/SKILL.md",
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "level": "L3",
+        "executable": true,
+        "task_family": "component",
+        "support_scope": {
+          "runtimes": [
+            "node"
+          ],
+          "languages": [
+            "javascript",
+            "typescript"
+          ],
+          "frameworks": [
+            "vue"
+          ]
+        },
+        "runtimes": [
+          "node"
+        ],
+        "languages": [
+          "javascript",
+          "typescript"
+        ],
+        "frameworks": [
+          "vue"
+        ],
+        "verify": [
+          "npm run build",
+          "npm test"
+        ],
+        "actions": [
+          {
+            "id": "node",
+            "type": "template_scaffold"
+          }
+        ],
+        "files": {
+          "skill": "skills/add-vue-component/SKILL.md",
+          "manifest": "skills/add-vue-component/manifest.json"
+        }
+      }
+    },
+    {
+      "id": "skill:api-design",
+      "source_type": "skill",
+      "source_ref": "api-design",
+      "name": "api-design",
+      "description": "REST API design patterns including resource naming, status codes, pagination, filtering, error responses, versioning, and rate limiting for production APIs.",
+      "kind": "general",
+      "execution_mode": "document",
+      "support_tier": "tier4",
+      "hidden": false,
+      "entrypoint": "skills/api-design/SKILL.md",
+      "prompt_file": "skills/api-design/SKILL.md",
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "level": "L1",
+        "executable": false,
+        "task_family": null,
+        "support_scope": {
+          "runtimes": [],
+          "languages": [
+            "go",
+            "java",
+            "javascript",
+            "python",
+            "typescript"
+          ],
+          "frameworks": []
+        },
+        "runtimes": [],
+        "languages": [
+          "go",
+          "java",
+          "javascript",
+          "python",
+          "typescript"
+        ],
+        "frameworks": [],
+        "verify": [],
+        "actions": [],
+        "files": {
+          "skill": "skills/api-design/SKILL.md",
+          "manifest": "skills/api-design/manifest.json"
+        }
+      }
+    },
+    {
+      "id": "skill:backend-patterns",
+      "source_type": "skill",
+      "source_ref": "backend-patterns",
+      "name": "backend-patterns",
+      "description": "Backend architecture patterns, API design, database optimization, and server-side best practices for Node.js, Express, and Next.js API routes.",
+      "kind": "general",
+      "execution_mode": "document",
+      "support_tier": "tier4",
+      "hidden": false,
+      "entrypoint": "skills/backend-patterns/SKILL.md",
+      "prompt_file": "skills/backend-patterns/SKILL.md",
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "level": "L1",
+        "executable": false,
+        "task_family": null,
+        "support_scope": {
+          "runtimes": [],
+          "languages": [
+            "go",
+            "java",
+            "javascript",
+            "python",
+            "typescript"
+          ],
+          "frameworks": []
+        },
+        "runtimes": [],
+        "languages": [
+          "go",
+          "java",
+          "javascript",
+          "python",
+          "typescript"
+        ],
+        "frameworks": [],
+        "verify": [],
+        "actions": [],
+        "files": {
+          "skill": "skills/backend-patterns/SKILL.md",
+          "manifest": "skills/backend-patterns/manifest.json"
+        }
+      }
+    },
+    {
+      "id": "skill:claude-public-tooling",
+      "source_type": "skill",
+      "source_ref": "claude-public-tooling",
+      "name": "claude-public-tooling",
+      "description": "Public-feature parity guidance for Claude-style coding tools using official docs only (slash commands, hooks, MCP, context compaction, health checks).",
+      "kind": "general",
+      "execution_mode": "document",
+      "support_tier": "tier4",
+      "hidden": false,
+      "entrypoint": "skills/claude-public-tooling/SKILL.md",
+      "prompt_file": "skills/claude-public-tooling/SKILL.md",
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "level": "L1",
+        "executable": false,
+        "task_family": null,
+        "support_scope": {
+          "runtimes": [],
+          "languages": [],
+          "frameworks": []
+        },
+        "runtimes": [],
+        "languages": [],
+        "frameworks": [],
+        "verify": [],
+        "actions": [],
+        "files": {
+          "skill": "skills/claude-public-tooling/SKILL.md",
+          "manifest": "skills/claude-public-tooling/manifest.json"
+        }
+      }
+    },
+    {
+      "id": "skill:coding-standards",
+      "source_type": "skill",
+      "source_ref": "coding-standards",
+      "name": "coding-standards",
+      "description": "Baseline cross-project coding conventions for naming, readability, immutability, and code-quality review. Use detailed frontend or backend skills for framework-specific patterns.",
+      "kind": "general",
+      "execution_mode": "document",
+      "support_tier": "tier4",
+      "hidden": false,
+      "entrypoint": "skills/coding-standards/SKILL.md",
+      "prompt_file": "skills/coding-standards/SKILL.md",
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "level": "L1",
+        "executable": false,
+        "task_family": null,
+        "support_scope": {
+          "runtimes": [],
+          "languages": [
+            "go",
+            "java",
+            "javascript",
+            "python",
+            "typescript"
+          ],
+          "frameworks": [
+            "react",
+            "vue"
+          ]
+        },
+        "runtimes": [],
+        "languages": [
+          "go",
+          "java",
+          "javascript",
+          "python",
+          "typescript"
+        ],
+        "frameworks": [
+          "react",
+          "vue"
+        ],
+        "verify": [],
+        "actions": [],
+        "files": {
+          "skill": "skills/coding-standards/SKILL.md",
+          "manifest": "skills/coding-standards/manifest.json"
+        }
+      }
+    },
+    {
+      "id": "skill:content-hash-cache-pattern",
+      "source_type": "skill",
+      "source_ref": "content-hash-cache-pattern",
+      "name": "content-hash-cache-pattern",
+      "description": "Cache expensive file processing results using SHA-256 content hashes — path-independent, auto-invalidating, with service layer separation.",
+      "kind": "general",
+      "execution_mode": "document",
+      "support_tier": "tier4",
+      "hidden": false,
+      "entrypoint": "skills/content-hash-cache-pattern/SKILL.md",
+      "prompt_file": "skills/content-hash-cache-pattern/SKILL.md",
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "level": "L1",
+        "executable": false,
+        "task_family": null,
+        "support_scope": {
+          "runtimes": [],
+          "languages": [],
+          "frameworks": []
+        },
+        "runtimes": [],
+        "languages": [],
+        "frameworks": [],
+        "verify": [],
+        "actions": [],
+        "files": {
+          "skill": "skills/content-hash-cache-pattern/SKILL.md",
+          "manifest": "skills/content-hash-cache-pattern/manifest.json"
+        }
+      }
+    },
+    {
+      "id": "skill:cost-aware-llm-pipeline",
+      "source_type": "skill",
+      "source_ref": "cost-aware-llm-pipeline",
+      "name": "cost-aware-llm-pipeline",
+      "description": "Cost optimization patterns for LLM API usage — model routing by task complexity, budget tracking, retry logic, and prompt caching.",
+      "kind": "general",
+      "execution_mode": "document",
+      "support_tier": "tier4",
+      "hidden": false,
+      "entrypoint": "skills/cost-aware-llm-pipeline/SKILL.md",
+      "prompt_file": "skills/cost-aware-llm-pipeline/SKILL.md",
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "level": "L1",
+        "executable": false,
+        "task_family": null,
+        "support_scope": {
+          "runtimes": [],
+          "languages": [
+            "go",
+            "java",
+            "javascript",
+            "python",
+            "typescript"
+          ],
+          "frameworks": []
+        },
+        "runtimes": [],
+        "languages": [
+          "go",
+          "java",
+          "javascript",
+          "python",
+          "typescript"
+        ],
+        "frameworks": [],
+        "verify": [],
+        "actions": [],
+        "files": {
+          "skill": "skills/cost-aware-llm-pipeline/SKILL.md",
+          "manifest": "skills/cost-aware-llm-pipeline/manifest.json"
+        }
+      }
+    },
+    {
+      "id": "skill:cpp-coding-standards",
+      "source_type": "skill",
+      "source_ref": "cpp-coding-standards",
+      "name": "cpp-coding-standards",
+      "description": "C++ coding standards based on the C++ Core Guidelines (isocpp.github.io). Use when writing, reviewing, or refactoring C++ code to enforce modern, safe, and idiomatic practices.",
+      "kind": "general",
+      "execution_mode": "document",
+      "support_tier": "tier4",
+      "hidden": false,
+      "entrypoint": "skills/cpp-coding-standards/SKILL.md",
+      "prompt_file": "skills/cpp-coding-standards/SKILL.md",
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "level": "L1",
+        "executable": false,
+        "task_family": null,
+        "support_scope": {
+          "runtimes": [],
+          "languages": [
+            "cpp"
+          ],
+          "frameworks": []
+        },
+        "runtimes": [],
+        "languages": [
+          "cpp"
+        ],
+        "frameworks": [],
+        "verify": [],
+        "actions": [],
+        "files": {
+          "skill": "skills/cpp-coding-standards/SKILL.md",
+          "manifest": "skills/cpp-coding-standards/manifest.json"
+        }
+      }
+    },
+    {
+      "id": "skill:cpp-testing",
+      "source_type": "skill",
+      "source_ref": "cpp-testing",
+      "name": "cpp-testing",
+      "description": "Use only when writing/updating/fixing C++ tests, configuring GoogleTest/CTest, diagnosing failing or flaky tests, or adding coverage/sanitizers.",
+      "kind": "verifier",
+      "execution_mode": "document",
+      "support_tier": "tier4",
+      "hidden": false,
+      "entrypoint": "skills/cpp-testing/SKILL.md",
+      "prompt_file": "skills/cpp-testing/SKILL.md",
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "level": "L1",
+        "executable": false,
+        "task_family": null,
+        "support_scope": {
+          "runtimes": [],
+          "languages": [
+            "cpp",
+            "go"
+          ],
+          "frameworks": []
+        },
+        "runtimes": [],
+        "languages": [
+          "cpp",
+          "go"
+        ],
+        "frameworks": [],
+        "verify": [],
+        "actions": [],
+        "files": {
+          "skill": "skills/cpp-testing/SKILL.md",
+          "manifest": "skills/cpp-testing/manifest.json"
+        }
+      }
+    },
+    {
+      "id": "skill:database-migrations",
+      "source_type": "skill",
+      "source_ref": "database-migrations",
+      "name": "database-migrations",
+      "description": "Database migration best practices for schema changes, data migrations, rollbacks, and zero-downtime deployments across PostgreSQL, MySQL, and common ORMs (Prisma, Drizzle, Kysely, Django, TypeORM, golang-migrate).",
+      "kind": "general",
+      "execution_mode": "document",
+      "support_tier": "tier4",
+      "hidden": false,
+      "entrypoint": "skills/database-migrations/SKILL.md",
+      "prompt_file": "skills/database-migrations/SKILL.md",
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "level": "L1",
+        "executable": false,
+        "task_family": null,
+        "support_scope": {
+          "runtimes": [],
+          "languages": [
+            "go",
+            "python",
+            "sql"
+          ],
+          "frameworks": [
+            "django",
+            "postgres"
+          ]
+        },
+        "runtimes": [],
+        "languages": [
+          "go",
+          "python",
+          "sql"
+        ],
+        "frameworks": [
+          "django",
+          "postgres"
+        ],
+        "verify": [],
+        "actions": [],
+        "files": {
+          "skill": "skills/database-migrations/SKILL.md",
+          "manifest": "skills/database-migrations/manifest.json"
+        }
+      }
+    },
+    {
+      "id": "skill:deployment-patterns",
+      "source_type": "skill",
+      "source_ref": "deployment-patterns",
+      "name": "deployment-patterns",
+      "description": "Deployment workflows, CI/CD pipeline patterns, Docker containerization, health checks, rollback strategies, and production readiness checklists for web applications.",
+      "kind": "releaser",
+      "execution_mode": "document",
+      "support_tier": "tier4",
+      "hidden": false,
+      "entrypoint": "skills/deployment-patterns/SKILL.md",
+      "prompt_file": "skills/deployment-patterns/SKILL.md",
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "level": "L1",
+        "executable": false,
+        "task_family": null,
+        "support_scope": {
+          "runtimes": [],
+          "languages": [
+            "docker"
+          ],
+          "frameworks": [
+            "docker"
+          ]
+        },
+        "runtimes": [],
+        "languages": [
+          "docker"
+        ],
+        "frameworks": [
+          "docker"
+        ],
+        "verify": [],
+        "actions": [],
+        "files": {
+          "skill": "skills/deployment-patterns/SKILL.md",
+          "manifest": "skills/deployment-patterns/manifest.json"
+        }
+      }
+    },
+    {
+      "id": "skill:django-patterns",
+      "source_type": "skill",
+      "source_ref": "django-patterns",
+      "name": "django-patterns",
+      "description": "Django architecture patterns, REST API design with DRF, ORM best practices, caching, signals, middleware, and production-grade Django apps.",
+      "kind": "general",
+      "execution_mode": "document",
+      "support_tier": "tier4",
+      "hidden": false,
+      "entrypoint": "skills/django-patterns/SKILL.md",
+      "prompt_file": "skills/django-patterns/SKILL.md",
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "level": "L1",
+        "executable": false,
+        "task_family": null,
+        "support_scope": {
+          "runtimes": [],
+          "languages": [
+            "go",
+            "java",
+            "javascript",
+            "python",
+            "typescript"
+          ],
+          "frameworks": [
+            "django"
+          ]
+        },
+        "runtimes": [],
+        "languages": [
+          "go",
+          "java",
+          "javascript",
+          "python",
+          "typescript"
+        ],
+        "frameworks": [
+          "django"
+        ],
+        "verify": [],
+        "actions": [],
+        "files": {
+          "skill": "skills/django-patterns/SKILL.md",
+          "manifest": "skills/django-patterns/manifest.json"
+        }
+      }
+    },
+    {
+      "id": "skill:django-security",
+      "source_type": "skill",
+      "source_ref": "django-security",
+      "name": "django-security",
+      "description": "Django security best practices, authentication, authorization, CSRF protection, SQL injection prevention, XSS prevention, and secure deployment configurations.",
+      "kind": "reviewer",
+      "execution_mode": "document",
+      "support_tier": "tier4",
+      "hidden": false,
+      "entrypoint": "skills/django-security/SKILL.md",
+      "prompt_file": "skills/django-security/SKILL.md",
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "level": "L1",
+        "executable": false,
+        "task_family": null,
+        "support_scope": {
+          "runtimes": [],
+          "languages": [
+            "go",
+            "python"
+          ],
+          "frameworks": [
+            "django"
+          ]
+        },
+        "runtimes": [],
+        "languages": [
+          "go",
+          "python"
+        ],
+        "frameworks": [
+          "django"
+        ],
+        "verify": [],
+        "actions": [],
+        "files": {
+          "skill": "skills/django-security/SKILL.md",
+          "manifest": "skills/django-security/manifest.json"
+        }
+      }
+    },
+    {
+      "id": "skill:django-tdd",
+      "source_type": "skill",
+      "source_ref": "django-tdd",
+      "name": "django-tdd",
+      "description": "Django testing strategies with pytest-django, TDD methodology, factory_boy, mocking, coverage, and testing Django REST Framework APIs.",
+      "kind": "general",
+      "execution_mode": "document",
+      "support_tier": "tier4",
+      "hidden": false,
+      "entrypoint": "skills/django-tdd/SKILL.md",
+      "prompt_file": "skills/django-tdd/SKILL.md",
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "level": "L1",
+        "executable": false,
+        "task_family": null,
+        "support_scope": {
+          "runtimes": [],
+          "languages": [
+            "go",
+            "java",
+            "javascript",
+            "python",
+            "typescript"
+          ],
+          "frameworks": [
+            "django"
+          ]
+        },
+        "runtimes": [],
+        "languages": [
+          "go",
+          "java",
+          "javascript",
+          "python",
+          "typescript"
+        ],
+        "frameworks": [
+          "django"
+        ],
+        "verify": [],
+        "actions": [],
+        "files": {
+          "skill": "skills/django-tdd/SKILL.md",
+          "manifest": "skills/django-tdd/manifest.json"
+        }
+      }
+    },
+    {
+      "id": "skill:django-verification",
+      "source_type": "skill",
+      "source_ref": "django-verification",
+      "name": "django-verification",
+      "description": "Verification loop for Django projects: migrations, linting, tests with coverage, security scans, and deployment readiness checks before release or PR.",
+      "kind": "general",
+      "execution_mode": "document",
+      "support_tier": "tier4",
+      "hidden": false,
+      "entrypoint": "skills/django-verification/SKILL.md",
+      "prompt_file": "skills/django-verification/SKILL.md",
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "level": "L1",
+        "executable": false,
+        "task_family": null,
+        "support_scope": {
+          "runtimes": [],
+          "languages": [
+            "go",
+            "python"
+          ],
+          "frameworks": [
+            "django"
+          ]
+        },
+        "runtimes": [],
+        "languages": [
+          "go",
+          "python"
+        ],
+        "frameworks": [
+          "django"
+        ],
+        "verify": [],
+        "actions": [],
+        "files": {
+          "skill": "skills/django-verification/SKILL.md",
+          "manifest": "skills/django-verification/manifest.json"
+        }
+      }
+    },
+    {
+      "id": "skill:docker-patterns",
+      "source_type": "skill",
+      "source_ref": "docker-patterns",
+      "name": "docker-patterns",
+      "description": "Docker and Docker Compose patterns for local development, container security, networking, volume strategies, and multi-service orchestration.",
+      "kind": "general",
+      "execution_mode": "document",
+      "support_tier": "tier4",
+      "hidden": false,
+      "entrypoint": "skills/docker-patterns/SKILL.md",
+      "prompt_file": "skills/docker-patterns/SKILL.md",
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "level": "L1",
+        "executable": false,
+        "task_family": null,
+        "support_scope": {
+          "runtimes": [],
+          "languages": [
+            "docker"
+          ],
+          "frameworks": [
+            "docker"
+          ]
+        },
+        "runtimes": [],
+        "languages": [
+          "docker"
+        ],
+        "frameworks": [
+          "docker"
+        ],
+        "verify": [],
+        "actions": [],
+        "files": {
+          "skill": "skills/docker-patterns/SKILL.md",
+          "manifest": "skills/docker-patterns/manifest.json"
+        }
+      }
+    },
+    {
+      "id": "skill:e2e-testing",
+      "source_type": "skill",
+      "source_ref": "e2e-testing",
+      "name": "e2e-testing",
+      "description": "Playwright E2E testing patterns, Page Object Model, configuration, CI/CD integration, artifact management, and flaky test strategies.",
+      "kind": "verifier",
+      "execution_mode": "document",
+      "support_tier": "tier4",
+      "hidden": false,
+      "entrypoint": "skills/e2e-testing/SKILL.md",
+      "prompt_file": "skills/e2e-testing/SKILL.md",
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "level": "L1",
+        "executable": false,
+        "task_family": null,
+        "support_scope": {
+          "runtimes": [],
+          "languages": [],
+          "frameworks": []
+        },
+        "runtimes": [],
+        "languages": [],
+        "frameworks": [],
+        "verify": [],
+        "actions": [],
+        "files": {
+          "skill": "skills/e2e-testing/SKILL.md",
+          "manifest": "skills/e2e-testing/manifest.json"
+        }
+      }
+    },
+    {
+      "id": "skill:eval-harness",
+      "source_type": "skill",
+      "source_ref": "eval-harness",
+      "name": "eval-harness",
+      "description": "Formal evaluation framework for Claude Code sessions implementing eval-driven development (EDD) principles",
+      "kind": "general",
+      "execution_mode": "document",
+      "support_tier": "tier4",
+      "hidden": false,
+      "entrypoint": "skills/eval-harness/SKILL.md",
+      "prompt_file": "skills/eval-harness/SKILL.md",
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "level": "L1",
+        "executable": false,
+        "task_family": null,
+        "support_scope": {
+          "runtimes": [],
+          "languages": [],
+          "frameworks": []
+        },
+        "runtimes": [],
+        "languages": [],
+        "frameworks": [],
+        "verify": [],
+        "actions": [],
+        "files": {
+          "skill": "skills/eval-harness/SKILL.md",
+          "manifest": "skills/eval-harness/manifest.json"
+        }
+      }
+    },
+    {
+      "id": "skill:frontend-patterns",
+      "source_type": "skill",
+      "source_ref": "frontend-patterns",
+      "name": "frontend-patterns",
+      "description": "Frontend development patterns for React, Next.js, state management, performance optimization, and UI best practices.",
+      "kind": "general",
+      "execution_mode": "document",
+      "support_tier": "tier4",
+      "hidden": false,
+      "entrypoint": "skills/frontend-patterns/SKILL.md",
+      "prompt_file": "skills/frontend-patterns/SKILL.md",
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "level": "L1",
+        "executable": false,
+        "task_family": null,
+        "support_scope": {
+          "runtimes": [],
+          "languages": [
+            "javascript",
+            "typescript"
+          ],
+          "frameworks": [
+            "react",
+            "vue"
+          ]
+        },
+        "runtimes": [],
+        "languages": [
+          "javascript",
+          "typescript"
+        ],
+        "frameworks": [
+          "react",
+          "vue"
+        ],
+        "verify": [],
+        "actions": [],
+        "files": {
+          "skill": "skills/frontend-patterns/SKILL.md",
+          "manifest": "skills/frontend-patterns/manifest.json"
+        }
+      }
+    },
+    {
+      "id": "skill:generate-fastapi-feature",
+      "source_type": "skill",
+      "source_ref": "generate-fastapi-feature",
+      "name": "generate-fastapi-feature",
+      "description": "Generate a multi-file FastAPI backend feature bundle for Python projects.",
+      "kind": "implementer",
+      "execution_mode": "hybrid",
+      "support_tier": "tier1",
+      "hidden": false,
+      "entrypoint": "skills/generate-fastapi-feature/SKILL.md",
+      "prompt_file": "skills/generate-fastapi-feature/SKILL.md",
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "level": "L3",
+        "executable": true,
+        "task_family": "feature",
+        "support_scope": {
+          "runtimes": [
+            "python"
+          ],
+          "languages": [
+            "python"
+          ],
+          "frameworks": [
+            "fastapi",
+            "python"
+          ]
+        },
+        "runtimes": [
+          "python"
+        ],
+        "languages": [
+          "python"
+        ],
+        "frameworks": [
+          "fastapi",
+          "python"
+        ],
+        "verify": [
+          "python -m compileall .",
+          "python -m pytest -q"
+        ],
+        "actions": [
+          {
+            "id": "fastapi-feature",
+            "type": "feature_bundle"
+          }
+        ],
+        "files": {
+          "skill": "skills/generate-fastapi-feature/SKILL.md",
+          "manifest": "skills/generate-fastapi-feature/manifest.json"
+        }
+      }
+    },
+    {
+      "id": "skill:generate-go-feature",
+      "source_type": "skill",
+      "source_ref": "generate-go-feature",
+      "name": "generate-go-feature",
+      "description": "Generate a multi-file Go backend feature bundle for Go service projects.",
+      "kind": "implementer",
+      "execution_mode": "hybrid",
+      "support_tier": "tier1",
+      "hidden": false,
+      "entrypoint": "skills/generate-go-feature/SKILL.md",
+      "prompt_file": "skills/generate-go-feature/SKILL.md",
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "level": "L3",
+        "executable": true,
+        "task_family": "feature",
+        "support_scope": {
+          "runtimes": [
+            "go"
+          ],
+          "languages": [
+            "go"
+          ],
+          "frameworks": [
+            "go",
+            "gin",
+            "chi",
+            "fiber"
+          ]
+        },
+        "runtimes": [
+          "go"
+        ],
+        "languages": [
+          "go"
+        ],
+        "frameworks": [
+          "go",
+          "gin",
+          "chi",
+          "fiber"
+        ],
+        "verify": [
+          "go build ./...",
+          "go test ./..."
+        ],
+        "actions": [
+          {
+            "id": "go-feature",
+            "type": "feature_bundle"
+          }
+        ],
+        "files": {
+          "skill": "skills/generate-go-feature/SKILL.md",
+          "manifest": "skills/generate-go-feature/manifest.json"
+        }
+      }
+    },
+    {
+      "id": "skill:generate-node-feature",
+      "source_type": "skill",
+      "source_ref": "generate-node-feature",
+      "name": "generate-node-feature",
+      "description": "Generate a multi-file backend feature bundle for Node/TypeScript projects.",
+      "kind": "implementer",
+      "execution_mode": "hybrid",
+      "support_tier": "tier1",
+      "hidden": false,
+      "entrypoint": "skills/generate-node-feature/SKILL.md",
+      "prompt_file": "skills/generate-node-feature/SKILL.md",
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "level": "L3",
+        "executable": true,
+        "task_family": "feature",
+        "support_scope": {
+          "runtimes": [
+            "node"
+          ],
+          "languages": [
+            "javascript",
+            "typescript"
+          ],
+          "frameworks": [
+            "express",
+            "fastify",
+            "nest",
+            "node"
+          ]
+        },
+        "runtimes": [
+          "node"
+        ],
+        "languages": [
+          "javascript",
+          "typescript"
+        ],
+        "frameworks": [
+          "express",
+          "fastify",
+          "nest",
+          "node"
+        ],
+        "verify": [
+          "npm run build",
+          "npm test"
+        ],
+        "actions": [
+          {
+            "id": "node-feature",
+            "type": "feature_bundle"
+          }
+        ],
+        "files": {
+          "skill": "skills/generate-node-feature/SKILL.md",
+          "manifest": "skills/generate-node-feature/manifest.json"
+        }
+      }
+    },
+    {
+      "id": "skill:golang-patterns",
+      "source_type": "skill",
+      "source_ref": "golang-patterns",
+      "name": "golang-patterns",
+      "description": "Idiomatic Go patterns, best practices, and conventions for building robust, efficient, and maintainable Go applications.",
+      "kind": "general",
+      "execution_mode": "document",
+      "support_tier": "tier4",
+      "hidden": false,
+      "entrypoint": "skills/golang-patterns/SKILL.md",
+      "prompt_file": "skills/golang-patterns/SKILL.md",
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "level": "L1",
+        "executable": false,
+        "task_family": null,
+        "support_scope": {
+          "runtimes": [],
+          "languages": [
+            "go"
+          ],
+          "frameworks": []
+        },
+        "runtimes": [],
+        "languages": [
+          "go"
+        ],
+        "frameworks": [],
+        "verify": [],
+        "actions": [],
+        "files": {
+          "skill": "skills/golang-patterns/SKILL.md",
+          "manifest": "skills/golang-patterns/manifest.json"
+        }
+      }
+    },
+    {
+      "id": "skill:golang-testing",
+      "source_type": "skill",
+      "source_ref": "golang-testing",
+      "name": "golang-testing",
+      "description": "Go testing patterns including table-driven tests, subtests, benchmarks, fuzzing, and test coverage. Follows TDD methodology with idiomatic Go practices.",
+      "kind": "verifier",
+      "execution_mode": "document",
+      "support_tier": "tier4",
+      "hidden": false,
+      "entrypoint": "skills/golang-testing/SKILL.md",
+      "prompt_file": "skills/golang-testing/SKILL.md",
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "level": "L1",
+        "executable": false,
+        "task_family": null,
+        "support_scope": {
+          "runtimes": [],
+          "languages": [
+            "go"
+          ],
+          "frameworks": []
+        },
+        "runtimes": [],
+        "languages": [
+          "go"
+        ],
+        "frameworks": [],
+        "verify": [],
+        "actions": [],
+        "files": {
+          "skill": "skills/golang-testing/SKILL.md",
+          "manifest": "skills/golang-testing/manifest.json"
+        }
+      }
+    },
+    {
+      "id": "skill:java-coding-standards",
+      "source_type": "skill",
+      "source_ref": "java-coding-standards",
+      "name": "java-coding-standards",
+      "description": "Java coding standards for Spring Boot services: naming, immutability, Optional usage, streams, exceptions, generics, and project layout.",
+      "kind": "general",
+      "execution_mode": "document",
+      "support_tier": "tier4",
+      "hidden": false,
+      "entrypoint": "skills/java-coding-standards/SKILL.md",
+      "prompt_file": "skills/java-coding-standards/SKILL.md",
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "level": "L1",
+        "executable": false,
+        "task_family": null,
+        "support_scope": {
+          "runtimes": [],
+          "languages": [
+            "java"
+          ],
+          "frameworks": []
+        },
+        "runtimes": [],
+        "languages": [
+          "java"
+        ],
+        "frameworks": [],
+        "verify": [],
+        "actions": [],
+        "files": {
+          "skill": "skills/java-coding-standards/SKILL.md",
+          "manifest": "skills/java-coding-standards/manifest.json"
+        }
+      }
+    },
+    {
+      "id": "skill:jpa-patterns",
+      "source_type": "skill",
+      "source_ref": "jpa-patterns",
+      "name": "jpa-patterns",
+      "description": "JPA/Hibernate patterns for entity design, relationships, query optimization, transactions, auditing, indexing, pagination, and pooling in Spring Boot.",
+      "kind": "general",
+      "execution_mode": "document",
+      "support_tier": "tier4",
+      "hidden": false,
+      "entrypoint": "skills/jpa-patterns/SKILL.md",
+      "prompt_file": "skills/jpa-patterns/SKILL.md",
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "level": "L1",
+        "executable": false,
+        "task_family": null,
+        "support_scope": {
+          "runtimes": [],
+          "languages": [
+            "java"
+          ],
+          "frameworks": [
+            "jpa"
+          ]
+        },
+        "runtimes": [],
+        "languages": [
+          "java"
+        ],
+        "frameworks": [
+          "jpa"
+        ],
+        "verify": [],
+        "actions": [],
+        "files": {
+          "skill": "skills/jpa-patterns/SKILL.md",
+          "manifest": "skills/jpa-patterns/manifest.json"
+        }
+      }
+    },
+    {
+      "id": "skill:openspec-workflow",
+      "source_type": "skill",
+      "source_ref": "openspec-workflow",
+      "name": "openspec-workflow",
+      "description": "Use this skill for spec-first delivery with explicit proposal, tasks, implementation, and archive phases. Aligns with OpenSpec style change folders and review gates.",
+      "kind": "planner",
+      "execution_mode": "document",
+      "support_tier": "tier4",
+      "hidden": false,
+      "entrypoint": "skills/openspec-workflow/SKILL.md",
+      "prompt_file": "skills/openspec-workflow/SKILL.md",
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "level": "L1",
+        "executable": false,
+        "task_family": null,
+        "support_scope": {
+          "runtimes": [],
+          "languages": [],
+          "frameworks": []
+        },
+        "runtimes": [],
+        "languages": [],
+        "frameworks": [],
+        "verify": [],
+        "actions": [],
+        "files": {
+          "skill": "skills/openspec-workflow/SKILL.md",
+          "manifest": "skills/openspec-workflow/manifest.json"
+        }
+      }
+    },
+    {
+      "id": "skill:postgres-patterns",
+      "source_type": "skill",
+      "source_ref": "postgres-patterns",
+      "name": "postgres-patterns",
+      "description": "PostgreSQL database patterns for query optimization, schema design, indexing, and security. Based on Supabase best practices.",
+      "kind": "general",
+      "execution_mode": "document",
+      "support_tier": "tier4",
+      "hidden": false,
+      "entrypoint": "skills/postgres-patterns/SKILL.md",
+      "prompt_file": "skills/postgres-patterns/SKILL.md",
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "level": "L1",
+        "executable": false,
+        "task_family": null,
+        "support_scope": {
+          "runtimes": [],
+          "languages": [
+            "sql"
+          ],
+          "frameworks": [
+            "postgres"
+          ]
+        },
+        "runtimes": [],
+        "languages": [
+          "sql"
+        ],
+        "frameworks": [
+          "postgres"
+        ],
+        "verify": [],
+        "actions": [],
+        "files": {
+          "skill": "skills/postgres-patterns/SKILL.md",
+          "manifest": "skills/postgres-patterns/manifest.json"
+        }
+      }
+    },
+    {
+      "id": "skill:python-patterns",
+      "source_type": "skill",
+      "source_ref": "python-patterns",
+      "name": "python-patterns",
+      "description": "Pythonic idioms, PEP 8 standards, type hints, and best practices for building robust, efficient, and maintainable Python applications.",
+      "kind": "general",
+      "execution_mode": "document",
+      "support_tier": "tier4",
+      "hidden": false,
+      "entrypoint": "skills/python-patterns/SKILL.md",
+      "prompt_file": "skills/python-patterns/SKILL.md",
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "level": "L1",
+        "executable": false,
+        "task_family": null,
+        "support_scope": {
+          "runtimes": [],
+          "languages": [
+            "python"
+          ],
+          "frameworks": []
+        },
+        "runtimes": [],
+        "languages": [
+          "python"
+        ],
+        "frameworks": [],
+        "verify": [],
+        "actions": [],
+        "files": {
+          "skill": "skills/python-patterns/SKILL.md",
+          "manifest": "skills/python-patterns/manifest.json"
+        }
+      }
+    },
+    {
+      "id": "skill:python-testing",
+      "source_type": "skill",
+      "source_ref": "python-testing",
+      "name": "python-testing",
+      "description": "Python testing strategies using pytest, TDD methodology, fixtures, mocking, parametrization, and coverage requirements.",
+      "kind": "verifier",
+      "execution_mode": "document",
+      "support_tier": "tier4",
+      "hidden": false,
+      "entrypoint": "skills/python-testing/SKILL.md",
+      "prompt_file": "skills/python-testing/SKILL.md",
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "level": "L1",
+        "executable": false,
+        "task_family": null,
+        "support_scope": {
+          "runtimes": [],
+          "languages": [
+            "python"
+          ],
+          "frameworks": []
+        },
+        "runtimes": [],
+        "languages": [
+          "python"
+        ],
+        "frameworks": [],
+        "verify": [],
+        "actions": [],
+        "files": {
+          "skill": "skills/python-testing/SKILL.md",
+          "manifest": "skills/python-testing/manifest.json"
+        }
+      }
+    },
+    {
+      "id": "skill:search-first",
+      "source_type": "skill",
+      "source_ref": "search-first",
+      "name": "search-first",
+      "description": "Research-before-coding workflow. Search for existing tools, libraries, and patterns before writing custom code. Invokes the researcher agent.",
+      "kind": "general",
+      "execution_mode": "document",
+      "support_tier": "tier4",
+      "hidden": false,
+      "entrypoint": "skills/search-first/SKILL.md",
+      "prompt_file": "skills/search-first/SKILL.md",
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "level": "L1",
+        "executable": false,
+        "task_family": null,
+        "support_scope": {
+          "runtimes": [],
+          "languages": [],
+          "frameworks": []
+        },
+        "runtimes": [],
+        "languages": [],
+        "frameworks": [],
+        "verify": [],
+        "actions": [],
+        "files": {
+          "skill": "skills/search-first/SKILL.md",
+          "manifest": "skills/search-first/manifest.json"
+        }
+      }
+    },
+    {
+      "id": "skill:security-review",
+      "source_type": "skill",
+      "source_ref": "security-review",
+      "name": "security-review",
+      "description": "Use this skill when adding authentication, handling user input, working with secrets, creating API endpoints, or implementing payment/sensitive features. Provides comprehensive security checklist and patterns.",
+      "kind": "reviewer",
+      "execution_mode": "document",
+      "support_tier": "tier4",
+      "hidden": false,
+      "entrypoint": "skills/security-review/SKILL.md",
+      "prompt_file": "skills/security-review/SKILL.md",
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "level": "L1",
+        "executable": false,
+        "task_family": null,
+        "support_scope": {
+          "runtimes": [],
+          "languages": [
+            "go",
+            "java",
+            "javascript",
+            "python",
+            "typescript"
+          ],
+          "frameworks": []
+        },
+        "runtimes": [],
+        "languages": [
+          "go",
+          "java",
+          "javascript",
+          "python",
+          "typescript"
+        ],
+        "frameworks": [],
+        "verify": [],
+        "actions": [],
+        "files": {
+          "skill": "skills/security-review/SKILL.md",
+          "manifest": "skills/security-review/manifest.json"
+        }
+      }
+    },
+    {
+      "id": "skill:security-scan",
+      "source_type": "skill",
+      "source_ref": "security-scan",
+      "name": "security-scan",
+      "description": "Scan your Claude Code configuration (.claude/ directory) for security vulnerabilities, misconfigurations, and injection risks using AgentShield. Checks CLAUDE.md, settings.json, MCP servers, hooks, and agent definitions.",
+      "kind": "reviewer",
+      "execution_mode": "document",
+      "support_tier": "tier4",
+      "hidden": false,
+      "entrypoint": "skills/security-scan/SKILL.md",
+      "prompt_file": "skills/security-scan/SKILL.md",
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "level": "L1",
+        "executable": false,
+        "task_family": null,
+        "support_scope": {
+          "runtimes": [],
+          "languages": [],
+          "frameworks": []
+        },
+        "runtimes": [],
+        "languages": [],
+        "frameworks": [],
+        "verify": [],
+        "actions": [],
+        "files": {
+          "skill": "skills/security-scan/SKILL.md",
+          "manifest": "skills/security-scan/manifest.json"
+        }
+      }
+    },
+    {
+      "id": "skill:springboot-patterns",
+      "source_type": "skill",
+      "source_ref": "springboot-patterns",
+      "name": "springboot-patterns",
+      "description": "Spring Boot architecture patterns, REST API design, layered services, data access, caching, async processing, and logging. Use for Java Spring Boot backend work.",
+      "kind": "general",
+      "execution_mode": "document",
+      "support_tier": "tier4",
+      "hidden": false,
+      "entrypoint": "skills/springboot-patterns/SKILL.md",
+      "prompt_file": "skills/springboot-patterns/SKILL.md",
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "level": "L1",
+        "executable": false,
+        "task_family": null,
+        "support_scope": {
+          "runtimes": [],
+          "languages": [
+            "go",
+            "java",
+            "javascript",
+            "python",
+            "typescript"
+          ],
+          "frameworks": [
+            "springboot"
+          ]
+        },
+        "runtimes": [],
+        "languages": [
+          "go",
+          "java",
+          "javascript",
+          "python",
+          "typescript"
+        ],
+        "frameworks": [
+          "springboot"
+        ],
+        "verify": [],
+        "actions": [],
+        "files": {
+          "skill": "skills/springboot-patterns/SKILL.md",
+          "manifest": "skills/springboot-patterns/manifest.json"
+        }
+      }
+    },
+    {
+      "id": "skill:springboot-security",
+      "source_type": "skill",
+      "source_ref": "springboot-security",
+      "name": "springboot-security",
+      "description": "Spring Security best practices for authn/authz, validation, CSRF, secrets, headers, rate limiting, and dependency security in Java Spring Boot services.",
+      "kind": "reviewer",
+      "execution_mode": "document",
+      "support_tier": "tier4",
+      "hidden": false,
+      "entrypoint": "skills/springboot-security/SKILL.md",
+      "prompt_file": "skills/springboot-security/SKILL.md",
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "level": "L1",
+        "executable": false,
+        "task_family": null,
+        "support_scope": {
+          "runtimes": [],
+          "languages": [
+            "java"
+          ],
+          "frameworks": [
+            "springboot"
+          ]
+        },
+        "runtimes": [],
+        "languages": [
+          "java"
+        ],
+        "frameworks": [
+          "springboot"
+        ],
+        "verify": [],
+        "actions": [],
+        "files": {
+          "skill": "skills/springboot-security/SKILL.md",
+          "manifest": "skills/springboot-security/manifest.json"
+        }
+      }
+    },
+    {
+      "id": "skill:springboot-tdd",
+      "source_type": "skill",
+      "source_ref": "springboot-tdd",
+      "name": "springboot-tdd",
+      "description": "Test-driven development for Spring Boot using JUnit 5, Mockito, MockMvc, Testcontainers, and JaCoCo. Use when adding features, fixing bugs, or refactoring.",
+      "kind": "general",
+      "execution_mode": "document",
+      "support_tier": "tier4",
+      "hidden": false,
+      "entrypoint": "skills/springboot-tdd/SKILL.md",
+      "prompt_file": "skills/springboot-tdd/SKILL.md",
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "level": "L1",
+        "executable": false,
+        "task_family": null,
+        "support_scope": {
+          "runtimes": [],
+          "languages": [
+            "java"
+          ],
+          "frameworks": [
+            "springboot"
+          ]
+        },
+        "runtimes": [],
+        "languages": [
+          "java"
+        ],
+        "frameworks": [
+          "springboot"
+        ],
+        "verify": [],
+        "actions": [],
+        "files": {
+          "skill": "skills/springboot-tdd/SKILL.md",
+          "manifest": "skills/springboot-tdd/manifest.json"
+        }
+      }
+    },
+    {
+      "id": "skill:springboot-verification",
+      "source_type": "skill",
+      "source_ref": "springboot-verification",
+      "name": "springboot-verification",
+      "description": "Verification loop for Spring Boot projects: build, static analysis, tests with coverage, security scans, and diff review before release or PR.",
+      "kind": "general",
+      "execution_mode": "document",
+      "support_tier": "tier4",
+      "hidden": false,
+      "entrypoint": "skills/springboot-verification/SKILL.md",
+      "prompt_file": "skills/springboot-verification/SKILL.md",
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "level": "L1",
+        "executable": false,
+        "task_family": null,
+        "support_scope": {
+          "runtimes": [],
+          "languages": [
+            "java"
+          ],
+          "frameworks": [
+            "springboot"
+          ]
+        },
+        "runtimes": [],
+        "languages": [
+          "java"
+        ],
+        "frameworks": [
+          "springboot"
+        ],
+        "verify": [],
+        "actions": [],
+        "files": {
+          "skill": "skills/springboot-verification/SKILL.md",
+          "manifest": "skills/springboot-verification/manifest.json"
+        }
+      }
+    },
+    {
+      "id": "skill:strategic-compact",
+      "source_type": "skill",
+      "source_ref": "strategic-compact",
+      "name": "strategic-compact",
+      "description": "Suggests manual context compaction at logical intervals to preserve context through task phases rather than arbitrary auto-compaction.",
+      "kind": "general",
+      "execution_mode": "document",
+      "support_tier": "tier4",
+      "hidden": false,
+      "entrypoint": "skills/strategic-compact/SKILL.md",
+      "prompt_file": "skills/strategic-compact/SKILL.md",
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "level": "L1",
+        "executable": false,
+        "task_family": null,
+        "support_scope": {
+          "runtimes": [],
+          "languages": [],
+          "frameworks": []
+        },
+        "runtimes": [],
+        "languages": [],
+        "frameworks": [],
+        "verify": [],
+        "actions": [],
+        "files": {
+          "skill": "skills/strategic-compact/SKILL.md",
+          "manifest": "skills/strategic-compact/manifest.json"
+        }
+      }
+    },
+    {
+      "id": "skill:tdd-workflow",
+      "source_type": "skill",
+      "source_ref": "tdd-workflow",
+      "name": "tdd-workflow",
+      "description": "Use this skill when writing new features, fixing bugs, or refactoring code. Enforces test-driven development with 80%+ coverage including unit, integration, and E2E tests.",
+      "kind": "implementer",
+      "execution_mode": "document",
+      "support_tier": "tier4",
+      "hidden": false,
+      "entrypoint": "skills/tdd-workflow/SKILL.md",
+      "prompt_file": "skills/tdd-workflow/SKILL.md",
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "level": "L1",
+        "executable": false,
+        "task_family": null,
+        "support_scope": {
+          "runtimes": [],
+          "languages": [],
+          "frameworks": []
+        },
+        "runtimes": [],
+        "languages": [],
+        "frameworks": [],
+        "verify": [],
+        "actions": [],
+        "files": {
+          "skill": "skills/tdd-workflow/SKILL.md",
+          "manifest": "skills/tdd-workflow/manifest.json"
+        }
+      }
+    },
+    {
+      "id": "skill:verification-loop",
+      "source_type": "skill",
+      "source_ref": "verification-loop",
+      "name": "verification-loop",
+      "description": "A comprehensive verification system for Claude Code sessions.",
+      "kind": "general",
+      "execution_mode": "document",
+      "support_tier": "tier4",
+      "hidden": false,
+      "entrypoint": "skills/verification-loop/SKILL.md",
+      "prompt_file": "skills/verification-loop/SKILL.md",
+      "tools": {},
+      "aliases": [],
+      "metadata": {
+        "level": "L1",
+        "executable": false,
+        "task_family": null,
+        "support_scope": {
+          "runtimes": [],
+          "languages": [],
+          "frameworks": []
+        },
+        "runtimes": [],
+        "languages": [],
+        "frameworks": [],
+        "verify": [],
+        "actions": [],
+        "files": {
+          "skill": "skills/verification-loop/SKILL.md",
+          "manifest": "skills/verification-loop/manifest.json"
+        }
+      }
+    }
+  ],
+  "aliases": [
+    {
+      "id": "command:ast-rewrite",
+      "interface": "command",
+      "source_ref": "ast-rewrite",
+      "target_id": "agent:refactor-cleaner",
+      "agent": "refactor-cleaner",
+      "template": "{file:./commands/ast-rewrite.md}\n\n$ARGUMENTS",
+      "subtask": true
+    },
+    {
+      "id": "command:build-fix",
+      "interface": "command",
+      "source_ref": "build-fix",
+      "target_id": "agent:build-error-resolver",
+      "agent": "build-error-resolver",
+      "template": "{file:./commands/build-fix.md}\n\n$ARGUMENTS",
+      "subtask": true
+    },
+    {
+      "id": "command:checkpoint",
+      "interface": "command",
+      "source_ref": "checkpoint",
+      "target_id": "agent:eoc_orchestrator",
+      "agent": "eoc_orchestrator",
+      "template": "{file:./commands/checkpoint.md}\n\n$ARGUMENTS",
+      "subtask": true
+    },
+    {
+      "id": "command:code-review",
+      "interface": "command",
+      "source_ref": "code-review",
+      "target_id": "agent:eoc_code_reviewer",
+      "agent": "eoc_code_reviewer",
+      "template": "{file:./commands/code-review.md}\n\n$ARGUMENTS",
+      "subtask": true
+    },
+    {
+      "id": "command:coder-loop",
+      "interface": "command",
+      "source_ref": "coder-loop",
+      "target_id": "agent:ts-coder",
+      "agent": "ts-coder",
+      "template": "{file:./commands/coder-loop.md}\n\n$ARGUMENTS",
+      "subtask": true
+    },
+    {
+      "id": "command:delivery-report",
+      "interface": "command",
+      "source_ref": "delivery-report",
+      "target_id": "agent:eoc_orchestrator",
+      "agent": "eoc_orchestrator",
+      "template": "{file:./commands/delivery-report.md}\n\n$ARGUMENTS",
+      "subtask": true
+    },
+    {
+      "id": "command:e2e",
+      "interface": "command",
+      "source_ref": "e2e",
+      "target_id": "agent:e2e-runner",
+      "agent": "e2e-runner",
+      "template": "{file:./commands/e2e.md}\n\n$ARGUMENTS",
+      "subtask": true
+    },
+    {
+      "id": "command:env-check",
+      "interface": "command",
+      "source_ref": "env-check",
+      "target_id": "agent:eoc_orchestrator",
+      "agent": "eoc_orchestrator",
+      "template": "{file:./commands/env-check.md}\n\n$ARGUMENTS",
+      "subtask": true
+    },
+    {
+      "id": "command:eoc-parallel",
+      "interface": "command",
+      "source_ref": "eoc-parallel",
+      "target_id": "agent:eoc_orchestrator",
+      "agent": "eoc_orchestrator",
+      "template": "{file:./commands/eoc-parallel.md}\n\n$ARGUMENTS",
+      "subtask": true
+    },
+    {
+      "id": "command:eoc-ultrawork",
+      "interface": "command",
+      "source_ref": "eoc-ultrawork",
+      "target_id": "agent:eoc_orchestrator",
+      "agent": "eoc_orchestrator",
+      "template": "{file:./commands/eoc-ultrawork.md}\n\n$ARGUMENTS",
+      "subtask": true
+    },
+    {
+      "id": "command:eval",
+      "interface": "command",
+      "source_ref": "eval",
+      "target_id": "agent:eoc_orchestrator",
+      "agent": "eoc_orchestrator",
+      "template": "{file:./commands/eval.md}\n\n$ARGUMENTS",
+      "subtask": true
+    },
+    {
+      "id": "command:feature-acceptance",
+      "interface": "command",
+      "source_ref": "feature-acceptance",
+      "target_id": "agent:eoc_orchestrator",
+      "agent": "eoc_orchestrator",
+      "template": "{file:./commands/feature-acceptance.md}\n\n$ARGUMENTS",
+      "subtask": true
+    },
+    {
+      "id": "command:generate-feature",
+      "interface": "command",
+      "source_ref": "generate-feature",
+      "target_id": "agent:eoc_orchestrator",
+      "agent": "eoc_orchestrator",
+      "template": "{file:./commands/generate-feature.md}\n\n$ARGUMENTS",
+      "subtask": true
+    },
+    {
+      "id": "command:go-build",
+      "interface": "command",
+      "source_ref": "go-build",
+      "target_id": "agent:go-build-resolver",
+      "agent": "go-build-resolver",
+      "template": "{file:./commands/go-build.md}\n\n$ARGUMENTS",
+      "subtask": true
+    },
+    {
+      "id": "command:go-review",
+      "interface": "command",
+      "source_ref": "go-review",
+      "target_id": "agent:go-reviewer",
+      "agent": "go-reviewer",
+      "template": "{file:./commands/go-review.md}\n\n$ARGUMENTS",
+      "subtask": true
+    },
+    {
+      "id": "command:go-test",
+      "interface": "command",
+      "source_ref": "go-test",
+      "target_id": "agent:tdd-guide",
+      "agent": "tdd-guide",
+      "template": "{file:./commands/go-test.md}\n\n$ARGUMENTS",
+      "subtask": true
+    },
+    {
+      "id": "command:hashline-edit",
+      "interface": "command",
+      "source_ref": "hashline-edit",
+      "target_id": "agent:eoc_orchestrator",
+      "agent": "eoc_orchestrator",
+      "template": "{file:./commands/hashline-edit.md}\n\n$ARGUMENTS",
+      "subtask": true
+    },
+    {
+      "id": "command:implement-task",
+      "interface": "command",
+      "source_ref": "implement-task",
+      "target_id": "agent:eoc_orchestrator",
+      "agent": "eoc_orchestrator",
+      "template": "{file:./commands/implement-task.md}\n\n$ARGUMENTS",
+      "subtask": true
+    },
+    {
+      "id": "command:openspec-apply",
+      "interface": "command",
+      "source_ref": "openspec-apply",
+      "target_id": "agent:tdd-guide",
+      "agent": "tdd-guide",
+      "template": "{file:./commands/openspec-apply.md}\n\n$ARGUMENTS",
+      "subtask": true
+    },
+    {
+      "id": "command:openspec-archive",
+      "interface": "command",
+      "source_ref": "openspec-archive",
+      "target_id": "agent:doc-updater",
+      "agent": "doc-updater",
+      "template": "{file:./commands/openspec-archive.md}\n\n$ARGUMENTS",
+      "subtask": true
+    },
+    {
+      "id": "command:openspec-proposal",
+      "interface": "command",
+      "source_ref": "openspec-proposal",
+      "target_id": "agent:eoc_planner",
+      "agent": "eoc_planner",
+      "template": "{file:./commands/openspec-proposal.md}\n\n$ARGUMENTS",
+      "subtask": true
+    },
+    {
+      "id": "command:orchestrate",
+      "interface": "command",
+      "source_ref": "orchestrate",
+      "target_id": "agent:eoc_planner",
+      "agent": "eoc_planner",
+      "template": "{file:./commands/orchestrate.md}\n\n$ARGUMENTS",
+      "subtask": true
+    },
+    {
+      "id": "command:plan",
+      "interface": "command",
+      "source_ref": "plan",
+      "target_id": "agent:eoc_planner",
+      "agent": "eoc_planner",
+      "template": "{file:./commands/plan.md}\n\n$ARGUMENTS",
+      "subtask": true
+    },
+    {
+      "id": "command:project-profile",
+      "interface": "command",
+      "source_ref": "project-profile",
+      "target_id": "agent:repo-aware-coder",
+      "agent": "repo-aware-coder",
+      "template": "{file:./commands/project-profile.md}\n\n$ARGUMENTS",
+      "subtask": true
+    },
+    {
+      "id": "command:python-review",
+      "interface": "command",
+      "source_ref": "python-review",
+      "target_id": "agent:python-reviewer",
+      "agent": "python-reviewer",
+      "template": "{file:./commands/python-review.md}\n\n$ARGUMENTS",
+      "subtask": true
+    },
+    {
+      "id": "command:quality-gate",
+      "interface": "command",
+      "source_ref": "quality-gate",
+      "target_id": "agent:eoc_orchestrator",
+      "agent": "eoc_orchestrator",
+      "template": "{file:./commands/quality-gate.md}\n\n$ARGUMENTS",
+      "subtask": true
+    },
+    {
+      "id": "command:refactor-clean",
+      "interface": "command",
+      "source_ref": "refactor-clean",
+      "target_id": "agent:refactor-cleaner",
+      "agent": "refactor-cleaner",
+      "template": "{file:./commands/refactor-clean.md}\n\n$ARGUMENTS",
+      "subtask": true
+    },
+    {
+      "id": "command:release-evidence",
+      "interface": "command",
+      "source_ref": "release-evidence",
+      "target_id": "agent:eoc_orchestrator",
+      "agent": "eoc_orchestrator",
+      "template": "{file:./commands/release-evidence.md}\n\n$ARGUMENTS",
+      "subtask": true
+    },
+    {
+      "id": "command:review-gate",
+      "interface": "command",
+      "source_ref": "review-gate",
+      "target_id": "agent:eoc_code_reviewer",
+      "agent": "eoc_code_reviewer",
+      "template": "{file:./commands/review-gate.md}\n\n$ARGUMENTS",
+      "subtask": true
+    },
+    {
+      "id": "command:security",
+      "interface": "command",
+      "source_ref": "security",
+      "target_id": "agent:security-reviewer",
+      "agent": "security-reviewer",
+      "template": "{file:./commands/security.md}\n\n$ARGUMENTS",
+      "subtask": true
+    },
+    {
+      "id": "command:setup-pm",
+      "interface": "command",
+      "source_ref": "setup-pm",
+      "target_id": "agent:eoc_orchestrator",
+      "agent": "eoc_orchestrator",
+      "template": "{file:./commands/setup-pm.md}\n\n$ARGUMENTS",
+      "subtask": true
+    },
+    {
+      "id": "command:skill-create",
+      "interface": "command",
+      "source_ref": "skill-create",
+      "target_id": "agent:eoc_orchestrator",
+      "agent": "eoc_orchestrator",
+      "template": "{file:./commands/skill-create.md}\n\n$ARGUMENTS",
+      "subtask": true
+    },
+    {
+      "id": "command:tdd",
+      "interface": "command",
+      "source_ref": "tdd",
+      "target_id": "agent:tdd-guide",
+      "agent": "tdd-guide",
+      "template": "{file:./commands/tdd.md}\n\n$ARGUMENTS",
+      "subtask": true
+    },
+    {
+      "id": "command:test-coverage",
+      "interface": "command",
+      "source_ref": "test-coverage",
+      "target_id": "agent:tdd-guide",
+      "agent": "tdd-guide",
+      "template": "{file:./commands/test-coverage.md}\n\n$ARGUMENTS",
+      "subtask": true
+    },
+    {
+      "id": "command:tooling-parity",
+      "interface": "command",
+      "source_ref": "tooling-parity",
+      "target_id": "agent:eoc_planner",
+      "agent": "eoc_planner",
+      "template": "{file:./commands/tooling-parity.md}\n\n$ARGUMENTS",
+      "subtask": true
+    },
+    {
+      "id": "command:update-codemaps",
+      "interface": "command",
+      "source_ref": "update-codemaps",
+      "target_id": "agent:doc-updater",
+      "agent": "doc-updater",
+      "template": "{file:./commands/update-codemaps.md}\n\n$ARGUMENTS",
+      "subtask": true
+    },
+    {
+      "id": "command:update-docs",
+      "interface": "command",
+      "source_ref": "update-docs",
+      "target_id": "agent:doc-updater",
+      "agent": "doc-updater",
+      "template": "{file:./commands/update-docs.md}\n\n$ARGUMENTS",
+      "subtask": true
+    },
+    {
+      "id": "command:verify",
+      "interface": "command",
+      "source_ref": "verify",
+      "target_id": "agent:eoc_orchestrator",
+      "agent": "eoc_orchestrator",
+      "template": "{file:./commands/verify.md}\n\n$ARGUMENTS",
+      "subtask": true
+    }
+  ]
+}

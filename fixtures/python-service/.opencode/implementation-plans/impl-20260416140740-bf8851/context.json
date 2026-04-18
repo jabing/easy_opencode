@@ -1,0 +1,1213 @@
+{
+  "schema_version": "1.1",
+  "generated_at": "2026-04-16T14:07:40.928Z",
+  "objective": "new model",
+  "mode": "auto",
+  "profile": {
+    "profile_version": "1.2",
+    "runtime": "python",
+    "language": "python",
+    "framework": "django",
+    "package_manager": "pip",
+    "package_name": "python-service",
+    "validation": [
+      {
+        "kind": "test",
+        "command": "python -m pytest -q",
+        "source": "detected:pytest"
+      },
+      {
+        "kind": "build",
+        "command": "python manage.py check",
+        "source": "detected:django"
+      }
+    ],
+    "detected_by": "pyproject.toml",
+    "build_tool": "manage.py check",
+    "test_runner": "pytest",
+    "lint_tool": null,
+    "typecheck_tool": null,
+    "format_tool": null,
+    "app_type": "backend-service",
+    "repo_shape": "flat-package",
+    "workspace": {
+      "is_workspace": false,
+      "tool": null
+    },
+    "entrypoints": [
+      "manage.py"
+    ],
+    "config_files": [
+      "pyproject.toml"
+    ],
+    "signals": {
+      "has_manage_py": true,
+      "has_tests_dir": true,
+      "has_src_dir": false
+    },
+    "confidence": 0.88,
+    "git": false,
+    "changed_files": [],
+    "validation_by_kind": {
+      "test": "python -m pytest -q",
+      "build": "python manage.py check"
+    },
+    "validation_gaps": [
+      "lint"
+    ],
+    "profile_notes": [
+      "No lint command was detected; style regressions may need manual review.",
+      "Framework-specific conventions matter here: django.",
+      "Primary test runner appears to be pytest."
+    ]
+  },
+  "context_policy": {
+    "strategy_bias": "balanced",
+    "context_scope": "narrow",
+    "target_budget": 4,
+    "related_test_budget": 8,
+    "max_failure_items": 12,
+    "ast_edit_mode": "surgical",
+    "ast_max_files": 10,
+    "ast_max_identifiers": 96,
+    "prefer_structure_aware": true,
+    "allow_workspace_wide_edits": false,
+    "benchmark_feedback": {
+      "assessed_at": "2026-04-16T14:07:40.860Z",
+      "scope": {
+        "objective": "new model",
+        "runtime": "python",
+        "framework": "django",
+        "skill": "add-django-model",
+        "task_family": "model"
+      },
+      "policy": {
+        "id": "standard",
+        "label": "Standard release candidate"
+      },
+      "data_window": {
+        "run_count": 0,
+        "limit": 10
+      },
+      "risk_score": 0,
+      "risk_level": "unknown",
+      "confidence": 0,
+      "strategy_bias": "balanced",
+      "recommended_validation_mode": "standard",
+      "recommended_action": "implementation_first",
+      "review_gate_required": false,
+      "reasons": [
+        "no benchmark history available"
+      ],
+      "coverage": {
+        "status": "missing",
+        "required_dimensions": [
+          "runtime_framework",
+          "task_family",
+          "skill"
+        ],
+        "matched_dimensions": [],
+        "missing_dimensions": [
+          "runtime_framework",
+          "task_family",
+          "skill"
+        ],
+        "required_count": 3,
+        "matched_count": 0,
+        "coverage_score": 0
+      },
+      "freshness": {
+        "status": "missing",
+        "observed_at": null,
+        "age_days": null,
+        "source": "missing",
+        "source_label": null,
+        "bucket_key": null,
+        "run_id": null,
+        "matched_source_count": 0,
+        "thresholds": {
+          "fresh_days": 14,
+          "aging_days": 21,
+          "stale_days": 35
+        },
+        "policy": {
+          "id": "standard",
+          "label": "Standard release candidate"
+        }
+      },
+      "trend_evidence": {
+        "matched_count": 0,
+        "overall_direction": "unknown",
+        "buckets": []
+      },
+      "matched_buckets": {},
+      "commands": [
+        "node /mnt/data/batch18/bin/eoc-script.js benchmark-feedback report --root /mnt/data/batch18/fixtures/python-service --policy standard --json",
+        "node /mnt/data/batch18/bin/eoc-script.js benchmark-suite trend --group-by runtime-framework --json",
+        "node /mnt/data/batch18/bin/eoc-script.js benchmark-suite trend --group-by skill-family --json",
+        "node /mnt/data/batch18/bin/eoc-script.js benchmark-suite freshness --policy standard --json",
+        "node /mnt/data/batch18/bin/eoc-script.js benchmark-suite trend --group-by skill --json"
+      ],
+      "release_readiness": {
+        "status": "caution",
+        "reasons": [
+          "benchmark history is unavailable",
+          "benchmark sample size is shallow (0/5 runs)",
+          "benchmark confidence is low (0/30)",
+          "benchmark scope coverage is missing for the requested release scope",
+          "benchmark freshness cannot be established"
+        ],
+        "thresholds": {
+          "policy": {
+            "id": "standard",
+            "label": "Standard release candidate"
+          },
+          "minimum_run_count": 5,
+          "minimum_confidence": 30,
+          "minimum_coverage_dimensions": 3,
+          "coverage_requirement": "sufficient",
+          "freshness": {
+            "fresh_days": 14,
+            "aging_days": 21,
+            "stale_days": 35
+          },
+          "observed_run_count": 0,
+          "observed_confidence": 0,
+          "observed_coverage_status": "missing",
+          "observed_matched_dimensions": 0,
+          "observed_trend_direction": "unknown",
+          "observed_freshness_status": "missing",
+          "observed_freshness_age_days": null,
+          "risk_level": "unknown"
+        }
+      }
+    },
+    "task_route": {
+      "task_kind": "local_bugfix",
+      "risk_level": "unknown",
+      "route_confidence": "low",
+      "planning_model": "small",
+      "coding_model": "primary",
+      "repair_model": "primary",
+      "context_budget": "narrow",
+      "verify_intensity": "targeted",
+      "edit_mode": "surgical",
+      "strategy_bias": "balanced",
+      "recommended_loop_mode": "implement-first",
+      "reasons": [
+        "task_kind=local_bugfix",
+        "runtime=unknown",
+        "risk=unknown",
+        "targets=0"
+      ]
+    },
+    "notes": [
+      "Prioritize only the primary targets plus the closest related tests.",
+      "Prefer symbol-safe or file-local AST edits; avoid wide rename fallbacks unless explicitly forced."
+    ]
+  },
+  "semantic_index": {
+    "entrypoints": [
+      "app/admin.py",
+      "app/admin/invoice_admin.py",
+      "app/main.py",
+      "app/models/__init__.py",
+      "app/models/invoice.py",
+      "app/services/__init__.py",
+      "manage.py"
+    ],
+    "files_indexed": 8,
+    "targets": [
+      {
+        "target": "app/models/invoice.py",
+        "probable_entrypoints": [
+          "app/admin.py",
+          "app/admin/invoice_admin.py",
+          "app/models/__init__.py",
+          "app/main.py",
+          "app/models/invoice.py",
+          "app/services/__init__.py",
+          "manage.py"
+        ],
+        "ranked_entrypoint_paths": [
+          {
+            "path": "app/admin.py",
+            "score": 5,
+            "reasons": [
+              "semantic_dependent",
+              "root_entrypoint"
+            ]
+          },
+          {
+            "path": "app/admin/invoice_admin.py",
+            "score": 5,
+            "reasons": [
+              "semantic_dependent",
+              "root_entrypoint"
+            ]
+          },
+          {
+            "path": "app/models/__init__.py",
+            "score": 5,
+            "reasons": [
+              "semantic_dependent",
+              "root_entrypoint"
+            ]
+          },
+          {
+            "path": "app/main.py",
+            "score": 2,
+            "reasons": [
+              "root_entrypoint"
+            ]
+          },
+          {
+            "path": "app/models/invoice.py",
+            "score": 2,
+            "reasons": [
+              "root_entrypoint"
+            ]
+          },
+          {
+            "path": "app/services/__init__.py",
+            "score": 2,
+            "reasons": [
+              "root_entrypoint"
+            ]
+          },
+          {
+            "path": "manage.py",
+            "score": 2,
+            "reasons": [
+              "root_entrypoint"
+            ]
+          }
+        ],
+        "symbol_chains": [
+          {
+            "symbol": "Invoice",
+            "owners": [
+              "app/models/invoice.py"
+            ],
+            "referenced_by": [
+              {
+                "path": "app/admin.py",
+                "count": 2
+              },
+              {
+                "path": "app/admin/invoice_admin.py",
+                "count": 2
+              },
+              {
+                "path": "app/models/__init__.py",
+                "count": 2
+              },
+              {
+                "path": "tests/test_invoice_model.py",
+                "count": 2
+              }
+            ],
+            "called_by": [
+              "tests/test_invoice_model.py"
+            ]
+          },
+          {
+            "symbol": "Meta",
+            "owners": [
+              "app/models/invoice.py"
+            ],
+            "referenced_by": [],
+            "called_by": []
+          }
+        ],
+        "semantic_callers": [
+          "tests/test_invoice_model.py"
+        ],
+        "semantic_dependents": [
+          "app/admin.py",
+          "app/admin/invoice_admin.py",
+          "app/models/__init__.py",
+          "tests/test_invoice_model.py"
+        ]
+      },
+      {
+        "target": "app/admin/invoice_admin.py",
+        "probable_entrypoints": [
+          "app/admin.py",
+          "app/admin/invoice_admin.py",
+          "app/main.py",
+          "app/models/__init__.py",
+          "app/models/invoice.py",
+          "app/services/__init__.py",
+          "manage.py"
+        ],
+        "ranked_entrypoint_paths": [
+          {
+            "path": "app/admin.py",
+            "score": 2,
+            "reasons": [
+              "root_entrypoint"
+            ]
+          },
+          {
+            "path": "app/admin/invoice_admin.py",
+            "score": 2,
+            "reasons": [
+              "root_entrypoint"
+            ]
+          },
+          {
+            "path": "app/main.py",
+            "score": 2,
+            "reasons": [
+              "root_entrypoint"
+            ]
+          },
+          {
+            "path": "app/models/__init__.py",
+            "score": 2,
+            "reasons": [
+              "root_entrypoint"
+            ]
+          },
+          {
+            "path": "app/models/invoice.py",
+            "score": 2,
+            "reasons": [
+              "root_entrypoint"
+            ]
+          },
+          {
+            "path": "app/services/__init__.py",
+            "score": 2,
+            "reasons": [
+              "root_entrypoint"
+            ]
+          },
+          {
+            "path": "manage.py",
+            "score": 2,
+            "reasons": [
+              "root_entrypoint"
+            ]
+          }
+        ],
+        "symbol_chains": [
+          {
+            "symbol": "InvoiceAdmin",
+            "owners": [
+              "app/admin/invoice_admin.py"
+            ],
+            "referenced_by": [],
+            "called_by": []
+          }
+        ],
+        "semantic_callers": [],
+        "semantic_dependents": []
+      },
+      {
+        "target": "tests/test_invoice_model.py",
+        "probable_entrypoints": [
+          "app/admin.py",
+          "app/admin/invoice_admin.py",
+          "app/main.py",
+          "app/models/__init__.py",
+          "app/models/invoice.py",
+          "app/services/__init__.py",
+          "manage.py"
+        ],
+        "ranked_entrypoint_paths": [
+          {
+            "path": "app/admin.py",
+            "score": 2,
+            "reasons": [
+              "root_entrypoint"
+            ]
+          },
+          {
+            "path": "app/admin/invoice_admin.py",
+            "score": 2,
+            "reasons": [
+              "root_entrypoint"
+            ]
+          },
+          {
+            "path": "app/main.py",
+            "score": 2,
+            "reasons": [
+              "root_entrypoint"
+            ]
+          },
+          {
+            "path": "app/models/__init__.py",
+            "score": 2,
+            "reasons": [
+              "root_entrypoint"
+            ]
+          },
+          {
+            "path": "app/models/invoice.py",
+            "score": 2,
+            "reasons": [
+              "root_entrypoint"
+            ]
+          },
+          {
+            "path": "app/services/__init__.py",
+            "score": 2,
+            "reasons": [
+              "root_entrypoint"
+            ]
+          },
+          {
+            "path": "manage.py",
+            "score": 2,
+            "reasons": [
+              "root_entrypoint"
+            ]
+          }
+        ],
+        "symbol_chains": [
+          {
+            "symbol": "test_invoice_string_representation",
+            "owners": [
+              "tests/test_invoice_model.py"
+            ],
+            "referenced_by": [],
+            "called_by": []
+          }
+        ],
+        "semantic_callers": [],
+        "semantic_dependents": []
+      }
+    ]
+  },
+  "task_route": {
+    "task_kind": "multi_file_feature",
+    "risk_level": "high",
+    "route_confidence": "low",
+    "planning_model": "primary",
+    "coding_model": "primary",
+    "repair_model": "primary",
+    "context_budget": "broad",
+    "verify_intensity": "deep",
+    "edit_mode": "localized",
+    "strategy_bias": "conservative",
+    "recommended_loop_mode": "implement-first",
+    "reasons": [
+      "task_kind=multi_file_feature",
+      "runtime=python",
+      "risk=high",
+      "targets=4"
+    ]
+  },
+  "edit_strategy": {
+    "edit_mode": "surgical",
+    "allowed_files": 4,
+    "apply_style_contract": true,
+    "protect_high_risk_neighbors": true,
+    "prefer_ast_rewrite": true
+  },
+  "context_buckets": {
+    "primary_symbols": [
+      "Invoice",
+      "Meta",
+      "InvoiceAdmin",
+      "test_invoice_string_representation"
+    ],
+    "direct_neighbors": [],
+    "test_neighbors": [
+      "tests/test_invoice_model.py"
+    ],
+    "high_risk_neighbors": [],
+    "candidate_edit_files": [
+      {
+        "path": "tests/test_invoice_model.py",
+        "score": 11,
+        "reasons": [
+          "symbol_reference",
+          "matching_test"
+        ]
+      },
+      {
+        "path": "app/admin.py",
+        "score": 6,
+        "reasons": [
+          "symbol_reference"
+        ]
+      },
+      {
+        "path": "app/admin/invoice_admin.py",
+        "score": 6,
+        "reasons": [
+          "symbol_reference"
+        ]
+      },
+      {
+        "path": "app/models/__init__.py",
+        "score": 6,
+        "reasons": [
+          "symbol_reference"
+        ]
+      }
+    ]
+  },
+  "style_contract": {
+    "controller_pattern": "flat-handlers",
+    "async_style": "sync-or-callback",
+    "test_style": "xunit",
+    "validation_style": "inline-guards",
+    "preferred_test_runner": {
+      "default": null,
+      "ci": null,
+      "watch": null,
+      "coverage": null
+    }
+  },
+  "change_surface": {
+    "neighborhoods": [
+      {
+        "target": "app/models/invoice.py",
+        "primary_symbols": [
+          "Invoice",
+          "Meta",
+          "Invoice"
+        ],
+        "direct_neighbors": [],
+        "test_neighbors": [
+          "tests/test_invoice_model.py"
+        ],
+        "high_risk_neighbors": [],
+        "outbound_calls": [],
+        "incoming_symbol_callers": [
+          {
+            "path": "app/admin.py",
+            "reference_count": 4
+          },
+          {
+            "path": "app/admin/invoice_admin.py",
+            "reference_count": 4
+          },
+          {
+            "path": "app/models/__init__.py",
+            "reference_count": 4
+          },
+          {
+            "path": "tests/test_invoice_model.py",
+            "reference_count": 4
+          }
+        ],
+        "candidate_edit_files": [
+          {
+            "path": "tests/test_invoice_model.py",
+            "score": 11,
+            "reasons": [
+              "symbol_reference",
+              "matching_test"
+            ]
+          },
+          {
+            "path": "app/admin.py",
+            "score": 6,
+            "reasons": [
+              "symbol_reference"
+            ]
+          },
+          {
+            "path": "app/admin/invoice_admin.py",
+            "score": 6,
+            "reasons": [
+              "symbol_reference"
+            ]
+          },
+          {
+            "path": "app/models/__init__.py",
+            "score": 6,
+            "reasons": [
+              "symbol_reference"
+            ]
+          }
+        ],
+        "impact": {
+          "direct_dependents": [],
+          "dependency_count": 0,
+          "dependent_count": 0,
+          "reference_count": 2,
+          "inbound_reference_weight": 16,
+          "risk_score": 4
+        }
+      },
+      {
+        "target": "app/admin/invoice_admin.py",
+        "primary_symbols": [
+          "InvoiceAdmin",
+          "InvoiceAdmin"
+        ],
+        "direct_neighbors": [],
+        "test_neighbors": [],
+        "high_risk_neighbors": [],
+        "outbound_calls": [],
+        "incoming_symbol_callers": [],
+        "candidate_edit_files": [],
+        "impact": {
+          "direct_dependents": [],
+          "dependency_count": 0,
+          "dependent_count": 0,
+          "reference_count": 3,
+          "inbound_reference_weight": 0,
+          "risk_score": 0
+        }
+      },
+      {
+        "target": "tests/test_invoice_model.py",
+        "primary_symbols": [
+          "test_invoice_string_representation"
+        ],
+        "direct_neighbors": [],
+        "test_neighbors": [
+          "tests/test_invoice_model.py"
+        ],
+        "high_risk_neighbors": [],
+        "outbound_calls": [],
+        "incoming_symbol_callers": [],
+        "candidate_edit_files": [],
+        "impact": {
+          "direct_dependents": [],
+          "dependency_count": 0,
+          "dependent_count": 0,
+          "reference_count": 3,
+          "inbound_reference_weight": 0,
+          "risk_score": 1
+        }
+      },
+      {
+        "target": ".opencode/task-bundles/invoice-model.integration.md",
+        "primary_symbols": [],
+        "direct_neighbors": [],
+        "test_neighbors": [],
+        "high_risk_neighbors": [],
+        "outbound_calls": [],
+        "incoming_symbol_callers": [],
+        "candidate_edit_files": [],
+        "impact": {
+          "direct_dependents": [],
+          "dependency_count": 0,
+          "dependent_count": 0,
+          "reference_count": 0,
+          "inbound_reference_weight": 0,
+          "risk_score": 0
+        }
+      }
+    ],
+    "primary_symbols": [
+      "Invoice",
+      "Meta",
+      "InvoiceAdmin",
+      "test_invoice_string_representation"
+    ],
+    "direct_neighbors": [],
+    "test_neighbors": [
+      "tests/test_invoice_model.py"
+    ],
+    "high_risk_neighbors": [],
+    "candidate_edit_files": [
+      {
+        "path": "tests/test_invoice_model.py",
+        "score": 11,
+        "reasons": [
+          "symbol_reference",
+          "matching_test"
+        ]
+      },
+      {
+        "path": "app/admin.py",
+        "score": 6,
+        "reasons": [
+          "symbol_reference"
+        ]
+      },
+      {
+        "path": "app/admin/invoice_admin.py",
+        "score": 6,
+        "reasons": [
+          "symbol_reference"
+        ]
+      },
+      {
+        "path": "app/models/__init__.py",
+        "score": 6,
+        "reasons": [
+          "symbol_reference"
+        ]
+      }
+    ],
+    "impact_score": 5,
+    "recommended_edit_mode": "surgical",
+    "recommended_target_budget": 4
+  },
+  "targets": [
+    {
+      "path": "app/models/invoice.py",
+      "exists": true,
+      "line_count": 13,
+      "imports": [
+        "from django.db import models"
+      ],
+      "exports": [],
+      "symbols": [
+        "Invoice"
+      ],
+      "related_tests": [
+        "tests/test_invoice_model.py"
+      ],
+      "intelligence": {
+        "target": "app/models/invoice.py",
+        "primary_symbols": [
+          "Invoice",
+          "Meta",
+          "Invoice"
+        ],
+        "direct_neighbors": [],
+        "test_neighbors": [
+          "tests/test_invoice_model.py"
+        ],
+        "high_risk_neighbors": [],
+        "outbound_calls": [],
+        "incoming_symbol_callers": [
+          {
+            "path": "app/admin.py",
+            "reference_count": 4
+          },
+          {
+            "path": "app/admin/invoice_admin.py",
+            "reference_count": 4
+          },
+          {
+            "path": "app/models/__init__.py",
+            "reference_count": 4
+          },
+          {
+            "path": "tests/test_invoice_model.py",
+            "reference_count": 4
+          }
+        ],
+        "candidate_edit_files": [
+          {
+            "path": "tests/test_invoice_model.py",
+            "score": 11,
+            "reasons": [
+              "symbol_reference",
+              "matching_test"
+            ]
+          },
+          {
+            "path": "app/admin.py",
+            "score": 6,
+            "reasons": [
+              "symbol_reference"
+            ]
+          },
+          {
+            "path": "app/admin/invoice_admin.py",
+            "score": 6,
+            "reasons": [
+              "symbol_reference"
+            ]
+          },
+          {
+            "path": "app/models/__init__.py",
+            "score": 6,
+            "reasons": [
+              "symbol_reference"
+            ]
+          }
+        ],
+        "impact": {
+          "direct_dependents": [],
+          "dependency_count": 0,
+          "dependent_count": 0,
+          "reference_count": 2,
+          "inbound_reference_weight": 16,
+          "risk_score": 4
+        }
+      },
+      "semantic": {
+        "target": "app/models/invoice.py",
+        "probable_entrypoints": [
+          "app/admin.py",
+          "app/admin/invoice_admin.py",
+          "app/models/__init__.py",
+          "app/main.py",
+          "app/models/invoice.py",
+          "app/services/__init__.py",
+          "manage.py"
+        ],
+        "ranked_entrypoint_paths": [
+          {
+            "path": "app/admin.py",
+            "score": 5,
+            "reasons": [
+              "semantic_dependent",
+              "root_entrypoint"
+            ]
+          },
+          {
+            "path": "app/admin/invoice_admin.py",
+            "score": 5,
+            "reasons": [
+              "semantic_dependent",
+              "root_entrypoint"
+            ]
+          },
+          {
+            "path": "app/models/__init__.py",
+            "score": 5,
+            "reasons": [
+              "semantic_dependent",
+              "root_entrypoint"
+            ]
+          },
+          {
+            "path": "app/main.py",
+            "score": 2,
+            "reasons": [
+              "root_entrypoint"
+            ]
+          },
+          {
+            "path": "app/models/invoice.py",
+            "score": 2,
+            "reasons": [
+              "root_entrypoint"
+            ]
+          },
+          {
+            "path": "app/services/__init__.py",
+            "score": 2,
+            "reasons": [
+              "root_entrypoint"
+            ]
+          },
+          {
+            "path": "manage.py",
+            "score": 2,
+            "reasons": [
+              "root_entrypoint"
+            ]
+          }
+        ],
+        "symbol_chains": [
+          {
+            "symbol": "Invoice",
+            "owners": [
+              "app/models/invoice.py"
+            ],
+            "referenced_by": [
+              {
+                "path": "app/admin.py",
+                "count": 2
+              },
+              {
+                "path": "app/admin/invoice_admin.py",
+                "count": 2
+              },
+              {
+                "path": "app/models/__init__.py",
+                "count": 2
+              },
+              {
+                "path": "tests/test_invoice_model.py",
+                "count": 2
+              }
+            ],
+            "called_by": [
+              "tests/test_invoice_model.py"
+            ]
+          },
+          {
+            "symbol": "Meta",
+            "owners": [
+              "app/models/invoice.py"
+            ],
+            "referenced_by": [],
+            "called_by": []
+          }
+        ],
+        "semantic_callers": [
+          "tests/test_invoice_model.py"
+        ],
+        "semantic_dependents": [
+          "app/admin.py",
+          "app/admin/invoice_admin.py",
+          "app/models/__init__.py",
+          "tests/test_invoice_model.py"
+        ]
+      }
+    },
+    {
+      "path": "app/admin/invoice_admin.py",
+      "exists": true,
+      "line_count": 10,
+      "imports": [
+        "from django.contrib import admin",
+        "from app.models.invoice import Invoice"
+      ],
+      "exports": [],
+      "symbols": [
+        "InvoiceAdmin"
+      ],
+      "related_tests": [],
+      "intelligence": {
+        "target": "app/admin/invoice_admin.py",
+        "primary_symbols": [
+          "InvoiceAdmin",
+          "InvoiceAdmin"
+        ],
+        "direct_neighbors": [],
+        "test_neighbors": [],
+        "high_risk_neighbors": [],
+        "outbound_calls": [],
+        "incoming_symbol_callers": [],
+        "candidate_edit_files": [],
+        "impact": {
+          "direct_dependents": [],
+          "dependency_count": 0,
+          "dependent_count": 0,
+          "reference_count": 3,
+          "inbound_reference_weight": 0,
+          "risk_score": 0
+        }
+      },
+      "semantic": {
+        "target": "app/admin/invoice_admin.py",
+        "probable_entrypoints": [
+          "app/admin.py",
+          "app/admin/invoice_admin.py",
+          "app/main.py",
+          "app/models/__init__.py",
+          "app/models/invoice.py",
+          "app/services/__init__.py",
+          "manage.py"
+        ],
+        "ranked_entrypoint_paths": [
+          {
+            "path": "app/admin.py",
+            "score": 2,
+            "reasons": [
+              "root_entrypoint"
+            ]
+          },
+          {
+            "path": "app/admin/invoice_admin.py",
+            "score": 2,
+            "reasons": [
+              "root_entrypoint"
+            ]
+          },
+          {
+            "path": "app/main.py",
+            "score": 2,
+            "reasons": [
+              "root_entrypoint"
+            ]
+          },
+          {
+            "path": "app/models/__init__.py",
+            "score": 2,
+            "reasons": [
+              "root_entrypoint"
+            ]
+          },
+          {
+            "path": "app/models/invoice.py",
+            "score": 2,
+            "reasons": [
+              "root_entrypoint"
+            ]
+          },
+          {
+            "path": "app/services/__init__.py",
+            "score": 2,
+            "reasons": [
+              "root_entrypoint"
+            ]
+          },
+          {
+            "path": "manage.py",
+            "score": 2,
+            "reasons": [
+              "root_entrypoint"
+            ]
+          }
+        ],
+        "symbol_chains": [
+          {
+            "symbol": "InvoiceAdmin",
+            "owners": [
+              "app/admin/invoice_admin.py"
+            ],
+            "referenced_by": [],
+            "called_by": []
+          }
+        ],
+        "semantic_callers": [],
+        "semantic_dependents": []
+      }
+    },
+    {
+      "path": "tests/test_invoice_model.py",
+      "exists": true,
+      "line_count": 7,
+      "imports": [
+        "from app.models.invoice import Invoice"
+      ],
+      "exports": [],
+      "symbols": [
+        "test_invoice_string_representation"
+      ],
+      "related_tests": [
+        "tests/test_invoice_model.py"
+      ],
+      "intelligence": {
+        "target": "tests/test_invoice_model.py",
+        "primary_symbols": [
+          "test_invoice_string_representation"
+        ],
+        "direct_neighbors": [],
+        "test_neighbors": [
+          "tests/test_invoice_model.py"
+        ],
+        "high_risk_neighbors": [],
+        "outbound_calls": [],
+        "incoming_symbol_callers": [],
+        "candidate_edit_files": [],
+        "impact": {
+          "direct_dependents": [],
+          "dependency_count": 0,
+          "dependent_count": 0,
+          "reference_count": 3,
+          "inbound_reference_weight": 0,
+          "risk_score": 1
+        }
+      },
+      "semantic": {
+        "target": "tests/test_invoice_model.py",
+        "probable_entrypoints": [
+          "app/admin.py",
+          "app/admin/invoice_admin.py",
+          "app/main.py",
+          "app/models/__init__.py",
+          "app/models/invoice.py",
+          "app/services/__init__.py",
+          "manage.py"
+        ],
+        "ranked_entrypoint_paths": [
+          {
+            "path": "app/admin.py",
+            "score": 2,
+            "reasons": [
+              "root_entrypoint"
+            ]
+          },
+          {
+            "path": "app/admin/invoice_admin.py",
+            "score": 2,
+            "reasons": [
+              "root_entrypoint"
+            ]
+          },
+          {
+            "path": "app/main.py",
+            "score": 2,
+            "reasons": [
+              "root_entrypoint"
+            ]
+          },
+          {
+            "path": "app/models/__init__.py",
+            "score": 2,
+            "reasons": [
+              "root_entrypoint"
+            ]
+          },
+          {
+            "path": "app/models/invoice.py",
+            "score": 2,
+            "reasons": [
+              "root_entrypoint"
+            ]
+          },
+          {
+            "path": "app/services/__init__.py",
+            "score": 2,
+            "reasons": [
+              "root_entrypoint"
+            ]
+          },
+          {
+            "path": "manage.py",
+            "score": 2,
+            "reasons": [
+              "root_entrypoint"
+            ]
+          }
+        ],
+        "symbol_chains": [
+          {
+            "symbol": "test_invoice_string_representation",
+            "owners": [
+              "tests/test_invoice_model.py"
+            ],
+            "referenced_by": [],
+            "called_by": []
+          }
+        ],
+        "semantic_callers": [],
+        "semantic_dependents": []
+      }
+    },
+    {
+      "path": ".opencode/task-bundles/invoice-model.integration.md",
+      "exists": true,
+      "line_count": 8,
+      "imports": [],
+      "exports": [],
+      "symbols": [],
+      "related_tests": [],
+      "intelligence": {
+        "target": ".opencode/task-bundles/invoice-model.integration.md",
+        "primary_symbols": [],
+        "direct_neighbors": [],
+        "test_neighbors": [],
+        "high_risk_neighbors": [],
+        "outbound_calls": [],
+        "incoming_symbol_callers": [],
+        "candidate_edit_files": [],
+        "impact": {
+          "direct_dependents": [],
+          "dependency_count": 0,
+          "dependent_count": 0,
+          "reference_count": 0,
+          "inbound_reference_weight": 0,
+          "risk_score": 0
+        }
+      },
+      "semantic": null
+    }
+  ],
+  "omitted_targets": [],
+  "related_tests": [
+    "tests/test_invoice_model.py"
+  ],
+  "omitted_related_tests": [],
+  "latest_failures": [],
+  "implementation_hints": [
+    "Coder policy bias: balanced.",
+    "Update or extend related tests before widening implementation scope.",
+    "Follow django-specific structure and conventions before adding files.",
+    "Prefer pytest when adding or updating tests.",
+    "Validation gaps detected: lint.",
+    "Narrow context policy is active: avoid pulling in distant neighbors unless failures force it.",
+    "Preferred AST edit mode: surgical."
+  ]
+}

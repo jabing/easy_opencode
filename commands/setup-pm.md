@@ -1,6 +1,6 @@
 ---
 description: Configure package manager preference
-agent: build
+agent: eoc_orchestrator
 ---
 
 # Setup Package Manager Command
@@ -14,10 +14,10 @@ Set up package manager preference for the project or globally.
 ## Detection Order
 
 1. **Environment variable**: `CLAUDE_PACKAGE_MANAGER`
-2. **Project config**: `.claude/package-manager.json`
+2. **Project config**: `.opencode/package-manager.json`
 3. **package.json**: `packageManager` field
 4. **Lock file**: Auto-detect from lock files
-5. **Global config**: `~/.claude/package-manager.json`
+5. **Global config**: `~/.opencode/package-manager.json`
 6. **Fallback**: First available
 
 ## Configuration Options
@@ -29,8 +29,8 @@ export CLAUDE_PACKAGE_MANAGER=pnpm
 
 ### Option 2: Project Config
 ```bash
-# Create .claude/package-manager.json
-echo '{"packageManager": "pnpm"}' > .claude/package-manager.json
+# Create .opencode/package-manager.json
+echo '{"packageManager": "pnpm"}' > .opencode/package-manager.json
 ```
 
 ### Option 3: package.json
@@ -42,8 +42,8 @@ echo '{"packageManager": "pnpm"}' > .claude/package-manager.json
 
 ### Option 4: Global Config
 ```bash
-# Create ~/.claude/package-manager.json
-echo '{"packageManager": "yarn"}' > ~/.claude/package-manager.json
+# Create ~/.opencode/package-manager.json
+echo '{"packageManager": "yarn"}' > ~/.opencode/package-manager.json
 ```
 
 ## Supported Package Managers

@@ -1,0 +1,19 @@
+{
+  "name": "cost-aware-llm-pipeline",
+  "description": "Cost optimization patterns for LLM API usage \u2014 model routing by task complexity, budget tracking, retry logic, and prompt caching.",
+  "origin": "ECC",
+  "level": "L1",
+  "languages": [
+    "go",
+    "java",
+    "javascript",
+    "python",
+    "typescript"
+  ],
+  "frameworks": [],
+  "triggers": [
+    "cost aware llm pipeline"
+  ],
+  "actions": [],
+  "verify": []
+}

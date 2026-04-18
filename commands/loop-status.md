@@ -1,1 +1,11 @@
-# Loop Status Command\n\nView status of autonomous loops.\n\n## Usage\n\n/loop-status                # Show current loop status\n\n## Implementation\n\nRuns: node scripts/loop-status.js\n
+# Loop Status Command
+
+View status of autonomous loops.
+
+## Usage
+
+/loop-status                # Show current loop status
+
+## Implementation
+
+Runs: node scripts/loop-status.js

@@ -1,0 +1,372 @@
+{
+  "schema_version": "2.0",
+  "run_id": "impl-impl-20260416140740-bf8851",
+  "workflow": "implement-task",
+  "flow": "implementation",
+  "objective": "new model",
+  "status": "created",
+  "source_kind": "implementation_plan",
+  "source_id": "impl-20260416140740-bf8851",
+  "root_dir": "/mnt/data/batch18/fixtures/python-service",
+  "created_at": "2026-04-16T14:07:40.999Z",
+  "updated_at": "2026-04-16T14:07:41.001Z",
+  "context": {
+    "profile": {
+      "profile_version": "1.2",
+      "runtime": "python",
+      "language": "python",
+      "framework": "django",
+      "package_manager": "pip",
+      "package_name": "python-service",
+      "validation": [
+        {
+          "kind": "test",
+          "command": "python -m pytest -q",
+          "source": "detected:pytest"
+        },
+        {
+          "kind": "build",
+          "command": "python manage.py check",
+          "source": "detected:django"
+        }
+      ],
+      "detected_by": "pyproject.toml",
+      "build_tool": "manage.py check",
+      "test_runner": "pytest",
+      "lint_tool": null,
+      "typecheck_tool": null,
+      "format_tool": null,
+      "app_type": "backend-service",
+      "repo_shape": "flat-package",
+      "workspace": {
+        "is_workspace": false,
+        "tool": null
+      },
+      "entrypoints": [
+        "manage.py"
+      ],
+      "config_files": [
+        "pyproject.toml"
+      ],
+      "signals": {
+        "has_manage_py": true,
+        "has_tests_dir": false,
+        "has_src_dir": false
+      },
+      "confidence": 0.88,
+      "git": false,
+      "changed_files": [],
+      "validation_by_kind": {
+        "test": "python -m pytest -q",
+        "build": "python manage.py check"
+      },
+      "validation_gaps": [
+        "lint"
+      ],
+      "profile_notes": [
+        "No lint command was detected; style regressions may need manual review.",
+        "Framework-specific conventions matter here: django.",
+        "Primary test runner appears to be pytest."
+      ]
+    },
+    "selected_skill": {
+      "name": "add-django-model",
+      "dir": "add-django-model",
+      "level": "L3",
+      "executable": true,
+      "support_tier": "tier2",
+      "task_family": "model",
+      "runtime_match": true,
+      "framework_match": true,
+      "compatibility": {
+        "runtime": "match",
+        "framework": "match",
+        "language": "match",
+        "supported_runtimes": [
+          "python"
+        ],
+        "supported_frameworks": [
+          "django"
+        ],
+        "supported_languages": [
+          "python"
+        ]
+      },
+      "decision": {
+        "accepted": true,
+        "allow_cross_runtime": false,
+        "constraints": [
+          {
+            "kind": "runtime",
+            "status": "passed",
+            "detail": "runtime match: python"
+          },
+          {
+            "kind": "framework",
+            "status": "passed",
+            "detail": "framework match: django"
+          }
+        ],
+        "positive_signals": [
+          "runtime match: python",
+          "framework match: django",
+          "language match: python"
+        ],
+        "negative_signals": [],
+        "score_breakdown": [
+          {
+            "reason": "metadata mentions \"new\"",
+            "points": 2
+          },
+          {
+            "reason": "name includes \"model\"",
+            "points": 8
+          },
+          {
+            "reason": "dir includes \"model\"",
+            "points": 7
+          },
+          {
+            "reason": "metadata mentions \"model\"",
+            "points": 2
+          },
+          {
+            "reason": "query matches trigger \"new model\"",
+            "points": 5
+          },
+          {
+            "reason": "skill is executable",
+            "points": 1
+          },
+          {
+            "reason": "runtime matches python",
+            "points": 6
+          },
+          {
+            "reason": "framework matches django",
+            "points": 5
+          },
+          {
+            "reason": "language matches python",
+            "points": 2
+          }
+        ],
+        "summary": "accepted: runtime match: python"
+      },
+      "verify": [
+        "python manage.py check",
+        "python -m pytest -q"
+      ]
+    },
+    "benchmark_feedback": {
+      "assessed_at": "2026-04-16T14:07:40.203Z",
+      "scope": {
+        "objective": "new model",
+        "runtime": "python",
+        "framework": "django",
+        "skill": "add-django-model",
+        "task_family": "model"
+      },
+      "policy": {
+        "id": "standard",
+        "label": "Standard release candidate"
+      },
+      "data_window": {
+        "run_count": 0,
+        "limit": 10
+      },
+      "risk_score": 0,
+      "risk_level": "unknown",
+      "confidence": 0,
+      "strategy_bias": "balanced",
+      "recommended_validation_mode": "standard",
+      "recommended_action": "implementation_first",
+      "review_gate_required": false,
+      "reasons": [
+        "no benchmark history available"
+      ],
+      "coverage": {
+        "status": "missing",
+        "required_dimensions": [
+          "runtime_framework",
+          "task_family",
+          "skill"
+        ],
+        "matched_dimensions": [],
+        "missing_dimensions": [
+          "runtime_framework",
+          "task_family",
+          "skill"
+        ],
+        "required_count": 3,
+        "matched_count": 0,
+        "coverage_score": 0
+      },
+      "freshness": {
+        "status": "missing",
+        "observed_at": null,
+        "age_days": null,
+        "source": "missing",
+        "source_label": null,
+        "bucket_key": null,
+        "run_id": null,
+        "matched_source_count": 0,
+        "thresholds": {
+          "fresh_days": 14,
+          "aging_days": 21,
+          "stale_days": 35
+        },
+        "policy": {
+          "id": "standard",
+          "label": "Standard release candidate"
+        }
+      },
+      "trend_evidence": {
+        "matched_count": 0,
+        "overall_direction": "unknown",
+        "buckets": []
+      },
+      "matched_buckets": {},
+      "commands": [
+        "node /mnt/data/batch18/bin/eoc-script.js benchmark-feedback report --root /mnt/data/batch18/fixtures/python-service --policy standard --json",
+        "node /mnt/data/batch18/bin/eoc-script.js benchmark-suite trend --group-by runtime-framework --json",
+        "node /mnt/data/batch18/bin/eoc-script.js benchmark-suite trend --group-by skill-family --json",
+        "node /mnt/data/batch18/bin/eoc-script.js benchmark-suite freshness --policy standard --json",
+        "node /mnt/data/batch18/bin/eoc-script.js benchmark-suite trend --group-by skill --json"
+      ],
+      "release_readiness": {
+        "status": "caution",
+        "reasons": [
+          "benchmark history is unavailable",
+          "benchmark sample size is shallow (0/5 runs)",
+          "benchmark confidence is low (0/30)",
+          "benchmark scope coverage is missing for the requested release scope",
+          "benchmark freshness cannot be established"
+        ],
+        "thresholds": {
+          "policy": {
+            "id": "standard",
+            "label": "Standard release candidate"
+          },
+          "minimum_run_count": 5,
+          "minimum_confidence": 30,
+          "minimum_coverage_dimensions": 3,
+          "coverage_requirement": "sufficient",
+          "freshness": {
+            "fresh_days": 14,
+            "aging_days": 21,
+            "stale_days": 35
+          },
+          "observed_run_count": 0,
+          "observed_confidence": 0,
+          "observed_coverage_status": "missing",
+          "observed_matched_dimensions": 0,
+          "observed_trend_direction": "unknown",
+          "observed_freshness_status": "missing",
+          "observed_freshness_age_days": null,
+          "risk_level": "unknown"
+        }
+      }
+    },
+    "execution_policy": {
+      "strategy_bias": "balanced",
+      "validation_mode": "standard",
+      "review_gate_required": false,
+      "benchmark_risk_level": "unknown",
+      "benchmark_risk_score": 0,
+      "context_scope": "narrow",
+      "ast_edit_mode": "surgical",
+      "scaffold_bundle_mode": "standard",
+      "scaffold_integration_mode": "apply"
+    }
+  },
+  "pointers": {
+    "implementation_plan_id": "impl-20260416140740-bf8851",
+    "coder_run_id": "coder-20260416140740-adb39f",
+    "latest_prompt": ".opencode/implementation-plans/impl-20260416140740-bf8851/next-prompt.md",
+    "context_file": ".opencode/implementation-plans/impl-20260416140740-bf8851/context.json"
+  },
+  "steps": [
+    {
+      "step_id": "plan",
+      "kind": "plan",
+      "status": "succeeded",
+      "started_at": "2026-04-16T14:07:40.999Z",
+      "ended_at": "2026-04-16T14:07:40.999Z",
+      "summary": "Implementation plan impl-20260416140740-bf8851"
+    },
+    {
+      "step_id": "coder-loop",
+      "kind": "execution",
+      "status": "running",
+      "started_at": "2026-04-16T14:07:40.999Z",
+      "ended_at": null,
+      "summary": "Coder loop coder-20260416140740-adb39f",
+      "metrics": {
+        "failed_count": 0,
+        "round_count": 0
+      }
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "context",
+      "path": ".opencode/implementation-plans/impl-20260416140740-bf8851/context.json"
+    },
+    {
+      "type": "next_prompt",
+      "path": ".opencode/implementation-plans/impl-20260416140740-bf8851/next-prompt.md"
+    }
+  ],
+  "policy_snapshot": {
+    "strategy_bias": "balanced",
+    "validation_mode": "standard",
+    "review_gate_required": false,
+    "benchmark_risk_level": "unknown",
+    "benchmark_risk_score": 0,
+    "context_scope": "narrow",
+    "ast_edit_mode": "surgical",
+    "scaffold_bundle_mode": "standard",
+    "scaffold_integration_mode": "apply"
+  },
+  "recovery": {
+    "snapshot_id": null,
+    "snapshot_status": "disabled",
+    "recovery_baseline": {
+      "root_dir": "/mnt/data/batch18/fixtures/python-service",
+      "collected_at": "2026-04-16T14:07:40.978Z",
+      "is_git_repo": false,
+      "branch": null,
+      "head": null,
+      "repo_root": null,
+      "dirty": false,
+      "status_entries": [],
+      "status_fingerprint": null,
+      "target_fingerprints": [
+        {
+          "path": ".opencode/task-bundles/invoice-model.integration.md",
+          "sha256": "931b0ecb118601f29eaa78eb0546645011f2cee92af41c84865546069e6a2fa3"
+        },
+        {
+          "path": "app/admin/invoice_admin.py",
+          "sha256": "da39a86884677137a95f5d78106875e281780d4a8aa19c6b67ba38c5068f5f78"
+        },
+        {
+          "path": "app/models/invoice.py",
+          "sha256": "5e53dd33f11cdbd45ac623ce56135844a62f8449ac19029aac633a2b920f3c91"
+        },
+        {
+          "path": "tests/test_invoice_model.py",
+          "sha256": "ab6443e7a1d38af795a96c847e18bd10578c744d0c0d066a58f8303dc941d5d7"
+        }
+      ]
+    }
+  },
+  "summary": {
+    "failed_count": 0,
+    "round_count": 0,
+    "strategy_action": null,
+    "strategy_confidence": null
+  },
+  "latest_event": null
+}

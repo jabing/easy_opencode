@@ -1,0 +1,15 @@
+{
+  "name": "cpp-coding-standards",
+  "description": "C++ coding standards based on the C++ Core Guidelines (isocpp.github.io). Use when writing, reviewing, or refactoring C++ code to enforce modern, safe, and idiomatic practices.",
+  "origin": "ECC",
+  "level": "L1",
+  "languages": [
+    "cpp"
+  ],
+  "frameworks": [],
+  "triggers": [
+    "cpp coding standards"
+  ],
+  "actions": [],
+  "verify": []
+}

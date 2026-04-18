@@ -1,0 +1,431 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "default_agent": "eoc_orchestrator",
+  "instructions": [
+    "./AGENTS.md",
+    "./.opencode/instructions/INSTRUCTIONS.md",
+    "./skills/tdd-workflow/SKILL.md",
+    "./skills/security-review/SKILL.md",
+    "./skills/coding-standards/SKILL.md",
+    "./skills/frontend-patterns/SKILL.md",
+    "./skills/backend-patterns/SKILL.md",
+    "./skills/e2e-testing/SKILL.md",
+    "./skills/verification-loop/SKILL.md",
+    "./skills/api-design/SKILL.md",
+    "./skills/strategic-compact/SKILL.md",
+    "./skills/eval-harness/SKILL.md",
+    "./skills/openspec-workflow/SKILL.md",
+    "./skills/claude-public-tooling/SKILL.md"
+  ],
+  "plugin": [
+    "./.opencode/plugins"
+  ],
+  "agent": {
+    "eoc_orchestrator": {
+      "description": "EOC default execution orchestrator",
+      "mode": "primary",
+      "prompt": "{file:./prompts/agents/eoc-orchestrator.md}",
+      "tools": {
+        "write": true,
+        "edit": true,
+        "bash": true,
+        "read": true
+      }
+    },
+    "eoc_planner": {
+      "description": "EOC planning specialist",
+      "hidden": true,
+      "prompt": "{file:./prompts/agents/planner.md}",
+      "tools": {
+        "read": true,
+        "bash": true,
+        "write": false,
+        "edit": false
+      }
+    },
+    "eoc_code_reviewer": {
+      "description": "EOC code review specialist",
+      "mode": "primary",
+      "prompt": "{file:./prompts/agents/code-reviewer.md}",
+      "tools": {
+        "read": true,
+        "bash": true,
+        "write": false,
+        "edit": false
+      }
+    },
+    "tdd-guide": {
+      "description": "TDD specialist",
+      "hidden": true,
+      "prompt": "{file:./prompts/agents/tdd-guide.md}",
+      "tools": {
+        "read": true,
+        "write": true,
+        "edit": true,
+        "bash": true
+      }
+    },
+    "security-reviewer": {
+      "description": "Security review specialist",
+      "hidden": true,
+      "prompt": "{file:./prompts/agents/security-reviewer.md}",
+      "tools": {
+        "read": true,
+        "bash": true,
+        "write": false,
+        "edit": false
+      }
+    },
+    "build-error-resolver": {
+      "description": "Build and type error fixer",
+      "hidden": true,
+      "prompt": "{file:./prompts/agents/build-error-resolver.md}",
+      "tools": {
+        "read": true,
+        "write": true,
+        "edit": true,
+        "bash": true
+      }
+    },
+    "e2e-runner": {
+      "description": "Playwright E2E specialist",
+      "hidden": true,
+      "prompt": "{file:./prompts/agents/e2e-runner.md}",
+      "tools": {
+        "read": true,
+        "write": true,
+        "edit": true,
+        "bash": true
+      }
+    },
+    "refactor-cleaner": {
+      "description": "Refactoring and cleanup specialist",
+      "hidden": true,
+      "prompt": "{file:./prompts/agents/refactor-cleaner.md}",
+      "tools": {
+        "read": true,
+        "write": true,
+        "edit": true,
+        "bash": true
+      }
+    },
+    "doc-updater": {
+      "description": "Documentation updater",
+      "hidden": true,
+      "prompt": "{file:./prompts/agents/doc-updater.md}",
+      "tools": {
+        "read": true,
+        "write": true,
+        "edit": true,
+        "bash": true
+      }
+    },
+    "go-reviewer": {
+      "description": "Go code review specialist",
+      "hidden": true,
+      "prompt": "{file:./prompts/agents/go-reviewer.md}",
+      "tools": {
+        "read": true,
+        "bash": true,
+        "write": false,
+        "edit": false
+      }
+    },
+    "go-build-resolver": {
+      "description": "Go build error specialist",
+      "hidden": true,
+      "prompt": "{file:./prompts/agents/go-build-resolver.md}",
+      "tools": {
+        "read": true,
+        "write": true,
+        "edit": true,
+        "bash": true
+      }
+    },
+    "database-reviewer": {
+      "description": "Database schema and SQL specialist",
+      "hidden": true,
+      "prompt": "{file:./prompts/agents/database-reviewer.md}",
+      "tools": {
+        "read": true,
+        "bash": true,
+        "write": false,
+        "edit": false
+      }
+    },
+    "architect": {
+      "description": "Architecture and scalability specialist",
+      "hidden": true,
+      "prompt": "{file:./prompts/agents/architect.md}",
+      "tools": {
+        "read": true,
+        "bash": true,
+        "write": false,
+        "edit": false
+      }
+    },
+    "python-reviewer": {
+      "description": "Python code review specialist",
+      "hidden": true,
+      "prompt": "{file:./prompts/agents/python-reviewer.md}",
+      "tools": {
+        "read": true,
+        "bash": true,
+        "write": false,
+        "edit": false
+      }
+    },
+    "repo-aware-coder": {
+      "description": "Repo-aware implementation specialist",
+      "hidden": true,
+      "prompt": "{file:./prompts/agents/repo-aware-coder.md}",
+      "tools": {
+        "read": true,
+        "write": true,
+        "edit": true,
+        "bash": true
+      }
+    },
+    "ts-coder": {
+      "description": "TypeScript and JavaScript implementation specialist",
+      "hidden": true,
+      "prompt": "{file:./prompts/agents/coder-ts.md}",
+      "tools": {
+        "read": true,
+        "write": true,
+        "edit": true,
+        "bash": true
+      }
+    }
+  },
+  "command": {
+    "ast-rewrite": {
+      "description": "AST Rewrite Command",
+      "template": "{file:./commands/ast-rewrite.md}\n\n$ARGUMENTS",
+      "agent": "refactor-cleaner",
+      "subtask": true
+    },
+    "build-fix": {
+      "description": "Build Fix Command",
+      "template": "{file:./commands/build-fix.md}\n\n$ARGUMENTS",
+      "agent": "build-error-resolver",
+      "subtask": true
+    },
+    "checkpoint": {
+      "description": "Checkpoint Command",
+      "template": "{file:./commands/checkpoint.md}\n\n$ARGUMENTS",
+      "agent": "eoc_orchestrator",
+      "subtask": true
+    },
+    "code-review": {
+      "description": "Code Review Command",
+      "template": "{file:./commands/code-review.md}\n\n$ARGUMENTS",
+      "agent": "eoc_code_reviewer",
+      "subtask": true
+    },
+    "coder-loop": {
+      "description": "Coder Loop Command",
+      "template": "{file:./commands/coder-loop.md}\n\n$ARGUMENTS",
+      "agent": "ts-coder",
+      "subtask": true
+    },
+    "delivery-report": {
+      "description": "Delivery Report Command",
+      "template": "{file:./commands/delivery-report.md}\n\n$ARGUMENTS",
+      "agent": "eoc_orchestrator",
+      "subtask": true
+    },
+    "e2e": {
+      "description": "E2E Command",
+      "template": "{file:./commands/e2e.md}\n\n$ARGUMENTS",
+      "agent": "e2e-runner",
+      "subtask": true
+    },
+    "env-check": {
+      "description": "Environment Check Command",
+      "template": "{file:./commands/env-check.md}\n\n$ARGUMENTS",
+      "agent": "eoc_orchestrator",
+      "subtask": true
+    },
+    "eoc-parallel": {
+      "description": "EOC Parallel Command",
+      "template": "{file:./commands/eoc-parallel.md}\n\n$ARGUMENTS",
+      "agent": "eoc_orchestrator",
+      "subtask": true
+    },
+    "eoc-ultrawork": {
+      "description": "EOC Ultrawork Command",
+      "template": "{file:./commands/eoc-ultrawork.md}\n\n$ARGUMENTS",
+      "agent": "eoc_orchestrator",
+      "subtask": true
+    },
+    "eval": {
+      "description": "Eval Command",
+      "template": "{file:./commands/eval.md}\n\n$ARGUMENTS",
+      "agent": "eoc_orchestrator",
+      "subtask": true
+    },
+    "feature-acceptance": {
+      "description": "feature-acceptance",
+      "template": "{file:./commands/feature-acceptance.md}\n\n$ARGUMENTS",
+      "agent": "eoc_orchestrator",
+      "subtask": true
+    },
+    "generate-feature": {
+      "description": "Generate Feature",
+      "template": "{file:./commands/generate-feature.md}\n\n$ARGUMENTS",
+      "agent": "eoc_orchestrator",
+      "subtask": true
+    },
+    "go-build": {
+      "description": "Go Build Command",
+      "template": "{file:./commands/go-build.md}\n\n$ARGUMENTS",
+      "agent": "go-build-resolver",
+      "subtask": true
+    },
+    "go-review": {
+      "description": "Go Review Command",
+      "template": "{file:./commands/go-review.md}\n\n$ARGUMENTS",
+      "agent": "go-reviewer",
+      "subtask": true
+    },
+    "go-test": {
+      "description": "Go Test Command",
+      "template": "{file:./commands/go-test.md}\n\n$ARGUMENTS",
+      "agent": "tdd-guide",
+      "subtask": true
+    },
+    "hashline-edit": {
+      "description": "Hashline Edit Command",
+      "template": "{file:./commands/hashline-edit.md}\n\n$ARGUMENTS",
+      "agent": "eoc_orchestrator",
+      "subtask": true
+    },
+    "implement-task": {
+      "description": "Implement Task Command",
+      "template": "{file:./commands/implement-task.md}\n\n$ARGUMENTS",
+      "agent": "eoc_orchestrator",
+      "subtask": true
+    },
+    "openspec-apply": {
+      "description": "OpenSpec Apply",
+      "template": "{file:./commands/openspec-apply.md}\n\n$ARGUMENTS",
+      "agent": "tdd-guide",
+      "subtask": true
+    },
+    "openspec-archive": {
+      "description": "OpenSpec Archive",
+      "template": "{file:./commands/openspec-archive.md}\n\n$ARGUMENTS",
+      "agent": "doc-updater",
+      "subtask": true
+    },
+    "openspec-proposal": {
+      "description": "OpenSpec Proposal",
+      "template": "{file:./commands/openspec-proposal.md}\n\n$ARGUMENTS",
+      "agent": "eoc_planner",
+      "subtask": true
+    },
+    "orchestrate": {
+      "description": "Orchestrate Command",
+      "template": "{file:./commands/orchestrate.md}\n\n$ARGUMENTS",
+      "agent": "eoc_planner",
+      "subtask": true
+    },
+    "plan": {
+      "description": "Plan Command",
+      "template": "{file:./commands/plan.md}\n\n$ARGUMENTS",
+      "agent": "eoc_planner",
+      "subtask": true
+    },
+    "project-profile": {
+      "description": "Project Profile Command",
+      "template": "{file:./commands/project-profile.md}\n\n$ARGUMENTS",
+      "agent": "repo-aware-coder",
+      "subtask": true
+    },
+    "python-review": {
+      "description": "Python Code Review",
+      "template": "{file:./commands/python-review.md}\n\n$ARGUMENTS",
+      "agent": "python-reviewer",
+      "subtask": true
+    },
+    "quality-gate": {
+      "description": "Quality Gate Command",
+      "template": "{file:./commands/quality-gate.md}\n\n$ARGUMENTS",
+      "agent": "eoc_orchestrator",
+      "subtask": true
+    },
+    "refactor-clean": {
+      "description": "Refactor Clean Command",
+      "template": "{file:./commands/refactor-clean.md}\n\n$ARGUMENTS",
+      "agent": "refactor-cleaner",
+      "subtask": true
+    },
+    "release-evidence": {
+      "description": "release-evidence",
+      "template": "{file:./commands/release-evidence.md}\n\n$ARGUMENTS",
+      "agent": "eoc_orchestrator",
+      "subtask": true
+    },
+    "review-gate": {
+      "description": "Review Gate Command",
+      "template": "{file:./commands/review-gate.md}\n\n$ARGUMENTS",
+      "agent": "eoc_code_reviewer",
+      "subtask": true
+    },
+    "security": {
+      "description": "Security Review Command",
+      "template": "{file:./commands/security.md}\n\n$ARGUMENTS",
+      "agent": "security-reviewer",
+      "subtask": true
+    },
+    "setup-pm": {
+      "description": "Setup Package Manager Command",
+      "template": "{file:./commands/setup-pm.md}\n\n$ARGUMENTS",
+      "agent": "eoc_orchestrator",
+      "subtask": true
+    },
+    "skill-create": {
+      "description": "Skill Create Command",
+      "template": "{file:./commands/skill-create.md}\n\n$ARGUMENTS",
+      "agent": "eoc_orchestrator",
+      "subtask": true
+    },
+    "tdd": {
+      "description": "TDD Command",
+      "template": "{file:./commands/tdd.md}\n\n$ARGUMENTS",
+      "agent": "tdd-guide",
+      "subtask": true
+    },
+    "test-coverage": {
+      "description": "Test Coverage Command",
+      "template": "{file:./commands/test-coverage.md}\n\n$ARGUMENTS",
+      "agent": "tdd-guide",
+      "subtask": true
+    },
+    "tooling-parity": {
+      "description": "Tooling Parity Audit",
+      "template": "{file:./commands/tooling-parity.md}\n\n$ARGUMENTS",
+      "agent": "eoc_planner",
+      "subtask": true
+    },
+    "update-codemaps": {
+      "description": "Update Codemaps Command",
+      "template": "{file:./commands/update-codemaps.md}\n\n$ARGUMENTS",
+      "agent": "doc-updater",
+      "subtask": true
+    },
+    "update-docs": {
+      "description": "Update Docs Command",
+      "template": "{file:./commands/update-docs.md}\n\n$ARGUMENTS",
+      "agent": "doc-updater",
+      "subtask": true
+    },
+    "verify": {
+      "description": "Verify Command",
+      "template": "{file:./commands/verify.md}\n\n$ARGUMENTS",
+      "agent": "eoc_orchestrator",
+      "subtask": true
+    }
+  }
+}

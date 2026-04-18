@@ -1,1 +1,19 @@
-# Harness Audit Command\n\nAudit agent harness configuration for issues.\n\n## Usage\n\n/harness-audit              # Full audit\n/harness-audit --verbose    # Detailed report\n\n## Implementation\n\nRuns: node scripts/harness-audit.js\n\n## Checks\n\n- Agent configuration\n- Command templates\n- Instruction files\n- Prompt file paths\n
+# Harness Audit Command
+
+Audit agent harness configuration for issues.
+
+## Usage
+
+/harness-audit              # Full audit
+/harness-audit --verbose    # Detailed report
+
+## Implementation
+
+Runs: node scripts/harness-audit.js
+
+## Checks
+
+- Agent configuration
+- Command templates
+- Instruction files
+- Prompt file paths

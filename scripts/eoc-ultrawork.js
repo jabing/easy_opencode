@@ -3,38 +3,22 @@ const fs = require('fs');
 const path = require('path');
 const { spawnSync } = require('child_process');
 const bridge = require('./eoc-bridge.js');
-const scheduler = require('./eoc-scheduler.js');
+const scheduler = require('../src/cli/eoc-scheduler-cli.js');
 const eocStart = require('./eoc-start.js');
 const qualityGate = require('./quality-gate.js');
 const { runCoverageCheck } = require('./coverage-check.js');
 const { runReviewGate } = require('./review-gate.js');
+const { normalizeWorkdir } = require('../src/control-plane/policy/execution-policy.js');
+const { formatManagedInvocation } = require('../src/cli/runtime-paths.js');
+const { executeEocUltraworkWorkflow } = require('../src/control-plane/workflows/eoc-ultrawork.js');
+const { parseArgs } = require('../src/shared/cli.js');
 
 const ROOT = process.cwd();
-const RUN_ACTIVE = path.join(ROOT, '.opencode', 'eoc-run', 'active.json');
 
 function usage() {
   console.log('Usage:');
-  console.log('  node scripts/eoc-ultrawork.js --packet <execution-packet.json> --code-review <file> --security-review <file> --docs-evidence <file> --archive-evidence <file> [--plan-id <id>] [--simulate]');
-  console.log('  cat plan.md | node scripts/eoc-ultrawork.js --stdin --code-review <file> --security-review <file> --docs-evidence <file> --archive-evidence <file> [--simulate]');
-}
-
-function parseArgs(argv) {
-  const opts = { _: [] };
-  for (let i = 2; i < argv.length; i++) {
-    const t = argv[i];
-    if (!t.startsWith('--')) {
-      opts._.push(t);
-      continue;
-    }
-    const k = t.slice(2);
-    const n = argv[i + 1];
-    if (!n || n.startsWith('--')) opts[k] = true;
-    else {
-      opts[k] = n;
-      i += 1;
-    }
-  }
-  return opts;
+  console.log(`  ${formatManagedInvocation('eoc-ultrawork', ['--packet', '<execution-packet.json>', '--scope-evidence', '<file>', '--implementation-evidence', '<file>', '--code-review', '<file>', '--security-review', '<file>', '--docs-evidence', '<file>', '--archive-evidence', '<file>', '--plan-id', '<id>', '--simulate'])}`);
+  console.log(`  cat plan.md | ${formatManagedInvocation('eoc-ultrawork', ['--stdin', '--scope-evidence', '<file>', '--implementation-evidence', '<file>', '--code-review', '<file>', '--security-review', '<file>', '--docs-evidence', '<file>', '--archive-evidence', '<file>', '--simulate'])}`);
 }
 
 function runNpm(args) {
@@ -49,14 +33,6 @@ function runNpm(args) {
   if (r.status !== 0) {
     throw new Error((r.stderr || r.stdout || '').trim() || `Command failed: ${cmd} ${args.join(' ')}`);
   }
-}
-
-function getActiveRunId() {
-  if (!fs.existsSync(RUN_ACTIVE)) throw new Error('No active run created by bridge.');
-  const data = JSON.parse(fs.readFileSync(RUN_ACTIVE, 'utf8'));
-  const runId = String(data.run_id || '').trim();
-  if (!runId) throw new Error('active.json missing run_id');
-  return runId;
 }
 
 function mark(runId, field, value) {
@@ -82,7 +58,7 @@ function loadRun(runId) {
 
 function assertEvidenceFile(filePath, runId, kind) {
   if (!filePath) throw new Error(`Missing required ${kind} evidence file.`);
-  const absolute = path.resolve(ROOT, String(filePath));
+  const absolute = normalizeWorkdir(path.resolve(ROOT, String(filePath)), ROOT, `${kind}-evidence`);
   if (!fs.existsSync(absolute)) {
     throw new Error(`${kind} evidence file not found: ${absolute}`);
   }
@@ -110,83 +86,111 @@ async function runQualityGateInline() {
   return null;
 }
 
+async function runUltrawork(opts, packetRaw) {
+  if (opts.help || opts.h || (!opts.packet && !opts.stdin)) {
+    return { ok: false, usage: true };
+  }
+  if (!opts['scope-evidence'] || !opts['implementation-evidence']) {
+    throw new Error('Missing required implementation evidence. Provide --scope-evidence <file> and --implementation-evidence <file>.');
+  }
+  if (!opts['code-review'] || !opts['security-review']) {
+    throw new Error('Missing required review evidence. Provide --code-review <file> and --security-review <file>.');
+  }
+  if (!opts['docs-evidence'] || !opts['archive-evidence']) {
+    throw new Error('Missing required gate-5 evidence. Provide --docs-evidence <file> and --archive-evidence <file>.');
+  }
+
+  const run = bridge.bridgeFromOptions(
+    {
+      packet: opts.packet,
+      'plan-id': opts['plan-id'],
+      simulate: opts.simulate,
+    },
+    packetRaw
+  );
+  const runId = run.run_id;
+  const workflowContext = {
+    opts,
+    rootDir: ROOT,
+    run,
+    runScheduler: async () => {
+      await scheduler.runSchedulerById(runId, { simulate: Boolean(opts.simulate) });
+      return 'scheduler completed';
+    },
+    advanceFromBacklog: () => {
+      advance(runId);
+      return 'gate advanced to scope lock';
+    },
+    lockScopeEvidence: () => {
+      assertEvidenceFile(opts['scope-evidence'], runId, 'scope');
+      mark(runId, 'scope_locked', true);
+      mark(runId, 'acceptance_criteria_locked', true);
+      advance(runId);
+      const runAfterScheduler = loadRun(runId);
+      const schedulerStatus = String(runAfterScheduler.scheduler?.status || '');
+      if (schedulerStatus !== 'completed') {
+        throw new Error(`Scheduler did not complete successfully. status=${schedulerStatus}`);
+      }
+      return 'scope locked';
+    },
+    markImplementationComplete: () => {
+      assertEvidenceFile(opts['implementation-evidence'], runId, 'implementation');
+      mark(runId, 'implementation_completed', true);
+      advance(runId);
+      return 'implementation completed';
+    },
+    runQualityGateAndCoverage: async () => {
+      await runQualityGateInline();
+      mark(runId, 'build_passed', true);
+      mark(runId, 'test_passed', true);
+      mark(runId, 'lint_passed', true);
+      const coverage = runCoverageCheck({
+        summary: path.join(ROOT, 'coverage', 'coverage-summary.json'),
+        threshold: 80,
+      });
+      if (!coverage.ok) throw new Error(`coverage check failed: ${coverage.detail}`);
+      mark(runId, 'coverage_passed', true);
+      advance(runId);
+      return 'quality gate and coverage passed';
+    },
+    runReviewStage: () => {
+      const review = runReviewGate({
+        runId,
+        codeFile: opts['code-review'],
+        securityFile: opts['security-review'],
+      });
+      if (!review.ok) throw new Error(`review gate failed: ${review.detail}`);
+      mark(runId, 'code_review_verdict', review.verdicts.code);
+      mark(runId, 'security_review_verdict', review.verdicts.security);
+      advance(runId);
+      return 'review gate passed';
+    },
+    finalizeDocsAndArchive: () => {
+      assertEvidenceFile(opts['docs-evidence'], runId, 'docs');
+      assertEvidenceFile(opts['archive-evidence'], runId, 'archive');
+      mark(runId, 'docs_updated', true);
+      mark(runId, 'archive_completed', true);
+      advance(runId);
+      return 'docs and archive completed';
+    },
+  };
+
+  await executeEocUltraworkWorkflow(workflowContext);
+  const finalRun = loadRun(runId);
+  return { ok: true, runId, gate: finalRun.current_gate, status: finalRun.status };
+}
+
 async function mainForTesting() {
   try {
     const opts = parseArgs(process.argv);
-    if (opts.help || opts.h || (!opts.packet && !opts.stdin)) {
+    let packetRaw = undefined;
+    if (opts.stdin) packetRaw = fs.readFileSync(0, 'utf8');
+    const result = await runUltrawork(opts, packetRaw);
+    if (result && result.usage) {
       usage();
       process.exit(0);
     }
-    if (!opts['code-review'] || !opts['security-review']) {
-      throw new Error('Missing required review evidence. Provide --code-review <file> and --security-review <file>.');
-    }
-    if (!opts['docs-evidence'] || !opts['archive-evidence']) {
-      throw new Error('Missing required gate-5 evidence. Provide --docs-evidence <file> and --archive-evidence <file>.');
-    }
-
-    let packetRaw = undefined;
-    if (opts.stdin) packetRaw = fs.readFileSync(0, 'utf8');
-    const run = bridge.bridgeFromOptions(
-      {
-        packet: opts.packet,
-        'plan-id': opts['plan-id'],
-        simulate: opts.simulate,
-      },
-      packetRaw
-    );
-    await scheduler.runSchedulerById(run.run_id, { simulate: Boolean(opts.simulate) });
-    const runId = run.run_id;
-
-    // Gate 0 -> 1
-    advance(runId);
-    // Gate 1 -> 2
-    mark(runId, 'scope_locked', true);
-    mark(runId, 'acceptance_criteria_locked', true);
-    advance(runId);
-
-    const runAfterScheduler = loadRun(runId);
-    const schedulerStatus = String(runAfterScheduler.scheduler?.status || '');
-    if (schedulerStatus !== 'completed') {
-      throw new Error(`Scheduler did not complete successfully. status=${schedulerStatus}`);
-    }
-
-    // Gate 2 -> 3
-    mark(runId, 'implementation_completed', true);
-    advance(runId);
-
-    // Gate 3 -> 4
-    await runQualityGateInline();
-    mark(runId, 'build_passed', true);
-    mark(runId, 'test_passed', true);
-    mark(runId, 'lint_passed', true);
-    const coverage = runCoverageCheck({
-      summary: path.join(ROOT, 'coverage', 'coverage-summary.json'),
-      threshold: 80,
-    });
-    if (!coverage.ok) throw new Error(`coverage check failed: ${coverage.detail}`);
-    mark(runId, 'coverage_passed', true);
-    advance(runId);
-
-    // Gate 4 -> 5
-    const review = runReviewGate({
-      runId,
-      codeFile: opts['code-review'],
-      securityFile: opts['security-review'],
-    });
-    if (!review.ok) throw new Error(`review gate failed: ${review.detail}`);
-    mark(runId, 'code_review_verdict', review.verdicts.code);
-    mark(runId, 'security_review_verdict', review.verdicts.security);
-    advance(runId);
-
-    // Gate 5 -> 6
-    assertEvidenceFile(opts['docs-evidence'], runId, 'docs');
-    assertEvidenceFile(opts['archive-evidence'], runId, 'archive');
-    mark(runId, 'docs_updated', true);
-    mark(runId, 'archive_completed', true);
-    advance(runId);
-
-    const finalRun = loadRun(runId);
-    console.log(`Ultrawork completed. run_id=${runId} gate=${finalRun.current_gate} status=${finalRun.status}`);
+    console.log(`Ultrawork completed. run_id=${result.runId} gate=${result.gate} status=${result.status}`);
   } catch (err) {
     console.error(`[eoc-ultrawork] ${err.message}`);
     usage();
@@ -198,4 +202,4 @@ if (require.main === module) {
   mainForTesting();
 }
 
-module.exports = { mainForTesting };
+module.exports = { mainForTesting, runUltrawork };

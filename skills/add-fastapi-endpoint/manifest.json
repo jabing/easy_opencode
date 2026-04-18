@@ -1,0 +1,120 @@
+{
+  "name": "add-fastapi-endpoint",
+  "description": "Scaffold a FastAPI endpoint task bundle with router, service, wiring helper, pytest, and API note.",
+  "origin": "EOC",
+  "level": "L3",
+  "languages": [
+    "python"
+  ],
+  "frameworks": [
+    "fastapi"
+  ],
+  "triggers": [
+    "add fastapi endpoint",
+    "new api route",
+    "add endpoint"
+  ],
+  "inputs": [
+    {
+      "name": "name",
+      "required": true
+    },
+    {
+      "name": "route_path",
+      "default": "/health"
+    }
+  ],
+  "actions": [
+    {
+      "id": "python",
+      "type": "locator_template_bundle",
+      "files": [
+        {
+          "template": "router.py.tpl",
+          "output": "app/routers/{{snake_name}}.py",
+          "primary": true
+        },
+        {
+          "template": "service.py.tpl",
+          "output": "app/services/{{snake_name}}_service.py"
+        },
+        {
+          "template": "wiring.py.tpl",
+          "output": "app/routers/{{snake_name}}_wiring.py"
+        },
+        {
+          "template": "router.test.py.tpl",
+          "output": "tests/test_{{snake_name}}.py"
+        },
+        {
+          "template": "api.md.tpl",
+          "output": "docs/api/{{snake_name}}.md"
+        },
+        {
+          "template": "integration.md.tpl",
+          "output": ".opencode/task-bundles/{{snake_name}}.integration.md"
+        }
+      ],
+      "when": {
+        "runtime": "python"
+      },
+      "updates": [
+        {
+          "type": "ensure_block",
+          "locator": {
+            "strategy": "first_existing",
+            "label": "fastapi api docs index",
+            "candidates": [
+              "docs/api/index.md",
+              "docs/index.md"
+            ],
+            "default": "docs/api/index.md",
+            "create_if_missing": true
+          },
+          "content": "- [{{subject}}](./{{snake_name}}.md) — `{{route_path}}`"
+        },
+        {
+          "type": "ensure_module_export",
+          "locator": {
+            "strategy": "first_existing",
+            "label": "fastapi router package exports",
+            "candidates": [
+              "app/routers/__init__.py",
+              "app/api/__init__.py"
+            ],
+            "default": "app/routers/__init__.py",
+            "only_if_exists": true
+          },
+          "import_statement": "from .{{snake_name}} import router as {{snake_name}}_router",
+          "export_name": "{{snake_name}}_router"
+        },
+        {
+          "type": "patch_framework_entry",
+          "locator": {
+            "strategy": "first_existing",
+            "label": "fastapi application entry",
+            "candidates": [
+              "app/main.py",
+              "main.py",
+              "app.py"
+            ],
+            "default": "app/main.py",
+            "only_if_exists": true
+          },
+          "import_statement": "from app.routers.{{snake_name}}_wiring import include_{{snake_name}}",
+          "registration_statement": "include_{{snake_name}}(app)",
+          "registration_anchor": {
+            "regex": "app\\s*=\\s*FastAPI\\([^\\n]*\\)",
+            "flags": "m"
+          },
+          "registration_strategy": "after_anchor",
+          "on_missing_registration_anchor": "append"
+        }
+      ]
+    }
+  ],
+  "verify": [
+    "python -m pytest -q"
+  ],
+  "task_family": "endpoint"
+}

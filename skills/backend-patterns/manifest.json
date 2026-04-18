@@ -1,0 +1,19 @@
+{
+  "name": "backend-patterns",
+  "description": "Backend architecture patterns, API design, database optimization, and server-side best practices for Node.js, Express, and Next.js API routes.",
+  "origin": "ECC",
+  "level": "L1",
+  "languages": [
+    "go",
+    "java",
+    "javascript",
+    "python",
+    "typescript"
+  ],
+  "frameworks": [],
+  "triggers": [
+    "backend patterns"
+  ],
+  "actions": [],
+  "verify": []
+}

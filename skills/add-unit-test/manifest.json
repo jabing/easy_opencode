@@ -1,0 +1,180 @@
+{
+  "name": "add-unit-test",
+  "description": "Scaffold a unit-test task bundle with starter test, fixture/testdata support, docs, and integration guide.",
+  "origin": "EOC",
+  "level": "L3",
+  "languages": [
+    "javascript",
+    "typescript",
+    "python",
+    "go",
+    "java"
+  ],
+  "frameworks": [
+    "vitest",
+    "jest",
+    "pytest",
+    "go test",
+    "junit"
+  ],
+  "triggers": [
+    "add unit test",
+    "create test scaffold",
+    "write regression test"
+  ],
+  "inputs": [
+    {
+      "name": "name",
+      "required": true
+    },
+    {
+      "name": "subject",
+      "required": true
+    }
+  ],
+  "actions": [
+    {
+      "id": "node",
+      "type": "template_bundle",
+      "when": {
+        "runtime": "node"
+      },
+      "files": [
+        {
+          "template": "node.test.tpl",
+          "output": "tests/{{kebab_name}}.test.ts",
+          "primary": true
+        },
+        {
+          "template": "node.fixture.tpl",
+          "output": "tests/fixtures/{{kebab_name}}.fixture.ts"
+        },
+        {
+          "template": "test.md.tpl",
+          "output": "docs/testing/{{kebab_name}}.md"
+        },
+        {
+          "template": "integration.md.tpl",
+          "output": ".opencode/task-bundles/{{kebab_name}}-test.integration.md"
+        }
+      ],
+      "updates": [
+        {
+          "type": "ensure_block",
+          "file": "docs/testing/index.md",
+          "content": "- [{{subject}} test](./{{kebab_name}}.md) \u2014 starter regression coverage",
+          "create_if_missing": true
+        }
+      ]
+    },
+    {
+      "id": "python",
+      "type": "template_bundle",
+      "when": {
+        "runtime": "python"
+      },
+      "files": [
+        {
+          "template": "python.test.tpl",
+          "output": "tests/test_{{snake_name}}.py",
+          "primary": true
+        },
+        {
+          "template": "python.fixture.tpl",
+          "output": "tests/fixtures/{{snake_name}}_fixture.py"
+        },
+        {
+          "template": "test.md.tpl",
+          "output": "docs/testing/{{snake_name}}.md"
+        },
+        {
+          "template": "integration.md.tpl",
+          "output": ".opencode/task-bundles/{{snake_name}}-test.integration.md"
+        }
+      ],
+      "updates": [
+        {
+          "type": "ensure_block",
+          "file": "docs/testing/index.md",
+          "content": "- [{{subject}} test](./{{snake_name}}.md) \u2014 starter regression coverage",
+          "create_if_missing": true
+        }
+      ]
+    },
+    {
+      "id": "go",
+      "type": "template_bundle",
+      "when": {
+        "runtime": "go"
+      },
+      "files": [
+        {
+          "template": "go.test.tpl",
+          "output": "{{snake_name}}_test.go",
+          "primary": true
+        },
+        {
+          "template": "go.fixture.tpl",
+          "output": "testdata/{{snake_name}}.json"
+        },
+        {
+          "template": "test.md.tpl",
+          "output": "docs/testing/{{snake_name}}.md"
+        },
+        {
+          "template": "integration.md.tpl",
+          "output": ".opencode/task-bundles/{{snake_name}}-test.integration.md"
+        }
+      ],
+      "updates": [
+        {
+          "type": "ensure_block",
+          "file": "docs/testing/index.md",
+          "content": "- [{{subject}} test](./{{snake_name}}.md) \u2014 starter regression coverage",
+          "create_if_missing": true
+        }
+      ]
+    },
+    {
+      "id": "java",
+      "type": "template_bundle",
+      "when": {
+        "runtime": "java"
+      },
+      "files": [
+        {
+          "template": "java.test.tpl",
+          "output": "src/test/java/{{package_path}}/{{class_name}}Test.java",
+          "primary": true
+        },
+        {
+          "template": "java.fixture.tpl",
+          "output": "src/test/resources/{{kebab_name}}.json"
+        },
+        {
+          "template": "test.md.tpl",
+          "output": "docs/testing/{{class_name}}.md"
+        },
+        {
+          "template": "integration.md.tpl",
+          "output": ".opencode/task-bundles/{{class_name}}-test.integration.md"
+        }
+      ],
+      "updates": [
+        {
+          "type": "ensure_block",
+          "file": "docs/testing/index.md",
+          "content": "- [{{subject}} test](./{{class_name}}.md) \u2014 starter regression coverage",
+          "create_if_missing": true
+        }
+      ]
+    }
+  ],
+  "verify": [
+    "npm test",
+    "pytest -q",
+    "go test ./...",
+    "./gradlew test"
+  ],
+  "task_family": "test"
+}

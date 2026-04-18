@@ -1,6 +1,6 @@
 ﻿---
 description: Draft an OpenSpec-style change proposal before implementation
-agent: planner
+agent: eoc_planner
 subtask: true
 ---
 

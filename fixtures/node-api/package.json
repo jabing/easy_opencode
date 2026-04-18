@@ -1,0 +1,16 @@
+{
+  "name": "benchmark-node-api-fixture",
+  "version": "1.0.0",
+  "private": true,
+  "packageManager": "npm@10.8.0",
+  "scripts": {
+    "build": "node -e \"console.log('fixture build ok')\"",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.0"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "name": "claude-public-tooling",
+  "description": "",
+  "origin": "",
+  "level": "L1",
+  "languages": [],
+  "frameworks": [],
+  "triggers": [
+    "claude public tooling"
+  ],
+  "actions": [],
+  "verify": []
+}

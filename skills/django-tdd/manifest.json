@@ -1,0 +1,21 @@
+{
+  "name": "django-tdd",
+  "description": "Django testing strategies with pytest-django, TDD methodology, factory_boy, mocking, coverage, and testing Django REST Framework APIs.",
+  "origin": "ECC",
+  "level": "L1",
+  "languages": [
+    "go",
+    "java",
+    "javascript",
+    "python",
+    "typescript"
+  ],
+  "frameworks": [
+    "django"
+  ],
+  "triggers": [
+    "django tdd"
+  ],
+  "actions": [],
+  "verify": []
+}

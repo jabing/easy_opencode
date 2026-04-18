@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "strict": true,
+    "noImplicitAny": true,
+    "exactOptionalPropertyTypes": true,
+    "noUncheckedIndexedAccess": true,
+    "allowJs": true,
+    "checkJs": true,
+    "noEmit": true,
+    "lib": ["ES2020"],
+    "skipLibCheck": true
+  },
+  "files": [
+    "src/core/package-hygiene.js",
+    "src/core/syntax-check.js",
+    "src/adapters/file-walker.js",
+    "src/adapters/process-runner.js",
+    "src/cli/project-profile-cli.js",
+    "src/core/project-profile.js"
+  ]
+}

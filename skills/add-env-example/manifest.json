@@ -1,0 +1,38 @@
+{
+  "name": "add-env-example",
+  "description": "Scaffold an env example snippet with a required variable.",
+  "origin": "EOC",
+  "level": "L3",
+  "languages": [
+    "shell"
+  ],
+  "frameworks": [
+    "dotenv"
+  ],
+  "triggers": [
+    "add env example",
+    "document environment variable"
+  ],
+  "inputs": [
+    {
+      "name": "env_key",
+      "required": true
+    },
+    {
+      "name": "value",
+      "default": "change-me"
+    }
+  ],
+  "actions": [
+    {
+      "id": "generic",
+      "type": "template_scaffold",
+      "template": "env.example.tpl",
+      "default_output": ".env.example"
+    }
+  ],
+  "verify": [
+    "cat .env.example"
+  ],
+  "task_family": "config"
+}

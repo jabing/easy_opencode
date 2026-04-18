@@ -1,1 +1,19 @@
-# Model Route Command\n\nConfigure model routing for different task types.\n\n## Usage\n\n/model-route                # Show current routing\n/model-route coding <model> # Set coding model\n/model-route --reset        # Reset to defaults\n\n## Implementation\n\nRuns: node scripts/model-route.js\n
+# Model Route Command
+
+Configure model routing for different task types.
+
+## Usage
+
+```bash
+/model-route                # Show current routing
+/model-route coding <model> # Set coding model
+/model-route --reset        # Reset to defaults
+```
+
+## Implementation
+
+Runs:
+
+```bash
+node scripts/model-route.js
+```

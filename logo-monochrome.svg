@@ -1,9 +1,0 @@
-<svg width="256" height="256" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
-  <rect width="256" height="256" fill="white" />
-  
-  <g transform="translate(128,128)">
-    <circle cx="0" cy="0" r="80" fill="black" opacity="0.9" />
-    
-    <text x="0" y="8" font-family="Arial, sans-serif" font-size="60" font-weight="bold" text-anchor="middle" fill="white">EOC</text>
-  </g>
-</svg>

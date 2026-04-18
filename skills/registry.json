@@ -1,11 +1,145 @@
 {
-  "generated_at": "2026-04-12T07:00:04.802Z",
+  "generated_at": "2026-04-18T10:07:29.017Z",
   "counts": {
     "total_dirs": 51,
     "indexed": 51,
-    "failures": 0
+    "failures": 0,
+    "metadata_failures": 0,
+    "metadata_warnings": 2
   },
   "skills": [
+    {
+      "dir": "add-cli-command",
+      "name": "add-cli-command",
+      "origin": "EOC",
+      "version": "",
+      "assets": {
+        "scripts": false,
+        "data": false,
+        "templates": true
+      }
+    },
+    {
+      "dir": "add-config-module",
+      "name": "add-config-module",
+      "origin": "EOC",
+      "version": "",
+      "assets": {
+        "scripts": false,
+        "data": false,
+        "templates": true
+      }
+    },
+    {
+      "dir": "add-django-model",
+      "name": "add-django-model",
+      "origin": "EOC",
+      "version": "",
+      "assets": {
+        "scripts": false,
+        "data": false,
+        "templates": true
+      }
+    },
+    {
+      "dir": "add-env-example",
+      "name": "add-env-example",
+      "origin": "EOC",
+      "version": "",
+      "assets": {
+        "scripts": false,
+        "data": false,
+        "templates": true
+      }
+    },
+    {
+      "dir": "add-express-route",
+      "name": "add-express-route",
+      "origin": "EOC",
+      "version": "",
+      "assets": {
+        "scripts": false,
+        "data": false,
+        "templates": true
+      }
+    },
+    {
+      "dir": "add-fastapi-endpoint",
+      "name": "add-fastapi-endpoint",
+      "origin": "EOC",
+      "version": "",
+      "assets": {
+        "scripts": false,
+        "data": false,
+        "templates": true
+      }
+    },
+    {
+      "dir": "add-go-handler",
+      "name": "add-go-handler",
+      "origin": "EOC",
+      "version": "",
+      "assets": {
+        "scripts": false,
+        "data": false,
+        "templates": true
+      }
+    },
+    {
+      "dir": "add-react-component",
+      "name": "add-react-component",
+      "origin": "EOC",
+      "version": "",
+      "assets": {
+        "scripts": false,
+        "data": false,
+        "templates": true
+      }
+    },
+    {
+      "dir": "add-service-module",
+      "name": "add-service-module",
+      "origin": "EOC",
+      "version": "",
+      "assets": {
+        "scripts": false,
+        "data": false,
+        "templates": true
+      }
+    },
+    {
+      "dir": "add-spring-controller",
+      "name": "add-spring-controller",
+      "origin": "EOC",
+      "version": "",
+      "assets": {
+        "scripts": false,
+        "data": false,
+        "templates": true
+      }
+    },
+    {
+      "dir": "add-unit-test",
+      "name": "add-unit-test",
+      "origin": "EOC",
+      "version": "",
+      "assets": {
+        "scripts": false,
+        "data": false,
+        "templates": true
+      }
+    },
+    {
+      "dir": "add-vue-component",
+      "name": "add-vue-component",
+      "origin": "EOC",
+      "version": "",
+      "assets": {
+        "scripts": false,
+        "data": false,
+        "templates": true
+      }
+    },
     {
       "dir": "api-design",
       "name": "api-design",
@@ -40,30 +174,8 @@
       }
     },
     {
-      "dir": "clickhouse-io",
-      "name": "clickhouse-io",
-      "origin": "ECC",
-      "version": "",
-      "assets": {
-        "scripts": false,
-        "data": false,
-        "templates": false
-      }
-    },
-    {
       "dir": "coding-standards",
       "name": "coding-standards",
-      "origin": "ECC",
-      "version": "",
-      "assets": {
-        "scripts": false,
-        "data": false,
-        "templates": false
-      }
-    },
-    {
-      "dir": "configure-ecc",
-      "name": "configure-ecc",
       "origin": "ECC",
       "version": "",
       "assets": {
@@ -79,17 +191,6 @@
       "version": "",
       "assets": {
         "scripts": false,
-        "data": false,
-        "templates": false
-      }
-    },
-    {
-      "dir": "continuous-learning-v2",
-      "name": "continuous-learning-v2",
-      "origin": "ECC",
-      "version": "2.1.0",
-      "assets": {
-        "scripts": true,
         "data": false,
         "templates": false
       }
@@ -227,17 +328,6 @@
       }
     },
     {
-      "dir": "foundation-models-on-device",
-      "name": "foundation-models-on-device",
-      "origin": "",
-      "version": "",
-      "assets": {
-        "scripts": false,
-        "data": false,
-        "templates": false
-      }
-    },
-    {
       "dir": "frontend-patterns",
       "name": "frontend-patterns",
       "origin": "ECC",
@@ -246,6 +336,39 @@
         "scripts": false,
         "data": false,
         "templates": false
+      }
+    },
+    {
+      "dir": "generate-fastapi-feature",
+      "name": "generate-fastapi-feature",
+      "origin": "",
+      "version": "",
+      "assets": {
+        "scripts": false,
+        "data": false,
+        "templates": true
+      }
+    },
+    {
+      "dir": "generate-go-feature",
+      "name": "generate-go-feature",
+      "origin": "",
+      "version": "",
+      "assets": {
+        "scripts": false,
+        "data": false,
+        "templates": true
+      }
+    },
+    {
+      "dir": "generate-node-feature",
+      "name": "generate-node-feature",
+      "origin": "",
+      "version": "",
+      "assets": {
+        "scripts": false,
+        "data": false,
+        "templates": true
       }
     },
     {
@@ -262,17 +385,6 @@
     {
       "dir": "golang-testing",
       "name": "golang-testing",
-      "origin": "ECC",
-      "version": "",
-      "assets": {
-        "scripts": false,
-        "data": false,
-        "templates": false
-      }
-    },
-    {
-      "dir": "iterative-retrieval",
-      "name": "iterative-retrieval",
       "origin": "ECC",
       "version": "",
       "assets": {
@@ -304,31 +416,9 @@
       }
     },
     {
-      "dir": "nutrient-document-processing",
-      "name": "nutrient-document-processing",
-      "origin": "ECC",
-      "version": "",
-      "assets": {
-        "scripts": false,
-        "data": false,
-        "templates": false
-      }
-    },
-    {
       "dir": "openspec-workflow",
       "name": "openspec-workflow",
       "origin": "EOC",
-      "version": "",
-      "assets": {
-        "scripts": false,
-        "data": false,
-        "templates": false
-      }
-    },
-    {
-      "dir": "plankton-code-quality",
-      "name": "plankton-code-quality",
-      "origin": "community",
       "version": "",
       "assets": {
         "scripts": false,
@@ -370,17 +460,6 @@
       }
     },
     {
-      "dir": "regex-vs-llm-structured-text",
-      "name": "regex-vs-llm-structured-text",
-      "origin": "ECC",
-      "version": "",
-      "assets": {
-        "scripts": false,
-        "data": false,
-        "templates": false
-      }
-    },
-    {
       "dir": "search-first",
       "name": "search-first",
       "origin": "ECC",
@@ -409,17 +488,6 @@
       "version": "",
       "assets": {
         "scripts": false,
-        "data": false,
-        "templates": false
-      }
-    },
-    {
-      "dir": "skill-stocktake",
-      "name": "skill-stocktake",
-      "origin": "ECC",
-      "version": "",
-      "assets": {
-        "scripts": true,
         "data": false,
         "templates": false
       }
@@ -480,61 +548,6 @@
       }
     },
     {
-      "dir": "superpowers-workflow",
-      "name": "superpowers-workflow",
-      "origin": "EOC",
-      "version": "",
-      "assets": {
-        "scripts": false,
-        "data": false,
-        "templates": false
-      }
-    },
-    {
-      "dir": "swift-actor-persistence",
-      "name": "swift-actor-persistence",
-      "origin": "ECC",
-      "version": "",
-      "assets": {
-        "scripts": false,
-        "data": false,
-        "templates": false
-      }
-    },
-    {
-      "dir": "swift-concurrency-6-2",
-      "name": "swift-concurrency-6-2",
-      "origin": "",
-      "version": "",
-      "assets": {
-        "scripts": false,
-        "data": false,
-        "templates": false
-      }
-    },
-    {
-      "dir": "swift-protocol-di-testing",
-      "name": "swift-protocol-di-testing",
-      "origin": "ECC",
-      "version": "",
-      "assets": {
-        "scripts": false,
-        "data": false,
-        "templates": false
-      }
-    },
-    {
-      "dir": "swiftui-patterns",
-      "name": "swiftui-patterns",
-      "origin": "",
-      "version": "",
-      "assets": {
-        "scripts": false,
-        "data": false,
-        "templates": false
-      }
-    },
-    {
       "dir": "tdd-workflow",
       "name": "tdd-workflow",
       "origin": "ECC",
@@ -543,17 +556,6 @@
         "scripts": false,
         "data": false,
         "templates": false
-      }
-    },
-    {
-      "dir": "ui-ux-pro-max",
-      "name": "ui-ux-pro-max",
-      "origin": "",
-      "version": "",
-      "assets": {
-        "scripts": true,
-        "data": true,
-        "templates": true
       }
     },
     {
@@ -567,5 +569,13 @@
         "templates": false
       }
     }
-  ]
+  ],
+  "metadata_validation": {
+    "ok": true,
+    "failures": [],
+    "warnings": [
+      "add-env-example: frameworks without runtime hints (dotenv)",
+      "trigger collision \"add endpoint\" is partitioned by runtime: add-express-route[node], add-fastapi-endpoint[python], add-spring-controller[java]"
+    ]
+  }
 }

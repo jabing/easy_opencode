@@ -1,0 +1,52 @@
+{
+  "name": "generate-fastapi-feature",
+  "description": "Generate a multi-file FastAPI backend feature bundle for Python projects.",
+  "origin": "EOC",
+  "level": "L3",
+  "languages": ["python"],
+  "frameworks": ["fastapi", "python"],
+  "triggers": ["generate fastapi feature", "add fastapi module", "create python feature"],
+  "inputs": [
+    { "name": "name", "required": true },
+    { "name": "subject", "required": true },
+    { "name": "feature_kind", "default": "crud" },
+    { "name": "with_repository", "default": true },
+    { "name": "with_test", "default": true },
+    { "name": "with_docs", "default": true }
+  ],
+  "actions": [
+    {
+      "id": "fastapi-feature",
+      "type": "feature_bundle",
+      "when": { "runtime": "python" },
+      "plan": {
+        "strategy": "auto",
+        "dependency_graph": {
+          "controller": ["service", "schema"],
+          "service": ["repository", "schema"],
+          "repository": ["schema"],
+          "schema": [],
+          "route": ["controller", "schema"],
+          "test": ["route"],
+          "docs": ["route"],
+          "integration": ["route", "service", "repository", "schema"]
+        }
+      },
+      "modules": [
+        { "id": "controller", "template": "feature/controller.py.tpl", "output": "{{paths.controller}}/{{controller_filename}}", "primary": true },
+        { "id": "service", "template": "feature/service.py.tpl", "output": "{{paths.service}}/{{service_filename}}" },
+        { "id": "repository", "template": "feature/repository.py.tpl", "output": "{{paths.repository}}/{{repository_filename}}", "condition": "with_repository" },
+        { "id": "schema", "template": "feature/schema.py.tpl", "output": "{{paths.schema}}/{{schema_filename}}" },
+        { "id": "route", "template": "feature/route.py.tpl", "output": "{{paths.route}}/{{route_filename}}" },
+        { "id": "test", "template": "feature/test.py.tpl", "output": "{{paths.test}}/{{test_filename}}", "condition": "with_test" },
+        { "id": "docs", "template": "feature/api.md.tpl", "output": "{{paths.docs}}/{{docs_filename}}", "condition": "with_docs" },
+        { "id": "integration", "template": "feature/integration.md.tpl", "output": ".opencode/feature-bundles/{{kebab_name}}.integration.md" }
+      ],
+      "updates": [
+        { "type": "ensure_block", "file": "{{paths.docs_index}}", "content": "- [{{subject}}](./{{docs_filename}}) — generated feature", "create_if_missing": true }
+      ]
+    }
+  ],
+  "verify": ["python -m compileall .", "python -m pytest -q"],
+  "task_family": "feature"
+}

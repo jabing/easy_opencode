@@ -1,0 +1,32 @@
+{
+  "include": [
+    "src/**/*.js",
+    "scripts/**/*.js",
+    "tests/**/*.js"
+  ],
+  "extensions": [
+    ".js",
+    ".cjs",
+    ".mjs",
+    ".jsx",
+    ".ts",
+    ".tsx",
+    ".mts",
+    ".cts"
+  ],
+  "ignoreDirs": [
+    ".git",
+    "node_modules",
+    "dist",
+    "build",
+    "coverage",
+    ".opencode"
+  ],
+  "maxWarnings": 0,
+  "rules": {
+    "no-debugger": "error",
+    "no-var": "error",
+    "no-trailing-whitespace": "warn",
+    "eol-last": "warn"
+  }
+}

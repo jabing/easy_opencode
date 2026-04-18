@@ -1,95 +1,72 @@
 #!/usr/bin/env node
 /**
  * Hook Configuration Management Script
- * 
- * Manages hook runtime configuration via environment variables and config file.
  */
-const fs = require("fs");
-const path = require("path");
+const fs = require('fs')
+const { resolveHooksConfig } = require('../src/cli/config-paths.js')
+const { formatManagedInvocation } = require('../src/cli/runtime-paths.js')
 
-const CONFIG_FILE = path.join(__dirname, "..", ".opencode", "hooks-config.json");
-
-const PROFILES = ["minimal", "standard", "strict"];
+const CONFIG_FILE = resolveHooksConfig(process.cwd())
+const PROFILES = ['minimal', 'standard', 'strict']
 
 function loadConfig() {
   try {
-    return JSON.parse(fs.readFileSync(CONFIG_FILE, "utf-8"));
-  } catch (error) {
-    return { profile: "standard", disabled: [], overrides: {} };
+    return JSON.parse(fs.readFileSync(CONFIG_FILE, 'utf-8'))
+  } catch {
+    return { profile: 'standard', disabled: [], overrides: {} }
   }
 }
 
 function saveConfig(config) {
-  fs.writeFileSync(CONFIG_FILE, JSON.stringify(config, null, 2) + "\n");
-}
-
-function getProfile() {
-  return process.env.ECC_HOOK_PROFILE || loadConfig().profile || "standard";
+  fs.mkdirSync(require('path').dirname(CONFIG_FILE), { recursive: true })
+  fs.writeFileSync(CONFIG_FILE, JSON.stringify(config, null, 2) + '\n')
 }
 
 function setProfile(profile) {
   if (!PROFILES.includes(profile)) {
-    console.error(`Invalid profile: ${profile}. Valid options: ${PROFILES.join(", ")}`);
-    process.exit(1);
+    console.error(`Invalid profile: ${profile}. Valid options: ${PROFILES.join(', ')}`)
+    process.exit(1)
   }
-  const config = loadConfig();
-  config.profile = profile;
-  saveConfig(config);
-  console.log(`Hook profile set to: ${profile}`);
-}
-
-function getDisabledHooks() {
-  const envHooks = process.env.ECC_DISABLED_HOOKS;
-  if (envHooks) {
-    return envHooks.split(",").map(h => h.trim()).filter(h => h);
-  }
-  return loadConfig().disabled || [];
+  const config = loadConfig()
+  config.profile = profile
+  saveConfig(config)
+  console.log(`Hook profile set to: ${profile}`)
+  console.log(`Config: ${CONFIG_FILE}`)
 }
 
 function disableHooks(hooks) {
-  const config = loadConfig();
-  hooks.forEach(hook => {
-    if (!config.disabled.includes(hook)) {
-      config.disabled.push(hook);
-    }
-  });
-  saveConfig(config);
-  console.log(`Disabled hooks: ${hooks.join(", ")}`);
+  const config = loadConfig()
+  for (const hook of hooks) {
+    if (!config.disabled.includes(hook)) config.disabled.push(hook)
+  }
+  saveConfig(config)
+  console.log(`Disabled hooks: ${hooks.join(', ')}`)
 }
 
 function enableHooks(hooks) {
-  const config = loadConfig();
-  if (hooks.includes("all")) {
-    config.disabled = [];
-    console.log("Enabled all hooks");
+  const config = loadConfig()
+  if (hooks.includes('all')) {
+    config.disabled = []
+    console.log('Enabled all hooks')
   } else {
-    config.disabled = config.disabled.filter(h => !hooks.includes(h));
-    console.log(`Enabled hooks: ${hooks.join(", ")}`);
+    config.disabled = config.disabled.filter((hook) => !hooks.includes(hook))
+    console.log(`Enabled hooks: ${hooks.join(', ')}`)
   }
-  saveConfig(config);
+  saveConfig(config)
 }
 
 function getStatus() {
-  const config = loadConfig();
-  const envProfile = process.env.ECC_HOOK_PROFILE;
-  const envDisabled = process.env.ECC_DISABLED_HOOKS;
-  
-  console.log("\n=== Hook Configuration Status ===\n");
-  console.log(`Profile (file): ${config.profile}`);
-  if (envProfile) {
-    console.log(`Profile (env):   ${envProfile} (overrides file)`);
-  }
-  console.log(`\nDisabled hooks (${config.disabled.length}):`);
+  const config = loadConfig()
+  console.log('\n=== Hook Configuration Status ===\n')
+  console.log(`Config file: ${CONFIG_FILE}`)
+  console.log(`Profile: ${config.profile}`)
+  console.log(`Disabled hooks (${config.disabled.length}):`)
   if (config.disabled.length === 0) {
-    console.log("  (none)");
+    console.log('  (none)')
   } else {
-    config.disabled.forEach(h => console.log(`  - ${h}`));
+    config.disabled.forEach((hook) => console.log(`  - ${hook}`))
   }
-  if (envDisabled) {
-    console.log(`\nDisabled by env (${envDisabled}):`);
-    envDisabled.split(",").forEach(h => console.log(`  - ${h.trim()}`));
-  }
-  console.log("");
+  console.log('')
 }
 
 function showHelp() {
@@ -97,42 +74,29 @@ function showHelp() {
 Hook Configuration Management
 
 Usage:
-  node hooks-config.js profile <minimal|standard|strict>  Set profile
-  node hooks-config.js disable <hook1,hook2,...>         Disable hooks
-  node hooks-config.js enable <hook1,hook2,...|all>      Enable hooks
-  node hooks-config.js status                            Show status
-  node hooks-config.js help                              Show this help
-
-Environment Variables:
-  ECC_HOOK_PROFILE       Set profile (minimal|standard|strict)
-  ECC_DISABLED_HOOKS     Comma-separated list of disabled hooks
-
-Examples:
-  node hooks-config.js profile strict
-  node hooks-config.js disable pre:bash:security-scan
-  node hooks-config.js enable all
-  node hooks-config.js status
-`);
+  ${formatManagedInvocation('hooks-config', ['profile', '<minimal|standard|strict>'])}
+  ${formatManagedInvocation('hooks-config', ['disable', '<hook1,hook2,...>'])}
+  ${formatManagedInvocation('hooks-config', ['enable', '<hook1,hook2,...|all>'])}
+  ${formatManagedInvocation('hooks-config', ['status'])}
+`)
 }
 
-// CLI
-const args = process.argv.slice(2);
-const command = args[0];
-
-switch (command) {
-  case "profile":
-    setProfile(args[1]);
-    break;
-  case "disable":
-    if (args[1]) disableHooks(args[1].split(","));
-    break;
-  case "enable":
-    if (args[1]) enableHooks(args[1].split(","));
-    break;
-  case "status":
-    getStatus();
-    break;
-  case "help":
+const args = process.argv.slice(2)
+switch (args[0]) {
+  case 'profile':
+    setProfile(args[1])
+    break
+  case 'disable':
+    if (args[1]) disableHooks(args[1].split(',').map((s) => s.trim()).filter(Boolean))
+    else showHelp()
+    break
+  case 'enable':
+    if (args[1]) enableHooks(args[1].split(',').map((s) => s.trim()).filter(Boolean))
+    else showHelp()
+    break
+  case 'status':
+    getStatus()
+    break
   default:
-    showHelp();
+    showHelp()
 }

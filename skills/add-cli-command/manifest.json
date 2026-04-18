@@ -1,0 +1,79 @@
+{
+  "name": "add-cli-command",
+  "description": "Scaffold a starter CLI command for the detected runtime.",
+  "origin": "EOC",
+  "level": "L3",
+  "languages": [
+    "javascript",
+    "typescript",
+    "python",
+    "go",
+    "java"
+  ],
+  "frameworks": [
+    "node",
+    "click",
+    "cobra",
+    "picocli"
+  ],
+  "triggers": [
+    "add cli command",
+    "new command",
+    "scaffold cli"
+  ],
+  "inputs": [
+    {
+      "name": "name",
+      "required": true
+    },
+    {
+      "name": "subject",
+      "required": true
+    }
+  ],
+  "actions": [
+    {
+      "id": "node",
+      "type": "template_scaffold",
+      "template": "node.cli.tpl",
+      "default_output": "src/cli/{{name}}.ts",
+      "when": {
+        "runtime": "node"
+      }
+    },
+    {
+      "id": "python",
+      "type": "template_scaffold",
+      "template": "python.cli.tpl",
+      "default_output": "cli/{{name}}.py",
+      "when": {
+        "runtime": "python"
+      }
+    },
+    {
+      "id": "go",
+      "type": "template_scaffold",
+      "template": "go.cli.tpl",
+      "default_output": "cmd/{{name}}.go",
+      "when": {
+        "runtime": "go"
+      }
+    },
+    {
+      "id": "java",
+      "type": "template_scaffold",
+      "template": "java.cli.tpl",
+      "default_output": "src/main/java/{{subject}}Command.java",
+      "when": {
+        "runtime": "java"
+      }
+    }
+  ],
+  "verify": [
+    "npm run build",
+    "python -m compileall .",
+    "go test ./...",
+    "./gradlew build"
+  ],
+  "task_family": "cli"
+}

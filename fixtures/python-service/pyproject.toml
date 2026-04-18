@@ -1,0 +1,10 @@
+[project]
+name = "benchmark-python-service-fixture"
+version = "0.1.0"
+dependencies = [
+  "django>=5.0",
+  "fastapi>=0.111"
+]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]

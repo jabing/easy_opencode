@@ -1,0 +1,17 @@
+{
+  "name": "springboot-security",
+  "description": "Spring Security best practices for authn/authz, validation, CSRF, secrets, headers, rate limiting, and dependency security in Java Spring Boot services.",
+  "origin": "ECC",
+  "level": "L1",
+  "languages": [
+    "java"
+  ],
+  "frameworks": [
+    "springboot"
+  ],
+  "triggers": [
+    "springboot security"
+  ],
+  "actions": [],
+  "verify": []
+}

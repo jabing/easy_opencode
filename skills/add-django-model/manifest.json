@@ -1,0 +1,115 @@
+{
+  "name": "add-django-model",
+  "description": "Scaffold a Django model task bundle with model module, admin registration support, starter test, docs, and integration guide.",
+  "origin": "EOC",
+  "level": "L3",
+  "languages": [
+    "python"
+  ],
+  "frameworks": [
+    "django"
+  ],
+  "triggers": [
+    "add django model",
+    "new model"
+  ],
+  "inputs": [
+    {
+      "name": "subject",
+      "required": true
+    },
+    {
+      "name": "app_label",
+      "default": "app"
+    }
+  ],
+  "actions": [
+    {
+      "id": "python",
+      "type": "locator_template_bundle",
+      "when": {
+        "runtime": "python"
+      },
+      "files": [
+        {
+          "template": "model.py.tpl",
+          "output": "app/models/{{snake_name}}.py",
+          "primary": true
+        },
+        {
+          "template": "admin.py.tpl",
+          "output": "app/admin/{{snake_name}}_admin.py"
+        },
+        {
+          "template": "model.test.py.tpl",
+          "output": "tests/test_{{snake_name}}_model.py"
+        },
+        {
+          "template": "model.md.tpl",
+          "output": "docs/models/{{snake_name}}.md"
+        },
+        {
+          "template": "integration.md.tpl",
+          "output": ".opencode/task-bundles/{{snake_name}}-model.integration.md"
+        }
+      ],
+      "updates": [
+        {
+          "type": "ensure_block",
+          "locator": {
+            "strategy": "first_existing",
+            "label": "django model docs index",
+            "candidates": [
+              "docs/models/index.md",
+              "docs/index.md"
+            ],
+            "default": "docs/models/index.md",
+            "create_if_missing": true
+          },
+          "content": "- [{{subject}}](./{{snake_name}}.md) — Django model scaffold"
+        },
+        {
+          "type": "ensure_module_export",
+          "locator": {
+            "strategy": "first_existing",
+            "label": "django model package exports",
+            "candidates": [
+              "app/models/__init__.py",
+              "{{app_label}}/models/__init__.py"
+            ],
+            "default": "app/models/__init__.py",
+            "only_if_exists": true
+          },
+          "import_statement": "from .{{snake_name}} import {{subject}}",
+          "export_name": "{{subject}}"
+        },
+        {
+          "type": "register_provider",
+          "locator": {
+            "strategy": "first_existing",
+            "label": "django admin registration",
+            "candidates": [
+              "app/admin.py",
+              "{{app_label}}/admin.py"
+            ],
+            "default": "app/admin.py",
+            "only_if_exists": true
+          },
+          "import_statement": "from .models.{{snake_name}} import {{subject}}",
+          "registration_statement": "admin.site.register({{subject}})",
+          "registration_anchor": {
+            "regex": "@admin\\.register|class\\s+[A-Za-z0-9_]+Admin\\(",
+            "flags": "m"
+          },
+          "registration_strategy": "before_anchor",
+          "on_missing_registration_anchor": "append"
+        }
+      ]
+    }
+  ],
+  "verify": [
+    "python manage.py makemigrations --check || true",
+    "pytest -q"
+  ],
+  "task_family": "model"
+}

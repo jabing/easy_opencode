@@ -1,0 +1,66 @@
+{
+  "version": 1,
+  "summary": {
+    "scope": "src/**/*.js",
+    "policy": "All src JavaScript files are included in tsconfig.json. Files that are not yet strict-safe are explicitly quarantined with // @ts-nocheck and listed here.",
+    "strict_target": "Remove files from this manifest as they become strict-check clean."
+  },
+  "files": [
+    {
+      "path": "src/cli/ast-rewrite-cli.js",
+      "reason": "Pending strict JS type migration after full-src inclusion."
+    },
+    {
+      "path": "src/cli/review-gate-cli.js",
+      "reason": "Pending strict JS type migration after full-src inclusion."
+    },
+    {
+      "path": "src/core/benchmark/suite-helpers.js",
+      "reason": "Pending strict JS type migration after full-src inclusion."
+    },
+    {
+      "path": "src/core/gates/review-helpers.js",
+      "reason": "Pending strict JS type migration after full-src inclusion."
+    },
+    {
+      "path": "src/core/refactor/lsp-production-readiness.js",
+      "reason": "Pending strict JS type migration after full-src inclusion."
+    },
+    {
+      "path": "src/core/refactor/providers/go.js",
+      "reason": "Pending strict JS type migration after full-src inclusion."
+    },
+    {
+      "path": "src/core/refactor/providers/java.js",
+      "reason": "Pending strict JS type migration after full-src inclusion."
+    },
+    {
+      "path": "src/core/refactor/providers/lsp-backend.js",
+      "reason": "Pending strict JS type migration after full-src inclusion."
+    },
+    {
+      "path": "src/core/refactor/providers/lsp-rename-runner.js",
+      "reason": "Pending strict JS type migration after full-src inclusion."
+    },
+    {
+      "path": "src/core/refactor/providers/typescript.js",
+      "reason": "Pending strict JS type migration after full-src inclusion."
+    },
+    {
+      "path": "src/core/refactor/service.js",
+      "reason": "Pending strict JS type migration after full-src inclusion."
+    },
+    {
+      "path": "src/core/release/check.js",
+      "reason": "Pending strict JS type migration after full-src inclusion."
+    },
+    {
+      "path": "src/core/skills/scaffold/service.js",
+      "reason": "Pending strict JS type migration after full-src inclusion."
+    },
+    {
+      "path": "src/core/skills/scaffold/updates.js",
+      "reason": "Pending strict JS type migration after full-src inclusion."
+    }
+  ]
+}

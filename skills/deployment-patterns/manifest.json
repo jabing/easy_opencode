@@ -1,0 +1,17 @@
+{
+  "name": "deployment-patterns",
+  "description": "Deployment workflows, CI/CD pipeline patterns, Docker containerization, health checks, rollback strategies, and production readiness checklists for web applications.",
+  "origin": "ECC",
+  "level": "L1",
+  "languages": [
+    "docker"
+  ],
+  "frameworks": [
+    "docker"
+  ],
+  "triggers": [
+    "deployment patterns"
+  ],
+  "actions": [],
+  "verify": []
+}
