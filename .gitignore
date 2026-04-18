@@ -4,6 +4,7 @@ build/
 coverage/
 *.log
 .DS_Store
+.worktrees/
 
 # Generated OpenCode runtime state
 .opencode/coder-loop/
