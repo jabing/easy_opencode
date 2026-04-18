@@ -131,7 +131,46 @@ Minimum fields:
 - recommended bundles
 - applied bundles
 
-This is the source of truth for automation and ecosystem decisions.
+This is an ephemeral fact model, not the persisted source of truth.
+
+It should be recomputed from:
+
+- repository facts
+- existing managed config
+- user overrides
+
+It may be cached for one command invocation, but it should not become the canonical persisted control plane state.
+
+### Ecosystem State
+
+`ecosystem state` is the canonical persisted control plane record for ecosystem behavior.
+
+Proposed managed file:
+
+- `.opencode/ecosystem.json`
+
+Minimum fields:
+
+- schema version
+- applied bundles
+- explicit user-enabled bundles
+- explicit user-disabled bundles
+- mode overrides
+- automation policy overrides
+- bootstrap metadata
+
+This file is the source of truth for persisted ecosystem intent.
+
+### Source Of Truth Rules
+
+Automation and ecosystem decisions must follow one precedence chain:
+
+1. explicit user override
+2. persisted ecosystem state
+3. derived workspace profile facts
+4. built-in bundle defaults
+
+This prevents commands, hooks, and installers from deriving different answers from the same repository.
 
 ### Capability Bundle
 
@@ -165,7 +204,14 @@ Example policy decisions:
 - whether review and test gates are auto-run
 - whether `ship` requires release evidence or rehearsal
 
-Automation policy is derived from workspace profile, operating mode, and applied bundles.
+Automation policy is derived from:
+
+- operating mode
+- persisted ecosystem state
+- workspace profile facts
+- applied bundles
+
+It must always be explainable through the source-of-truth rules above.
 
 ### Bootstrap Report
 
@@ -203,7 +249,9 @@ Default path:
 Extended path:
 
 - `eoc doctor --bootstrap`
-- runs detection and offers or applies recommended ecosystem configuration
+- runs the same detection logic as `bootstrap`, but stays in diagnostics-first mode
+- may preview recommended changes and hand off to `eoc bootstrap`
+- should not silently become a second independent bootstrap implementation
 
 ### `eoc bootstrap`
 
@@ -217,6 +265,8 @@ Default path:
 4. apply selected changes
 5. verify resulting setup
 6. emit bootstrap report
+
+This is the only command that should own detect -> recommend -> apply -> verify as a full managed flow.
 
 ### `eoc ecosystem`
 
@@ -237,17 +287,76 @@ The key requirement is explanation. Users must be able to answer:
 - why they were chosen
 - which hooks and policies came from them
 
+## Mode Boundaries
+
+The default automation surface must differ by mode. Without this, `implement` becomes too expensive for `solo` and too weak for `platform`.
+
+### `solo`
+
+Default posture:
+
+- shortest path
+- low ceremony
+- automatic scheduler allowed
+- only lightweight verification by default
+
+Default `implement` behavior:
+
+- build execution packet
+- run scheduler
+- run fast local verification only
+- do not auto-run heavyweight review or release evidence steps unless explicitly requested
+
+### `team`
+
+Default posture:
+
+- balanced throughput and quality
+- stronger default review posture
+
+Default `implement` behavior:
+
+- build execution packet
+- run scheduler
+- run standard verification
+- run review gate when change scope or risk crosses threshold
+
+### `platform`
+
+Default posture:
+
+- governance-first
+- strongest release and audit defaults
+
+Default `implement` behavior:
+
+- build execution packet
+- run scheduler
+- run standard verification
+- run review gate by default
+- require stronger downstream release evidence for `ship`
+
+### Automation Cost Guardrails
+
+Regardless of mode:
+
+- commands must support degraded execution when tools are unavailable
+- expensive steps must be skippable through explicit override
+- explanation output must state why a heavier path was chosen
+- low-level failures in optional ecosystem tooling must not prevent core workflows unless policy explicitly requires them
+
 ## Architecture
 
 ### Decision Flow
 
 Main workflow commands should follow one common decision path:
 
-1. load workspace profile
-2. load or derive applied bundles
-3. derive automation policy
-4. execute command-specific pipeline
-5. record observability and explanation output
+1. load persisted ecosystem state
+2. derive workspace profile facts
+3. resolve applied bundles
+4. derive automation policy
+5. execute command-specific pipeline
+6. record observability and explanation output
 
 This replaces scattered feature-specific defaults with one product-level decision model.
 
@@ -275,6 +384,17 @@ Every automatic behavior should be attributable to one of:
 
 If behavior cannot be traced to one of these, it is too implicit.
 
+### Command Ownership
+
+Responsibility boundaries must remain explicit:
+
+- `bootstrap` owns detect -> recommend -> apply -> verify
+- `doctor` owns diagnose -> explain -> optionally hand off to bootstrap
+- `ecosystem` owns inspect -> enable -> disable -> apply existing ecosystem intents
+- main workflow commands own execution, not ecosystem mutation
+
+This prevents command overlap and duplicated control logic.
+
 ## File-Level Plan
 
 ## P0
@@ -289,7 +409,9 @@ New files:
 - `src/core/ecosystem/workspace-profile.js`
   - Aggregate runtime/profile/tooling facts into a single normalized record
 - `src/core/ecosystem/bundle-registry.js`
-  - Define built-in bundle metadata and matching rules
+  - Define built-in bundle metadata and matching rules used for recommendation only in P0
+- `src/core/ecosystem/state.js`
+  - Load and validate persisted ecosystem state from managed config
 - `src/core/ecosystem/bootstrap-report.js`
   - Render structured bootstrap and ecosystem explanation output
 
@@ -310,10 +432,25 @@ Changed files:
 - `README.md`
   - Document the default automation model
 
+Out of scope for P0:
+
+- explicit MCP detector modules
+- explicit LSP detector modules
+- bundle application and mutation engine
+- preset support
+
+P0 dependency rule:
+
+- P0 may use existing runtime, profile, and capability signals already present in the codebase
+- P0 must not require the full P1 detector stack to function
+- P0 bundle handling is recommendation-only and read-only
+- P0 persistence is limited to reading canonical ecosystem state if present
+
 Acceptance:
 
 - `eoc implement` can drive scheduler-backed orchestration without explicit low-level commands
 - automation output explains which policy and bundles produced the run behavior
+- mode-specific automation boundaries are documented and reflected in orchestration decisions
 
 ## P1
 
@@ -325,6 +462,8 @@ New files:
   - Provide `status`, `list`, `recommend`, `enable`, `disable`, and `apply`
 - `src/core/ecosystem/apply-bundles.js`
   - Apply bundle decisions to managed config, hooks, and profiles
+- `src/core/ecosystem/state-schema.js`
+  - Define and validate canonical persisted ecosystem state
 - `src/core/ecosystem/detectors/mcp.js`
   - Detect MCP-related capabilities and available integration facts
 - `src/core/ecosystem/detectors/lsp.js`
@@ -349,6 +488,7 @@ Acceptance:
 
 - installation can bootstrap a workspace into a recommended starting posture
 - `eoc ecosystem status` can explain applied bundles, hook origins, and capability gaps
+- bundle application writes one canonical managed ecosystem state instead of duplicating state across commands
 
 ## P2
 
