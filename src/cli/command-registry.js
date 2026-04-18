@@ -34,6 +34,7 @@ const PUBLIC_METADATA = {
   'run-tests': { tier: 'core', surface: 'public', lifecycle: 'stable', compatibility: 'stable', summary: 'Run repository tests through the unified test runner.', supports_json: false },
   'detect-project-runtime': { tier: 'core', surface: 'public', lifecycle: 'stable', compatibility: 'stable', summary: 'Detect repository runtime and framework signals.', supports_json: true, contract_name: 'detect-project-runtime' },
   'implement-task': { tier: 'core', surface: 'public', lifecycle: 'stable', compatibility: 'stable', summary: 'Run the main implementation workflow.', supports_json: false },
+  'bootstrap': { tier: 'core', surface: 'public', lifecycle: 'active', compatibility: 'stable', summary: 'Preview or apply ecosystem bootstrap presets and bundle recommendations.', supports_json: false, recommended: true },
   'ecosystem': { tier: 'core', surface: 'public', lifecycle: 'active', compatibility: 'stable', summary: 'Inspect and manage ecosystem bundles and bootstrap state.', supports_json: true, contract_name: 'detect-project-runtime' },
   'review-gate': { tier: 'governance', surface: 'public', lifecycle: 'stable', compatibility: 'stable', summary: 'Run review gate and optional quality checks.', supports_json: true, contract_name: 'review-gate' },
   'failure-strategy': { tier: 'governance', surface: 'public', lifecycle: 'stable', compatibility: 'stable', summary: 'Inspect routing and failure-strategy posture.', supports_json: true, contract_name: 'failure-strategy' },
@@ -60,8 +61,7 @@ const DEPRECATION_POLICY = {
   compatibility_values: ['stable', 'compatibility', 'internal'],
 };
 
-// P0 keeps low-level orchestration and future ecosystem/bootstrap flows off the public surface
-// until dedicated implementations exist.
+// Keep low-level orchestration off the public surface. Bootstrap is public from P2 onward.
 const EXPERIMENTAL_SCRIPTS = new Set(['claw', 'eoc-ultrawork', 'eoc-bridge', 'eoc-start', 'eoc-scheduler']);
 const INTERNAL_PREFIXES = ['npm-', 'loop-', 'sync-', 'setup-', 'install', 'uninstall'];
 

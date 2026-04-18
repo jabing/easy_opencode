@@ -22,7 +22,7 @@ const {
   writeJson,
 } = require('./install-support.js')
 
-/** @typedef {{ global: boolean, project: boolean, bootstrap: boolean, yes: boolean, quiet: boolean, allowSourceRepo: boolean, target: string, bundles: string[] }} InstallFlags */
+/** @typedef {{ global: boolean, project: boolean, bootstrap: boolean, yes: boolean, quiet: boolean, allowSourceRepo: boolean, target: string, bundles: string[], presets: string[] }} InstallFlags */
 /** @typedef {{ commands: string, skills: string, prompts: string, scripts: string, src: string, bin: string, packageJson: string, readme: string, license: string, opencodeJson: string, opencodeInstructions: string, opencodePlugins: string, opencodeHooksConfig: string, opencodeCommandPolicy: string, agentsMd: string }} SourcePaths */
 /** @typedef {{ copied: string[], missing: string[] }} CopyRuntimeResult */
 /** @typedef {{ targetConfigDir: string, assetRoot: string, assetPrefix: string, quiet: boolean, installMode: 'project'|'global', projectDir: string }} InstallTargetOptions */

@@ -82,11 +82,19 @@ test('buildWorkspaceProfile generates mode-aware recommendations with stable exp
       ],
     );
     assert.deepEqual(
-      profile.explanation.filter((entry) => entry.startsWith('recommend:')),
+      profile.explanation.filter((entry) => entry.startsWith('recommend:') && !entry.startsWith('recommend:preset:')),
       [
         'recommend:release-governance:enabled_bundle',
         'recommend:node-service:package_manager=npm',
         'recommend:lsp-refactor:lsp_signal=opencode-lsp-config',
+      ],
+    );
+    assert.deepEqual(profile.recommended_presets, ['node-team', 'release-governance']);
+    assert.deepEqual(
+      profile.preset_recommendations.map((entry) => [entry.preset, entry.source]),
+      [
+        ['node-team', 'detector'],
+        ['release-governance', 'enabled'],
       ],
     );
     assert.equal(profile.recommended_bundles.includes('mcp-devtools'), false);

@@ -197,6 +197,12 @@
       "agent": "refactor-cleaner",
       "subtask": true
     },
+    "bootstrap": {
+      "description": "Bootstrap",
+      "template": "{file:./commands/bootstrap.md}\n\n$ARGUMENTS",
+      "agent": "eoc_orchestrator",
+      "subtask": true
+    },
     "build-fix": {
       "description": "Build Fix Command",
       "template": "{file:./commands/build-fix.md}\n\n$ARGUMENTS",

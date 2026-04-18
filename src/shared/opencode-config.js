@@ -122,8 +122,7 @@ function buildCommandConfig(commandsDir, assetPrefix) {
 
 /** @param {string} assetPrefix @param {string} commandsDir */
 function buildEocConfig(assetPrefix, commandsDir) {
-  // P1 publishes ecosystem management as an explicit surface.
-  // Keep bootstrap hidden until its dedicated implementation exists.
+  // P2 publishes both ecosystem management and bootstrap as explicit surfaces.
   const instructions = [
     `${assetPrefix}/AGENTS.md`,
     `${assetPrefix}/.opencode/instructions/INSTRUCTIONS.md`,

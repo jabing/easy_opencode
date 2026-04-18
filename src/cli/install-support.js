@@ -119,7 +119,7 @@ function getGlobalConfigDir() {
 
 /** @param {string[]} argv */
 function parseArgs(argv) {
-  /** @type {{ global: boolean, project: boolean, bootstrap: boolean, yes: boolean, quiet: boolean, allowSourceRepo: boolean, target: string, bundles: string[] }} */
+  /** @type {{ global: boolean, project: boolean, bootstrap: boolean, yes: boolean, quiet: boolean, allowSourceRepo: boolean, target: string, bundles: string[], presets: string[] }} */
   const result = {
     global: false,
     project: false,
@@ -129,6 +129,7 @@ function parseArgs(argv) {
     allowSourceRepo: false,
     target: '',
     bundles: [],
+    presets: [],
   };
 
   for (let i = 2; i < argv.length; i += 1) {
@@ -147,6 +148,15 @@ function parseArgs(argv) {
         throw new Error('Missing value for --bundle');
       }
       result.bundles.push(next);
+      i += 1;
+    }
+    else if (arg.startsWith('--preset=')) result.presets.push(arg.slice('--preset='.length));
+    else if (arg === '--preset') {
+      const next = argv[i + 1];
+      if (!next || next.startsWith('--')) {
+        throw new Error('Missing value for --preset');
+      }
+      result.presets.push(next);
       i += 1;
     }
     else if (arg.startsWith('--target=')) result.target = arg.slice('--target='.length);

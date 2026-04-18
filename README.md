@@ -13,7 +13,7 @@ Production-ready OpenCode plugin focused on a slimmer product kernel: stable ent
 
 - 16 specialized agents (2 visible entry agents + hidden specialists)
 - 51 skills
-- 59 commands after pruning experimental or low-signal surfaces
+- 60 commands after pruning experimental or low-signal surfaces
 - Stable main entry commands for plan / implement / test / review / ship / doctor
 - Quality guardrails with fast/full modes via `/quality-gate`
 - Executable skill manifests with discovery/scaffolding via `/skill-runner`
@@ -67,7 +67,7 @@ Easy OpenCode now treats `eoc implement` as a mode-aware automation entrypoint.
 - In `team`, implement keeps the scheduler on and enables stronger verification plus review-gate defaults.
 - In `platform`, implement keeps the strongest governance posture with review-gate behavior enabled by default.
 
-This mode-aware automation stays inside the six-command kernel. Low-level orchestration scripts and future `bootstrap` / `ecosystem` surfaces remain internal until their dedicated implementations are added.
+This mode-aware automation stays inside the six-command kernel. Low-level orchestration scripts remain internal, while `eoc ecosystem` and `eoc bootstrap` provide explicit ecosystem management without turning them into day-to-day primary entry commands.
 
 ## Ecosystem Management
 
@@ -87,6 +87,16 @@ Built-in bundles currently include:
 - `mcp-devtools`
 
 Managed ecosystem intent is written to `.opencode/ecosystem.json`. CLI status, install bootstrap, and hook policy derive behavior from this file so automation stays explainable and reversible.
+
+## Bootstrap
+
+P2 adds a dedicated bootstrap surface for previewing or applying preset-driven ecosystem defaults:
+
+- `eoc bootstrap --json`
+- `eoc bootstrap --apply --preset node-team --json`
+- `eoc bootstrap --apply --bundle release-governance --json`
+
+`eoc bootstrap` is the explicit detect -> recommend -> apply -> verify path. Use it when you want the plugin to materialize managed ecosystem defaults for the current repository.
 
 ## Install
 

@@ -3,6 +3,7 @@ const { loadEcosystemState } = require('./state.js');
 const { detectTooling } = require('./detectors/tooling.js');
 const { detectLsp } = require('./detectors/lsp.js');
 const { detectMcp } = require('./detectors/mcp.js');
+const { getPreset, listPresets } = require('./presets.js');
 
 const FALLBACK_BUNDLE_IDS = ['node-service', 'release-governance', 'lsp-refactor', 'mcp-devtools'];
 
@@ -23,6 +24,15 @@ function loadKnownBundleIds() {
   }
 }
 
+function loadKnownPresetIds() {
+  try {
+    const ids = uniqueStrings(listPresets().map((entry) => entry && typeof entry === 'object' ? entry.id : null));
+    return ids;
+  } catch {
+    return [];
+  }
+}
+
 /** @param {string[]} explanation @param {string} entry */
 function pushExplanation(explanation, entry) {
   if (!explanation.includes(entry)) {
@@ -40,6 +50,20 @@ function pushRecommendation(disabledBundles, recommendations, entry) {
   }
 }
 
+/** @param {string[]} disabledBundles @param {Array<{ preset: string, source: string, reason: string }>} recommendations @param {{ preset: string, source: string, reason: string }} entry */
+function pushPresetRecommendation(disabledBundles, recommendations, entry) {
+  const preset = getPreset(entry.preset);
+  if (!preset) {
+    return;
+  }
+  if (preset.bundles.some((bundleId) => disabledBundles.includes(bundleId))) {
+    return;
+  }
+  if (!recommendations.some((item) => item.preset === entry.preset)) {
+    recommendations.push(entry);
+  }
+}
+
 /**
  * @param {string} [rootDir]
  * @param {{ mode?: string | null, ecosystemState?: import('./state.js').EcosystemState }} [options]
@@ -51,9 +75,12 @@ function buildWorkspaceProfile(rootDir = process.cwd(), options = {}) {
   const lsp = detectLsp(rootDir);
   const mcp = detectMcp(rootDir);
   const knownBundleIds = loadKnownBundleIds();
+  const knownPresetIds = loadKnownPresetIds();
   const disabledBundles = uniqueStrings(state.disabled_bundles);
   /** @type {Array<{ bundle: string, source: string, reason: string }>} */
   const recommendations = [];
+  /** @type {Array<{ preset: string, source: string, reason: string }>} */
+  const presetRecommendations = [];
   const explanation = [`mode=${mode.id}`, `state_source=${state.source}`];
 
   if (tooling.package_manager) {
@@ -117,6 +144,41 @@ function buildWorkspaceProfile(rootDir = process.cwd(), options = {}) {
     pushExplanation(explanation, `recommend:${entry.bundle}:${entry.reason}`);
   }
 
+  if (tooling.runtimes.includes('node')) {
+    const runtimeReason = `mode=${mode.id}+runtime=node`;
+    if (mode.id === 'solo' && knownPresetIds.includes('node-solo')) {
+      pushPresetRecommendation(disabledBundles, presetRecommendations, {
+        preset: 'node-solo',
+        source: 'detector',
+        reason: runtimeReason,
+      });
+    }
+    if (mode.id === 'team' && knownPresetIds.includes('node-team')) {
+      pushPresetRecommendation(disabledBundles, presetRecommendations, {
+        preset: 'node-team',
+        source: 'detector',
+        reason: runtimeReason,
+      });
+    }
+    if (mode.id === 'platform' && knownPresetIds.includes('node-platform')) {
+      pushPresetRecommendation(disabledBundles, presetRecommendations, {
+        preset: 'node-platform',
+        source: 'detector',
+        reason: runtimeReason,
+      });
+    }
+  }
+  if (knownPresetIds.includes('release-governance') && (state.enabled_bundles || []).includes('release-governance')) {
+    pushPresetRecommendation(disabledBundles, presetRecommendations, {
+      preset: 'release-governance',
+      source: 'enabled',
+      reason: 'bundle=release-governance',
+    });
+  }
+  for (const entry of presetRecommendations) {
+    pushExplanation(explanation, `recommend:preset:${entry.preset}:${entry.reason}`);
+  }
+
   const detectorSummaries = {
     tooling: {
       ...tooling,
@@ -146,8 +208,11 @@ function buildWorkspaceProfile(rootDir = process.cwd(), options = {}) {
     lsp,
     mcp,
     known_bundles: knownBundleIds,
+    known_presets: knownPresetIds,
     recommendations,
+    preset_recommendations: presetRecommendations,
     recommended_bundles: recommendations.map((entry) => entry.bundle),
+    recommended_presets: presetRecommendations.map((entry) => entry.preset),
     effective_bundles: uniqueStrings([
       ...state.applied_bundles,
       ...state.enabled_bundles,

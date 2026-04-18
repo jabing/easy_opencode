@@ -2,6 +2,8 @@ const fs = require('fs');
 const path = require('path');
 const { readAllSkills } = require('../skills/manifest.js');
 const { getScriptSupportProfile } = require('../support-tiers/report.js');
+const { listBundles } = require('../ecosystem/bundle-registry.js');
+const { listPresets } = require('../ecosystem/presets.js');
 const { getAgentCapabilityPolicy, getScriptCapabilityPolicy } = require('../../shared/capability-policy.js');
 
 /**
@@ -391,6 +393,18 @@ function buildCapabilityRegistry(root) {
     bySupportTier[supportTier] = (bySupportTier[supportTier] || 0) + 1;
   }
 
+  const ecosystemBundles = listBundles().map((bundle) => ({
+    id: bundle.id,
+    summary: bundle.summary,
+    requires: [...bundle.requires],
+  }));
+  const ecosystemPresets = listPresets().map((preset) => ({
+    id: preset.id,
+    summary: preset.summary,
+    mode: preset.mode,
+    bundles: [...preset.bundles],
+  }));
+
   return {
     generated_at: new Date().toISOString(),
     root_dir: '.',
@@ -404,6 +418,13 @@ function buildCapabilityRegistry(root) {
       by_execution_mode: byExecutionMode,
       by_kind: byKind,
       by_support_tier: bySupportTier,
+    },
+    ecosystem: {
+      bundle_count: ecosystemBundles.length,
+      preset_count: ecosystemPresets.length,
+      public_surfaces: ['bootstrap', 'ecosystem'],
+      bundles: ecosystemBundles,
+      presets: ecosystemPresets,
     },
     capabilities,
     aliases,

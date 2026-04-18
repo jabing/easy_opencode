@@ -11,6 +11,7 @@ function printUsage() {
   console.log('');
   console.log('Usage:');
   console.log('  eoc <plan|implement|test|review|ship|doctor> [...args]');
+  console.log('  eoc bootstrap [--apply] [--preset <id>] [--bundle <id>] [--json]');
   console.log('  eoc ecosystem <status|list|recommend|enable|disable|apply> [...args]');
   console.log('  eoc mode');
   console.log('  eoc mode set <solo|team|platform>');
@@ -49,6 +50,9 @@ function main() {
     const flags = new Set(argv.slice(1));
     printCommands({ showAll: flags.has('--all'), showPublic: flags.has('--public'), showRecommended: flags.has('--recommended') });
     process.exit(0);
+  }
+  if (command === 'bootstrap') {
+    process.exit(runSingle('bootstrap', argv.slice(1)));
   }
   if (command === 'ecosystem') {
     process.exit(runSingle('ecosystem', argv.slice(1)));

@@ -60,3 +60,16 @@ test('hook policy upgrades quality mode when release-governance is active', () =
     assert.equal(policy.qualityMode, 'full');
   });
 });
+
+test('project install bootstrap accepts preset selections and persists preset metadata', () => {
+  withTempDir((dir) => seedProject(dir), (dir) => {
+    const result = runNodeResult(INSTALL, ['--project', '--yes', '--quiet', '--target', dir, '--bootstrap', '--preset', 'node-team'], { cwd: ROOT });
+    assert.equal(result.code, 0, result.stderr || result.stdout);
+
+    const ecosystemState = JSON.parse(fs.readFileSync(path.join(dir, '.opencode', 'ecosystem.json'), 'utf8'));
+    assert.deepEqual(ecosystemState.bootstrap.explicit_presets, ['node-team']);
+    assert.equal(ecosystemState.applied_bundles.includes('node-service'), true);
+    assert.equal(ecosystemState.applied_bundles.includes('release-governance'), true);
+    assert.equal(ecosystemState.applied_bundles.includes('lsp-refactor'), true);
+  });
+});

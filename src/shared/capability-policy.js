@@ -28,6 +28,7 @@ const AGENT_CAPABILITY_POLICY = {
 const SCRIPT_CAPABILITY_POLICY = {
   'project-profile': { kind: 'planner', surface: 'recommended', maturity: 'stable', recommended: true },
   'implement-task': { kind: 'implementer', surface: 'recommended', maturity: 'stable', recommended: true },
+  'bootstrap': { kind: 'planner', surface: 'recommended', maturity: 'stable', recommended: true },
   'run-tests': { kind: 'verifier', surface: 'recommended', maturity: 'stable', recommended: true },
   'review-gate': { kind: 'reviewer', surface: 'recommended', maturity: 'stable', recommended: true },
   'quality-gate': { kind: 'verifier', surface: 'recommended', maturity: 'stable', recommended: true },

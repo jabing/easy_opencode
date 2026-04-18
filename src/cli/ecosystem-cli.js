@@ -9,7 +9,8 @@ const {
 } = require('./lib/shared.js');
 
 /** @typedef {{ id: string, summary?: string, requires?: string[], contributes?: Record<string, unknown> }} BundleRecord */
-/** @typedef {{ command: string, root: string, ecosystem_state?: Record<string, unknown>, workspace_profile?: Record<string, unknown>, bundles?: BundleRecord[], recommendations?: string[], result?: Record<string, unknown> }} EcosystemPayload */
+/** @typedef {{ preset: string, source: string, reason: string }} PresetRecommendation */
+/** @typedef {{ command: string, root: string, ecosystem_state?: Record<string, unknown>, workspace_profile?: Record<string, unknown>, bundles?: BundleRecord[], recommendations?: string[], recommended_presets?: string[], preset_recommendations?: PresetRecommendation[], resolved_bundle_plan?: string[], result?: Record<string, unknown> }} EcosystemPayload */
 
 /** @param {(command: string, args: string[]) => string} formatManagedInvocation */
 function createUsage(formatManagedInvocation) {
@@ -120,6 +121,9 @@ function main(deps = {}) {
         root,
         ecosystem_state: ecosystemState,
         workspace_profile: workspaceProfile,
+        recommended_presets: Array.isArray(workspaceProfile.recommended_presets) ? workspaceProfile.recommended_presets : [],
+        preset_recommendations: Array.isArray(workspaceProfile.preset_recommendations) ? workspaceProfile.preset_recommendations : [],
+        resolved_bundle_plan: Array.isArray(workspaceProfile.effective_bundles) ? workspaceProfile.effective_bundles : [],
       };
     } else if (command === 'list') {
       payload = {
@@ -132,6 +136,9 @@ function main(deps = {}) {
         command,
         root,
         recommendations: Array.isArray(workspaceProfile.recommended_bundles) ? workspaceProfile.recommended_bundles : [],
+        recommended_presets: Array.isArray(workspaceProfile.recommended_presets) ? workspaceProfile.recommended_presets : [],
+        preset_recommendations: Array.isArray(workspaceProfile.preset_recommendations) ? workspaceProfile.preset_recommendations : [],
+        resolved_bundle_plan: Array.isArray(workspaceProfile.effective_bundles) ? workspaceProfile.effective_bundles : [],
         workspace_profile: workspaceProfile,
       };
     } else if (command === 'enable' || command === 'disable' || command === 'apply') {

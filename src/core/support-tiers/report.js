@@ -1,6 +1,8 @@
 const { listFeatureProviders } = require('../feature/providers.js');
 const { readAllSkills } = require('../skills/manifest.js');
 const { listRegisteredRefactorProviders } = require('../refactor/providers/index.js');
+const { listBundles } = require('../ecosystem/bundle-registry.js');
+const { listPresets } = require('../ecosystem/presets.js');
 
 /**
  * @typedef {{
@@ -255,16 +257,65 @@ function buildFrameworkWiringSupport(root) {
   };
 }
 
+function buildEcosystemSupport() {
+  const bundles = listBundles();
+  const presets = listPresets();
+  return {
+    support_tier: bundles.length > 0 && presets.length > 0 ? 'tier1' : 'tier3',
+    maturity: bundles.length > 0 && presets.length > 0 ? 'preset-backed' : 'bundle-only',
+    automation_coverage: {
+      bootstrap: 'public',
+      ecosystem: 'managed',
+    },
+    public_surfaces: ['bootstrap', 'ecosystem'],
+    bundles: bundles.map((bundle) => ({
+      id: bundle.id,
+      summary: bundle.summary,
+    })),
+    presets: presets.map((preset) => ({
+      id: preset.id,
+      mode: preset.mode,
+      bundles: [...preset.bundles],
+    })),
+  };
+}
+
 /** @param {string} root */
 function buildSupportTierReport(root) {
   const semanticRefactor = buildSemanticRefactorSupport();
   const featureGeneration = buildFeatureFlowSupport();
   const frameworkWiring = buildFrameworkWiringSupport(root);
+  const ecosystem = buildEcosystemSupport();
+  const ecosystemBundleIds = ecosystem.bundles.map((bundle) => bundle.id);
   return {
     generated_at: new Date().toISOString(),
     root_dir: root,
-    domains: { feature_generation: featureGeneration, semantic_refactor: semanticRefactor, framework_wiring: frameworkWiring },
+    domains: { feature_generation: featureGeneration, semantic_refactor: semanticRefactor, framework_wiring: frameworkWiring, ecosystem },
     scripts: {
+      bootstrap: {
+        support_tier: ecosystem.support_tier,
+        support_scope: {
+          bundles: ecosystemBundleIds,
+          presets: ecosystem.presets.map((preset) => preset.id),
+          public_surfaces: ecosystem.public_surfaces,
+        },
+        acceptance: {
+          maturity: ecosystem.maturity,
+          automation_coverage: ecosystem.automation_coverage,
+        },
+      },
+      ecosystem: {
+        support_tier: ecosystem.support_tier,
+        support_scope: {
+          bundles: ecosystemBundleIds,
+          presets: ecosystem.presets.map((preset) => preset.id),
+          public_surfaces: ecosystem.public_surfaces,
+        },
+        acceptance: {
+          maturity: ecosystem.maturity,
+          automation_coverage: ecosystem.automation_coverage,
+        },
+      },
       'generate-feature': {
         support_tier: featureGeneration.support_tier,
         support_scope: {

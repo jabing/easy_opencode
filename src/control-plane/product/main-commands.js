@@ -79,7 +79,14 @@ function buildMainCommandPlan(command, argv = [], options = {}) {
       return { command: 'ship', mode, runs: [{ script: 'release-check', args }] };
     }
     case 'doctor': {
-      return { command: 'doctor', mode, runs: [{ script: 'build-check', args: [] }, { script: 'quality-gate', args: mode.defaults.quality_mode === 'full' ? ['--full', '--strict'] : ['--strict'] }, { script: 'project-profile', args: ['--json'] }] };
+      const wantsBootstrap = argv.includes('--bootstrap');
+      const runs = [
+        { script: 'build-check', args: [] },
+        { script: 'quality-gate', args: mode.defaults.quality_mode === 'full' ? ['--full', '--strict'] : ['--strict'] },
+        { script: 'project-profile', args: ['--json'] },
+      ];
+      if (wantsBootstrap) runs.push({ script: 'bootstrap', args: ['--json'] });
+      return { command: 'doctor', mode, runs };
     }
     default: throw new Error(`Unknown main command: ${command}`);
   }
