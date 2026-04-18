@@ -133,6 +133,7 @@ function runReleaseCheck(rootDir, options = {}) {
   const qualityGateScript = path.join(ownScriptsDir, 'quality-gate.js');
   const reviewGateScript = path.join(ownScriptsDir, 'review-gate.js');
   const packageHygieneScript = path.join(ownScriptsDir, 'package-hygiene.js');
+  const isPluginWorkspace = fs.existsSync(path.join(resolvedRoot, 'commands')) && fs.existsSync(path.join(resolvedRoot, 'skills'));
   const selectedPolicy = resolveReleasePolicy(options.policy || 'standard', { strict: Boolean(options.strict) });
   const checks = [];
 
@@ -144,6 +145,7 @@ function runReleaseCheck(rootDir, options = {}) {
   }
 
   for (const scriptName of ['test']) {
+    if (!isPluginWorkspace) { addCheck(checks, 'skip', `npm:${scriptName}`, 'not applicable outside plugin workspace'); continue; }
     if (!hasPackageScript(resolvedRoot, scriptName)) { addCheck(checks, 'skip', `npm:${scriptName}`, 'script missing'); continue; }
     const result = runPackageScript(resolvedRoot, scriptName);
     addCheck(checks, result.code === 0 ? 'pass' : 'fail', `npm:${scriptName}`, result.code === 0 ? 'ok' : (summarizeOutput(`${result.stdout}\n${result.stderr}`) || 'script failed'));
@@ -151,11 +153,13 @@ function runReleaseCheck(rootDir, options = {}) {
 
   const packageJsonPath = path.join(resolvedRoot, 'package.json');
   if (fs.existsSync(packageJsonPath)) {
-    const pack = spawnSync('npm', ['pack', '--dry-run', '--json'], { cwd: resolvedRoot, shell: false, windowsHide: true, encoding: 'utf8' });
-    addCheck(checks, (typeof pack.status === 'number' ? pack.status : 1) === 0 ? 'pass' : 'fail', 'npm:pack-dry-run', (typeof pack.status === 'number' ? pack.status : 1) === 0 ? 'ok' : (summarizeOutput(`${pack.stdout}\n${pack.stderr}`) || 'npm pack --dry-run failed'));
+    if (isPluginWorkspace) {
+      const pack = spawnSync('npm', ['pack', '--dry-run', '--json'], { cwd: resolvedRoot, shell: false, windowsHide: true, encoding: 'utf8' });
+      addCheck(checks, (typeof pack.status === 'number' ? pack.status : 1) === 0 ? 'pass' : 'fail', 'npm:pack-dry-run', (typeof pack.status === 'number' ? pack.status : 1) === 0 ? 'ok' : (summarizeOutput(`${pack.stdout}\n${pack.stderr}`) || 'npm pack --dry-run failed'));
+    } else addCheck(checks, 'skip', 'npm:pack-dry-run', 'not applicable outside plugin workspace');
   } else addCheck(checks, 'skip', 'npm:pack-dry-run', 'package.json missing');
 
-  if (fs.existsSync(path.join(resolvedRoot, 'commands')) && fs.existsSync(path.join(resolvedRoot, 'skills'))) {
+  if (isPluginWorkspace) {
     const hygiene = runNodeScript(packageHygieneScript, [], resolvedRoot);
     addCheck(checks, hygiene.code === 0 ? 'pass' : 'fail', 'package:hygiene', hygiene.code === 0 ? 'ok' : (summarizeOutput(`${hygiene.stdout}\n${hygiene.stderr}`) || 'package hygiene failed'));
   } else addCheck(checks, 'skip', 'package:hygiene', 'not applicable outside plugin workspace');

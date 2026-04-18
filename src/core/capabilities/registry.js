@@ -42,6 +42,7 @@ const { getAgentCapabilityPolicy, getScriptCapabilityPolicy } = require('../../s
  *   runtimes?: string[],
  *   languages?: string[],
  *   frameworks?: string[],
+ *   manifest?: Record<string, unknown>,
  *   verify?: unknown,
  *   actions?: Array<{ id?: string | null, type?: string | null }> | null,
  *   files: { skill?: string | null },

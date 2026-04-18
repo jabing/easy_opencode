@@ -8,7 +8,7 @@ const ROOT = path.resolve(__dirname, '..');
 const WAVE_FILES = [
   'src/shared/cli.js',
   'src/shared/opencode-config.js',
-  'src/shared/platform-contracts.js',
+  'src/shared/contracts.js',
   'src/shared/product-scope.js',
   'src/core/project-profile/runners/go.js',
   'src/core/project-profile/runners/index.js',
@@ -22,9 +22,19 @@ const WAVE_FILES = [
   'src/control-plane/product/main-commands.js',
 ];
 
+function isCoveredByTsconfig(filePath) {
+  if (Array.isArray(tsconfig.files)) return tsconfig.files.includes(filePath);
+  if (!Array.isArray(tsconfig.include)) return false;
+  return tsconfig.include.some((pattern) => {
+    if (pattern === 'src/**/*.js') return /^src\/.+\.js$/.test(filePath);
+    if (pattern === 'src/**/*.d.ts') return /^src\/.+\.d\.ts$/.test(filePath);
+    return false;
+  });
+}
+
 test('batch3 adds a first wave of typechecked source files', () => {
   for (const file of WAVE_FILES) {
-    assert.ok(tsconfig.files.includes(file), `expected ${file} to be covered by tsconfig files`);
+    assert.ok(isCoveredByTsconfig(file), `expected ${file} to be covered by tsconfig`);
   }
 });
 
