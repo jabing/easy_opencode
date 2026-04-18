@@ -3,6 +3,10 @@
   "description": "",
   "origin": "",
   "level": "L1",
+  "capability_kind": "planner",
+  "capability_surface": "extended",
+  "capability_maturity": "beta",
+  "recommended": false,
   "languages": [],
   "frameworks": [],
   "triggers": [

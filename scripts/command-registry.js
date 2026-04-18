@@ -5,7 +5,7 @@ const { assertNamedContract } = require('../src/shared/contracts.js');
 
 function parseArgs(argv) {
   const positionals = [];
-  const flags = { json: false, public: false, internal: false, validate: false, main: false, tier: null, root: process.cwd() };
+  const flags = { json: false, public: false, internal: false, validate: false, main: false, recommended: false, tier: null, root: process.cwd() };
   for (let index = 0; index < argv.length; index += 1) {
     const token = argv[index];
     if (token === '--json') flags.json = true;
@@ -13,6 +13,7 @@ function parseArgs(argv) {
     else if (token === '--internal') flags.internal = true;
     else if (token === '--validate') flags.validate = true;
     else if (token === '--main') flags.main = true;
+    else if (token === '--recommended') flags.recommended = true;
     else if (token === '--tier') flags.tier = String(argv[++index] || '').trim() || null;
     else if (token === '--root') flags.root = path.resolve(String(argv[++index] || process.cwd()));
     else positionals.push(token);
@@ -21,13 +22,14 @@ function parseArgs(argv) {
 }
 
 function usage() {
-  console.log('Usage: node scripts/command-registry.js [list|validate|compatibility] [--json] [--public|--internal] [--tier <core|governance|internal>] [--main]');
+  console.log('Usage: node scripts/command-registry.js [list|validate|compatibility] [--json] [--public|--internal] [--recommended] [--tier <core|governance|internal>] [--main]');
 }
 
 function filterEntries(entries, flags) {
   let results = entries.slice();
   if (flags.public) results = results.filter((entry) => entry.surface === 'public');
   if (flags.internal) results = results.filter((entry) => entry.surface !== 'public');
+  if (flags.recommended) results = results.filter((entry) => entry.recommended === true);
   if (flags.tier) results = results.filter((entry) => entry.tier === flags.tier);
   return results;
 }

@@ -20,6 +20,7 @@ test('command registry exposes public governance and core commands', () => {
   assert.ok(publicEntries.some((item) => item.script === 'project-profile' && item.tier === 'core'));
   assert.ok(publicEntries.some((item) => item.script === 'release-evidence' && item.tier === 'governance'));
   assert.ok(publicEntries.some((item) => item.script === 'platform-report' && item.supports_json === true));
+  assert.ok(publicEntries.some((item) => item.script === 'implement-task' && item.recommended === true));
 });
 
 test('command-registry CLI returns stable JSON envelope', () => {
@@ -28,6 +29,15 @@ test('command-registry CLI returns stable JSON envelope', () => {
   assert.equal(payload.schema_version, '1.0');
   assert.ok(Array.isArray(payload.entries));
   assert.ok(payload.entries.some((item) => item.script === 'quality-gate'));
+});
+
+test('command-registry CLI supports recommended filtering', () => {
+  const payload = runNodeJson(path.join(ROOT, 'scripts', 'command-registry.js'), ['list', '--json', '--recommended'], { cwd: ROOT });
+  assert.ok(Array.isArray(payload.entries));
+  assert.ok(payload.entries.length > 0);
+  assert.ok(payload.entries.every((item) => item.recommended === true));
+  assert.ok(payload.entries.some((item) => item.script === 'project-profile'));
+  assert.ok(!payload.entries.some((item) => item.script === 'benchmark-suite'));
 });
 
 test('create-command scaffolds command core, script, docs, and test files', () => withTempDir(

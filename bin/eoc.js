@@ -13,7 +13,7 @@ function printUsage() {
   console.log('  eoc <plan|implement|test|review|ship|doctor> [...args]');
   console.log('  eoc mode');
   console.log('  eoc mode set <solo|team|platform>');
-  console.log('  eoc commands [--public|--all]');
+  console.log('  eoc commands [--public|--recommended|--all]');
   console.log('');
   console.log('Modes:');
   for (const mode of listModes()) console.log(`  - ${mode.id}: ${mode.description}`);
@@ -21,15 +21,18 @@ function printUsage() {
 function printCommands(options = {}) {
   const showAll = options.showAll === true;
   const showPublic = options.showPublic === true;
+  const showRecommended = options.showRecommended === true;
   console.log('Main commands:');
   for (const item of listMainCommands()) console.log(`  - ${item.id}: ${item.description}`);
-  if (!showAll && !showPublic) return;
+  if (!showAll && !showPublic && !showRecommended) return;
   const entries = buildCommandRegistry(PACKAGE_ROOT).filter((item) => {
     if (showAll) return true;
+    if (showRecommended) return item.recommended === true;
     return item.surface === 'public' && item.tier !== 'internal';
   });
   console.log('');
-  console.log(showAll ? 'All managed commands:' : 'Public managed commands:');
+  const heading = showAll ? 'All managed commands:' : (showRecommended ? 'Recommended managed commands:' : 'Public managed commands:');
+  console.log(heading);
   for (const entry of entries) {
     const lifecycle = entry.lifecycle === 'stable' ? '' : ` ${entry.lifecycle}`;
     console.log(`  - ${entry.script} [${entry.tier}${lifecycle}]${entry.supports_json ? ' --json' : ''}: ${entry.summary}`);
@@ -43,7 +46,7 @@ function main() {
   if (!command || command === '--help' || command === '-h' || command === 'help') { printUsage(); process.exit(command ? 0 : 1); }
   if (command === 'commands') {
     const flags = new Set(argv.slice(1));
-    printCommands({ showAll: flags.has('--all'), showPublic: flags.has('--public') });
+    printCommands({ showAll: flags.has('--all'), showPublic: flags.has('--public'), showRecommended: flags.has('--recommended') });
     process.exit(0);
   }
   if (command === 'mode') { const sub = argv[1] || 'get'; if (sub === 'get') { printMode(getMode(process.cwd())); process.exit(0); } if (sub === 'set') { const targetMode = argv[2]; if (!targetMode) { console.error('Missing mode. Expected: solo | team | platform'); process.exit(1); } const mode = setMode(process.cwd(), targetMode); printMode(mode); process.exit(0); } console.error(`Unknown mode subcommand: ${sub}`); process.exit(1); }

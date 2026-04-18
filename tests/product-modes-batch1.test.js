@@ -38,6 +38,11 @@ test('main eoc bin exposes mode get/set and commands without touching advanced s
     assert.equal(allCommands.code, 0);
     assert.match(allCommands.stdout, /All managed commands:/);
     assert.match(allCommands.stdout, /benchmark-suite/);
+    const recommendedCommands = runNodeResult(EOC_BIN, ['commands', '--recommended'], { cwd: dir });
+    assert.equal(recommendedCommands.code, 0);
+    assert.match(recommendedCommands.stdout, /Recommended managed commands:/);
+    assert.match(recommendedCommands.stdout, /project-profile/);
+    assert.doesNotMatch(recommendedCommands.stdout, /benchmark-suite/);
     const set = runNodeResult(EOC_BIN, ['mode', 'set', 'platform'], { cwd: dir });
     assert.equal(set.code, 0);
     assert.match(set.stdout, /Mode: platform/);

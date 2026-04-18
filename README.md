@@ -35,6 +35,13 @@ For day-to-day use, prefer the slim main entrypoint instead of memorizing dozens
 
 These map onto the existing kernel and keep advanced commands available without making them the default user path.
 
+Command discovery:
+
+- `eoc commands` shows only the six main commands
+- `eoc commands --recommended` shows the recommended managed command surface
+- `eoc commands --public` shows the full public managed surface
+- `eoc commands --all` shows every managed command
+
 ## Operating Modes
 
 Easy OpenCode now supports three operating modes:

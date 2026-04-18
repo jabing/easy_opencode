@@ -51,6 +51,8 @@ const { getScriptSupportProfile } = require('../support-tiers/report.js');
 /** @typedef {'general' | 'planner' | 'reviewer' | 'verifier' | 'releaser' | 'transformer' | 'implementer'} CapabilityKind */
 /** @typedef {'agent' | 'skill' | 'script'} CapabilitySourceType */
 /** @typedef {'agent' | 'hybrid' | 'document' | 'script'} ExecutionMode */
+/** @typedef {'recommended' | 'extended' | 'internal'} CapabilitySurface */
+/** @typedef {'stable' | 'beta' | 'experimental'} CapabilityMaturity */
 
 /**
  * @typedef {{
@@ -60,7 +62,10 @@ const { getScriptSupportProfile } = require('../support-tiers/report.js');
  *   name: string,
  *   description: string,
  *   kind: CapabilityKind,
- *   execution_mode: ExecutionMode,
+  *   execution_mode: ExecutionMode,
+ *   surface: CapabilitySurface,
+ *   maturity: CapabilityMaturity,
+ *   recommended: boolean,
  *   support_tier?: string,
  *   hidden: boolean,
  *   entrypoint: string | null,
@@ -106,6 +111,81 @@ const AGENT_KIND_OVERRIDES = {
   'repo-aware-coder': 'implementer',
   'ts-coder': 'implementer',
 };
+
+/** @type {Record<string, { kind?: CapabilityKind, surface?: CapabilitySurface, maturity?: CapabilityMaturity, recommended?: boolean }>} */
+const AGENT_METADATA_OVERRIDES = {
+  'eoc_orchestrator': { kind: 'general', surface: 'recommended', maturity: 'stable', recommended: true },
+  'eoc_code_reviewer': { kind: 'reviewer', surface: 'recommended', maturity: 'stable', recommended: true },
+  'eoc_planner': { kind: 'planner', surface: 'internal', maturity: 'stable', recommended: false },
+  'tdd-guide': { kind: 'verifier', surface: 'extended', maturity: 'stable', recommended: false },
+  'security-reviewer': { kind: 'reviewer', surface: 'extended', maturity: 'stable', recommended: false },
+  'build-error-resolver': { kind: 'transformer', surface: 'extended', maturity: 'stable', recommended: false },
+  'go-build-resolver': { kind: 'transformer', surface: 'extended', maturity: 'beta', recommended: false },
+  'go-reviewer': { kind: 'reviewer', surface: 'extended', maturity: 'beta', recommended: false },
+  'python-reviewer': { kind: 'reviewer', surface: 'extended', maturity: 'beta', recommended: false },
+  'database-reviewer': { kind: 'reviewer', surface: 'extended', maturity: 'beta', recommended: false },
+  'architect': { kind: 'reviewer', surface: 'extended', maturity: 'beta', recommended: false },
+  'e2e-runner': { kind: 'verifier', surface: 'extended', maturity: 'beta', recommended: false },
+  'refactor-cleaner': { kind: 'transformer', surface: 'extended', maturity: 'beta', recommended: false },
+  'doc-updater': { kind: 'general', surface: 'internal', maturity: 'beta', recommended: false },
+  'repo-aware-coder': { kind: 'implementer', surface: 'extended', maturity: 'stable', recommended: false },
+  'ts-coder': { kind: 'implementer', surface: 'extended', maturity: 'stable', recommended: false },
+};
+
+/** @type {Record<string, { kind?: CapabilityKind, surface?: CapabilitySurface, maturity?: CapabilityMaturity, recommended?: boolean }>} */
+const SCRIPT_METADATA_OVERRIDES = {
+  'project-profile': { kind: 'planner', surface: 'recommended', maturity: 'stable', recommended: true },
+  'implement-task': { kind: 'implementer', surface: 'recommended', maturity: 'stable', recommended: true },
+  'run-tests': { kind: 'verifier', surface: 'recommended', maturity: 'stable', recommended: true },
+  'review-gate': { kind: 'reviewer', surface: 'recommended', maturity: 'stable', recommended: true },
+  'quality-gate': { kind: 'verifier', surface: 'recommended', maturity: 'stable', recommended: true },
+  'release-check': { kind: 'releaser', surface: 'recommended', maturity: 'stable', recommended: true },
+  'release-evidence': { kind: 'releaser', surface: 'recommended', maturity: 'stable', recommended: true },
+};
+
+/** @param {unknown} value @param {boolean} fallback */
+function normalizeBoolean(value, fallback) {
+  if (typeof value === 'boolean') return value;
+  const normalized = String(value || '').trim().toLowerCase();
+  if (!normalized) return fallback;
+  if (['1', 'true', 'yes', 'y'].includes(normalized)) return true;
+  if (['0', 'false', 'no', 'n'].includes(normalized)) return false;
+  return fallback;
+}
+
+/** @param {unknown} value @param {CapabilitySurface} fallback */
+function normalizeSurface(value, fallback = 'extended') {
+  const normalized = String(value || '').trim().toLowerCase();
+  if (normalized === 'recommended') return 'recommended';
+  if (normalized === 'extended') return 'extended';
+  if (normalized === 'internal') return 'internal';
+  return fallback;
+}
+
+/** @param {unknown} value @param {CapabilityMaturity} fallback */
+function normalizeMaturity(value, fallback = 'experimental') {
+  const normalized = String(value || '').trim().toLowerCase();
+  if (normalized === 'stable') return 'stable';
+  if (normalized === 'beta') return 'beta';
+  if (normalized === 'experimental') return 'experimental';
+  return fallback;
+}
+
+/** @param {SkillRecord} skill */
+function deriveSkillMetadata(skill) {
+  const manifest = skill.manifest && typeof skill.manifest === 'object' ? skill.manifest : {};
+  const declaredKind = String(manifest.capability_kind || manifest.kind || '').trim().toLowerCase();
+  /** @type {CapabilityKind | null} */
+  let kind = null;
+  if (['general', 'planner', 'reviewer', 'verifier', 'releaser', 'transformer', 'implementer'].includes(declaredKind)) {
+    kind = /** @type {CapabilityKind} */ (declaredKind);
+  }
+  const defaultSurface = skill.support_tier === 'tier1' || skill.support_tier === 'tier2' ? 'recommended' : 'extended';
+  const surface = normalizeSurface(manifest.capability_surface || manifest.surface, defaultSurface);
+  const maturity = normalizeMaturity(manifest.capability_maturity || manifest.maturity, skill.support_tier === 'tier1' ? 'stable' : 'beta');
+  const recommended = normalizeBoolean(manifest.recommended, surface === 'recommended');
+  return { kind, surface, maturity, recommended };
+}
 
 /** @param {unknown} seed @returns {CapabilityKind} */
 function inferCapabilityKind(seed) {
@@ -153,7 +233,12 @@ function collectAgentCapabilities(root, config) {
   void root;
   const agents = config.agent && typeof config.agent === 'object' ? config.agent : {};
   return Object.entries(agents).map(([agentId, agent]) => {
-    const overriddenKind = AGENT_KIND_OVERRIDES[agentId] || null;
+    const overrideMeta = AGENT_METADATA_OVERRIDES[agentId] || {};
+    const overriddenKind = overrideMeta.kind || AGENT_KIND_OVERRIDES[agentId] || null;
+    const hidden = Boolean(agent.hidden);
+    const surface = normalizeSurface(overrideMeta.surface, hidden ? 'internal' : 'extended');
+    const maturity = normalizeMaturity(overrideMeta.maturity, hidden ? 'beta' : 'stable');
+    const recommended = normalizeBoolean(overrideMeta.recommended, surface === 'recommended');
     return ({
     id: `agent:${agentId}`,
     source_type: 'agent',
@@ -162,7 +247,10 @@ function collectAgentCapabilities(root, config) {
     description: String(agent.description || '').trim(),
     kind: overriddenKind || inferCapabilityKind(`${agentId} ${agent.description || ''}`),
     execution_mode: 'agent',
-    hidden: Boolean(agent.hidden),
+    surface,
+    maturity,
+    recommended,
+    hidden,
     entrypoint: String(agent.prompt || '').trim() || null,
     prompt_file: String(agent.prompt || '').startsWith('{file:')
       ? String(agent.prompt).replace(/^\{file:/, '').replace(/\}$/, '')
@@ -186,14 +274,19 @@ function isSkillRecord(skill) {
 /** @param {string} root @returns {CapabilityRecord[]} */
 function collectSkillCapabilities(root) {
   const skills = /** @type {SkillRecord[]} */ (readAllSkills(root).filter(isSkillRecord));
-  return skills.map((skill) => ({
+  return skills.map((skill) => {
+    const derived = deriveSkillMetadata(skill);
+    return ({
     id: `skill:${skill.dir}`,
     source_type: 'skill',
     source_ref: skill.dir,
     name: skill.name,
     description: String(skill.description || ''),
-    kind: inferSkillKind(skill),
+    kind: derived.kind || inferSkillKind(skill),
     execution_mode: skill.executable ? 'hybrid' : 'document',
+    surface: derived.surface,
+    maturity: derived.maturity,
+    recommended: derived.recommended,
     support_tier: skill.support_tier || 'tier4',
     hidden: false,
     entrypoint: skill.files.skill || null,
@@ -215,7 +308,8 @@ function collectSkillCapabilities(root) {
       })) : [],
       files: skill.files,
     },
-  }));
+    });
+  });
 }
 
 /** @param {string} root @param {string} entryName @returns {ScriptSupportProfile} */
@@ -243,14 +337,21 @@ function collectScriptCapabilities(root) {
     .filter((entry) => !['npm-install.js', 'npm-postinstall.js', 'install.js', 'uninstall.js'].includes(entry.name))
     .map((entry) => {
       const support = inferScriptSupport(root, entry.name);
+      const scriptName = entry.name.replace(/\.js$/i, '');
+      const meta = SCRIPT_METADATA_OVERRIDES[scriptName] || {};
+      const surface = normalizeSurface(meta.surface, 'internal');
+      const maturity = normalizeMaturity(meta.maturity, surface === 'recommended' ? 'stable' : 'beta');
       return /** @type {CapabilityRecord} */ ({
-        id: `script:${entry.name.replace(/\.js$/i, '')}`,
+        id: `script:${scriptName}`,
         source_type: 'script',
         source_ref: entry.name,
-        name: entry.name.replace(/\.js$/i, ''),
+        name: scriptName,
         description: '',
-        kind: inferScriptKind(entry.name),
+        kind: meta.kind || inferScriptKind(entry.name),
         execution_mode: 'script',
+        surface,
+        maturity,
+        recommended: normalizeBoolean(meta.recommended, surface === 'recommended'),
         support_tier: support.support_tier,
         hidden: false,
         entrypoint: relativeUnix(root, path.join(scriptsDir, entry.name)),

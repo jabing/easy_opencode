@@ -3,6 +3,10 @@
   "description": "Scaffold an Express route task bundle with route module, service, mount helper, route test, and API note.",
   "origin": "EOC",
   "level": "L3",
+  "capability_kind": "implementer",
+  "capability_surface": "extended",
+  "capability_maturity": "stable",
+  "recommended": false,
   "languages": [
     "javascript",
     "typescript"
