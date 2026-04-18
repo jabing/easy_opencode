@@ -2,6 +2,7 @@
 const {
   DEFAULT_REQUIRED_STATIC,
   DEFAULT_RUNTIME_PATHS,
+  DEFAULT_FORBIDDEN_SOURCE_SUFFIXES,
   checkPackageHygiene,
   normalizeFiles,
   readPackageJson,
@@ -25,6 +26,7 @@ function main() {
 module.exports = {
   REQUIRED_STATIC: DEFAULT_REQUIRED_STATIC,
   RUNTIME_PATHS: DEFAULT_RUNTIME_PATHS,
+  FORBIDDEN_SOURCE_SUFFIXES: DEFAULT_FORBIDDEN_SOURCE_SUFFIXES,
   checkPackageHygiene,
   normalizeFiles,
   readPackageJson,

@@ -13,4 +13,5 @@ test('publish whitelist excludes runtime .opencode state and keeps static assets
   assert.ok(result.files.includes('.opencode/plugins/'));
   assert.ok(result.files.includes('.opencode/hooks-config.json'));
   assert.ok(result.files.includes('.opencode/command-policy.json'));
+  assert.equal(result.errors.some((item) => item.includes('.bak') || item.includes('.probe')), false);
 });

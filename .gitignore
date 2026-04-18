@@ -16,3 +16,6 @@ coverage/
 .opencode/eoc-run/
 .opencode/task-bundles/
 .opencode/package-manager.json
+
+# Generated capability registry
+capabilities/registry.json

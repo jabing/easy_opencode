@@ -25,6 +25,15 @@ test('batch3 capability registry indexes agents, skills, scripts, and command al
   assert.ok(registry.counts.scripts >= 40);
   assert.equal(registry.counts.aliases, Object.keys(config.command || {}).length);
   assert.ok(registry.capabilities.some((item) => item.id === 'agent:eoc_orchestrator' && item.execution_mode === 'agent'));
+  assert.equal(registry.root_dir, '.');
+  const byId = Object.fromEntries(registry.capabilities.map((item) => [item.id, item]));
+  assert.equal(byId['agent:eoc_code_reviewer'].kind, 'reviewer');
+  assert.equal(byId['agent:e2e-runner'].kind, 'verifier');
+  assert.equal(byId['agent:security-reviewer'].kind, 'reviewer');
+  assert.equal(byId['agent:repo-aware-coder'].kind, 'implementer');
+  assert.equal(byId['agent:ts-coder'].kind, 'implementer');
+  assert.equal(byId['agent:build-error-resolver'].kind, 'transformer');
+  assert.equal(byId['agent:go-build-resolver'].kind, 'transformer');
   assert.ok(registry.capabilities.some((item) => item.id === 'skill:add-express-route' && item.execution_mode === 'hybrid'));
   assert.ok(registry.capabilities.some((item) => item.id === 'script:implement-task' && item.execution_mode === 'script'));
   assert.ok(registry.aliases.some((item) => item.id === 'command:implement-task' && item.target_id));

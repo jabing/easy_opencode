@@ -89,16 +89,34 @@ function normalizeList(value) {
   return [String(value).trim()].filter(Boolean);
 }
 
+/** @type {Record<string, CapabilityKind>} */
+const AGENT_KIND_OVERRIDES = {
+  'eoc_planner': 'planner',
+  'eoc_code_reviewer': 'reviewer',
+  'security-reviewer': 'reviewer',
+  'go-reviewer': 'reviewer',
+  'python-reviewer': 'reviewer',
+  'database-reviewer': 'reviewer',
+  'architect': 'reviewer',
+  'tdd-guide': 'verifier',
+  'e2e-runner': 'verifier',
+  'build-error-resolver': 'transformer',
+  'go-build-resolver': 'transformer',
+  'refactor-cleaner': 'transformer',
+  'repo-aware-coder': 'implementer',
+  'ts-coder': 'implementer',
+};
+
 /** @param {unknown} seed @returns {CapabilityKind} */
 function inferCapabilityKind(seed) {
   const value = String(seed || '').toLowerCase();
   if (!value) return 'general';
-  if (/(planner|plan|proposal|spec)/.test(value)) return 'planner';
-  if (/(review|audit|security|architect)/.test(value)) return 'reviewer';
-  if (/(verify|quality|lint|typecheck|test|gate|check|coverage|preflight|readiness)/.test(value)) return 'verifier';
-  if (/(release|delivery|deploy|publish|ship)/.test(value)) return 'releaser';
-  if (/(refactor|rewrite|transform|format|migrate|fix)/.test(value)) return 'transformer';
-  if (/(coder|implement|scaffold|build|e2e|workflow|runner|add|create|route|endpoint|component|controller|model|service|handler|module|test)/.test(value)) return 'implementer';
+  if (/\b(review|reviewer|audit|security|architect)\b/.test(value)) return 'reviewer';
+  if (/\b(verify|verification|quality|lint|typecheck|test|gate|check|coverage|preflight|readiness)\b/.test(value)) return 'verifier';
+  if (/\b(release|delivery|deploy|publish|ship)\b/.test(value)) return 'releaser';
+  if (/\b(refactor|rewrite|transform|format|migrate|fix|resolver)\b/.test(value)) return 'transformer';
+  if (/\b(coder|implement|implementation|scaffold|build|e2e|workflow|runner|add|create|route|endpoint|component|controller|model|service|handler|module)\b/.test(value)) return 'implementer';
+  if (/\b(planner|plan|proposal|spec)\b/.test(value)) return 'planner';
   return 'general';
 }
 
@@ -134,13 +152,15 @@ function relativeUnix(root, filePath) {
 function collectAgentCapabilities(root, config) {
   void root;
   const agents = config.agent && typeof config.agent === 'object' ? config.agent : {};
-  return Object.entries(agents).map(([agentId, agent]) => ({
+  return Object.entries(agents).map(([agentId, agent]) => {
+    const overriddenKind = AGENT_KIND_OVERRIDES[agentId] || null;
+    return ({
     id: `agent:${agentId}`,
     source_type: 'agent',
     source_ref: agentId,
     name: agentId,
     description: String(agent.description || '').trim(),
-    kind: inferCapabilityKind(`${agentId} ${agent.description || ''}`),
+    kind: overriddenKind || inferCapabilityKind(`${agentId} ${agent.description || ''}`),
     execution_mode: 'agent',
     hidden: Boolean(agent.hidden),
     entrypoint: String(agent.prompt || '').trim() || null,
@@ -152,7 +172,8 @@ function collectAgentCapabilities(root, config) {
     metadata: {
       mode: agent.mode || null,
     },
-  }));
+    });
+  });
 }
 
 /** @param {unknown} skill @returns {skill is SkillRecord} */
@@ -318,7 +339,7 @@ function buildCapabilityRegistry(root) {
 
   return {
     generated_at: new Date().toISOString(),
-    root_dir: resolvedRoot,
+    root_dir: '.',
     counts: {
       total: capabilities.length,
       agents: bySourceType.agent || 0,

@@ -2,15 +2,7 @@ const CORE_INSTRUCTION_SKILLS = [
   'tdd-workflow',
   'security-review',
   'coding-standards',
-  'frontend-patterns',
-  'backend-patterns',
-  'e2e-testing',
   'verification-loop',
-  'api-design',
-  'strategic-compact',
-  'eval-harness',
-  'openspec-workflow',
-  'claude-public-tooling',
 ];
 
 const REQUIRED_KERNEL_PATHS = [

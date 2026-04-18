@@ -13,18 +13,26 @@ function printUsage() {
   console.log('  eoc <plan|implement|test|review|ship|doctor> [...args]');
   console.log('  eoc mode');
   console.log('  eoc mode set <solo|team|platform>');
-  console.log('  eoc commands');
+  console.log('  eoc commands [--public|--all]');
   console.log('');
   console.log('Modes:');
   for (const mode of listModes()) console.log(`  - ${mode.id}: ${mode.description}`);
 }
-function printCommands() {
+function printCommands(options = {}) {
+  const showAll = options.showAll === true;
+  const showPublic = options.showPublic === true;
   console.log('Main commands:');
   for (const item of listMainCommands()) console.log(`  - ${item.id}: ${item.description}`);
+  if (!showAll && !showPublic) return;
+  const entries = buildCommandRegistry(PACKAGE_ROOT).filter((item) => {
+    if (showAll) return true;
+    return item.surface === 'public' && item.tier !== 'internal';
+  });
   console.log('');
-  console.log('Public managed commands:');
-  for (const entry of buildCommandRegistry(PACKAGE_ROOT).filter((item) => item.surface === 'public' && item.tier !== 'internal')) {
-    console.log(`  - ${entry.script} [${entry.tier}]${entry.supports_json ? ' --json' : ''}: ${entry.summary}`);
+  console.log(showAll ? 'All managed commands:' : 'Public managed commands:');
+  for (const entry of entries) {
+    const lifecycle = entry.lifecycle === 'stable' ? '' : ` ${entry.lifecycle}`;
+    console.log(`  - ${entry.script} [${entry.tier}${lifecycle}]${entry.supports_json ? ' --json' : ''}: ${entry.summary}`);
   }
 }
 function printMode(mode) { console.log(`Mode: ${mode.id}`); console.log(`Defaults: quality=${mode.defaults.quality_mode} release=${mode.defaults.release_policy} review_quality_gate=${mode.defaults.review_with_quality_gate}`); }
@@ -33,7 +41,11 @@ function runDoctor(plan) { let finalCode = 0; for (const run of plan.runs) { con
 function main() {
   const argv = process.argv.slice(2); const command = argv[0];
   if (!command || command === '--help' || command === '-h' || command === 'help') { printUsage(); process.exit(command ? 0 : 1); }
-  if (command === 'commands') { printCommands(); process.exit(0); }
+  if (command === 'commands') {
+    const flags = new Set(argv.slice(1));
+    printCommands({ showAll: flags.has('--all'), showPublic: flags.has('--public') });
+    process.exit(0);
+  }
   if (command === 'mode') { const sub = argv[1] || 'get'; if (sub === 'get') { printMode(getMode(process.cwd())); process.exit(0); } if (sub === 'set') { const targetMode = argv[2]; if (!targetMode) { console.error('Missing mode. Expected: solo | team | platform'); process.exit(1); } const mode = setMode(process.cwd(), targetMode); printMode(mode); process.exit(0); } console.error(`Unknown mode subcommand: ${sub}`); process.exit(1); }
   const plan = buildMainCommandPlan(command, argv.slice(1), { rootDir: process.cwd() });
   const exitCode = plan.command === 'doctor' ? runDoctor(plan) : runSingle(plan.runs[0].script, plan.runs[0].args);
