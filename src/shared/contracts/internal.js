@@ -19,6 +19,11 @@ function assertCommandRegistryContract(value) {
   assertString(record.schema_name, 'command-registry.schema_name');
   assertString(record.schema_version, 'command-registry.schema_version');
   assertArray(record.entries, 'command-registry.entries');
+  for (const [index, item] of /** @type {unknown[]} */ (record.entries).entries()) {
+    assertRecord(item, `command-registry.entries[${index}]`);
+    const entry = /** @type {Record<string, unknown>} */ (item);
+    if (entry.recommended !== undefined) assertBoolean(entry.recommended, `command-registry.entries[${index}].recommended`);
+  }
 }
 
 
@@ -192,6 +197,13 @@ function assertCapabilityRegistryContract(value) {
   const record = /** @type {Record<string, unknown>} */ (value);
   assertRecord(record.counts, 'capability-registry.counts');
   assertArray(record.capabilities, 'capability-registry.capabilities');
+  for (const [index, item] of /** @type {unknown[]} */ (record.capabilities).entries()) {
+    assertRecord(item, `capability-registry.capabilities[${index}]`);
+    const capability = /** @type {Record<string, unknown>} */ (item);
+    if (capability.surface !== undefined && capability.surface !== null) assertString(capability.surface, `capability-registry.capabilities[${index}].surface`);
+    if (capability.maturity !== undefined && capability.maturity !== null) assertString(capability.maturity, `capability-registry.capabilities[${index}].maturity`);
+    if (capability.recommended !== undefined) assertBoolean(capability.recommended, `capability-registry.capabilities[${index}].recommended`);
+  }
 }
 
 /** @param {unknown} value */

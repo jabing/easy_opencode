@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const { MAIN_COMMANDS } = require('../control-plane/product/main-commands.js');
 const { hasNamedContract } = require('../shared/contracts.js');
+const { isRecommendedScript } = require('../shared/capability-policy.js');
 
 /**
  * @typedef {{
@@ -20,9 +21,9 @@ const { hasNamedContract } = require('../shared/contracts.js');
 
 /** @type {Record<string, ScriptMetadata>} */
 const PUBLIC_METADATA = {
-  'project-profile': { tier: 'core', surface: 'public', lifecycle: 'active', compatibility: 'stable', summary: 'Analyze project structure and produce a profile snapshot.', supports_json: true, contract_name: 'project-profile', recommended: true },
-  'quality-gate': { tier: 'core', surface: 'public', lifecycle: 'active', compatibility: 'stable', summary: 'Run repository quality and delivery checks.', supports_json: true, contract_name: 'quality-gate', recommended: true },
-  'release-check': { tier: 'core', surface: 'public', lifecycle: 'active', compatibility: 'stable', summary: 'Evaluate release readiness against a selected policy.', supports_json: true, contract_name: 'release-check', recommended: true },
+  'project-profile': { tier: 'core', surface: 'public', lifecycle: 'active', compatibility: 'stable', summary: 'Analyze project structure and produce a profile snapshot.', supports_json: true, contract_name: 'project-profile' },
+  'quality-gate': { tier: 'core', surface: 'public', lifecycle: 'active', compatibility: 'stable', summary: 'Run repository quality and delivery checks.', supports_json: true, contract_name: 'quality-gate' },
+  'release-check': { tier: 'core', surface: 'public', lifecycle: 'active', compatibility: 'stable', summary: 'Evaluate release readiness against a selected policy.', supports_json: true, contract_name: 'release-check' },
   'release-rehearsal': { tier: 'governance', surface: 'public', lifecycle: 'active', compatibility: 'stable', summary: 'Simulate a governed release workflow with structured output.', supports_json: true, contract_name: 'release-rehearsal' },
   'release-evidence': { tier: 'governance', surface: 'public', lifecycle: 'active', compatibility: 'stable', summary: 'Export release evidence and audit material.', supports_json: true, contract_name: 'release-evidence' },
   'test-stability': { tier: 'governance', surface: 'public', lifecycle: 'stable', compatibility: 'stable', summary: 'Summarize flakiness and test-stability posture.', supports_json: true, contract_name: 'test-stability' },
@@ -30,12 +31,12 @@ const PUBLIC_METADATA = {
   'platform-report': { tier: 'governance', surface: 'public', lifecycle: 'stable', compatibility: 'stable', summary: 'Export platform-level release and telemetry reports.', supports_json: true, contract_name: 'platform-report' },
   'feature-acceptance': { tier: 'governance', surface: 'public', lifecycle: 'stable', compatibility: 'stable', summary: 'Summarize feature acceptance evidence.', supports_json: true, contract_name: 'feature-acceptance' },
   'preflight-production': { tier: 'governance', surface: 'public', lifecycle: 'stable', compatibility: 'stable', summary: 'Run production-focused preflight checks.', supports_json: true, contract_name: 'preflight-production' },
-  'run-tests': { tier: 'core', surface: 'public', lifecycle: 'stable', compatibility: 'stable', summary: 'Run repository tests through the unified test runner.', supports_json: false, recommended: true },
+  'run-tests': { tier: 'core', surface: 'public', lifecycle: 'stable', compatibility: 'stable', summary: 'Run repository tests through the unified test runner.', supports_json: false },
   'detect-project-runtime': { tier: 'core', surface: 'public', lifecycle: 'stable', compatibility: 'stable', summary: 'Detect repository runtime and framework signals.', supports_json: true, contract_name: 'detect-project-runtime' },
-  'implement-task': { tier: 'core', surface: 'public', lifecycle: 'stable', compatibility: 'stable', summary: 'Run the main implementation workflow.', supports_json: false, recommended: true },
-  'review-gate': { tier: 'governance', surface: 'public', lifecycle: 'stable', compatibility: 'stable', summary: 'Run review gate and optional quality checks.', supports_json: true, contract_name: 'review-gate', recommended: true },
+  'implement-task': { tier: 'core', surface: 'public', lifecycle: 'stable', compatibility: 'stable', summary: 'Run the main implementation workflow.', supports_json: false },
+  'review-gate': { tier: 'governance', surface: 'public', lifecycle: 'stable', compatibility: 'stable', summary: 'Run review gate and optional quality checks.', supports_json: true, contract_name: 'review-gate' },
   'failure-strategy': { tier: 'governance', surface: 'public', lifecycle: 'stable', compatibility: 'stable', summary: 'Inspect routing and failure-strategy posture.', supports_json: true, contract_name: 'failure-strategy' },
-  'delivery-report': { tier: 'governance', surface: 'public', lifecycle: 'stable', compatibility: 'stable', summary: 'Summarize delivery posture and recommendation level.', supports_json: true, contract_name: 'delivery-report', recommended: true },
+  'delivery-report': { tier: 'governance', surface: 'public', lifecycle: 'stable', compatibility: 'stable', summary: 'Summarize delivery posture and recommendation level.', supports_json: true, contract_name: 'delivery-report' },
   'internal-tools': { tier: 'internal', surface: 'internal', lifecycle: 'stable', compatibility: 'internal', summary: 'Unified internal maintenance entrypoint for internal utility domains.', supports_json: false },
   'analyze-project-structure': { tier: 'internal', surface: 'internal', lifecycle: 'deprecated', compatibility: 'compatibility', replacement: 'internal-tools', summary: 'Legacy wrapper for project structure analysis.', supports_json: true, contract_name: 'analyze-project-structure' },
   'prepare-implementation-context': { tier: 'internal', surface: 'internal', lifecycle: 'deprecated', compatibility: 'compatibility', replacement: 'internal-tools', summary: 'Legacy wrapper for implementation context preparation.', supports_json: true, contract_name: 'implementation-context' },
@@ -120,7 +121,7 @@ function buildCommandRegistry(rootDir = process.cwd()) {
       lifecycle: meta.lifecycle || 'stable',
       compatibility: meta.compatibility || (meta.surface === 'public' ? 'stable' : 'internal'),
       replacement: meta.replacement || null,
-      recommended: Boolean(meta.recommended),
+      recommended: Boolean(meta.recommended || isRecommendedScript(script)),
       contract_name: meta.contract_name || null,
       json_contracts: Array.isArray(meta.json_contracts) ? meta.json_contracts.slice().sort() : null,
       aliases: scriptAliases.slice().sort(),

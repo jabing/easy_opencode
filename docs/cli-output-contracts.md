@@ -12,6 +12,7 @@ Protected command families currently include:
 - `test-stability --json`
 - `observability-report report --json`
 - `platform-report report --json`
+- `command-registry list --json`
 
 The goal is not full JSON Schema coverage for every command. Instead, these contracts protect the highest-value machine-consumed entrypoints from accidental field drift during refactors.
 
@@ -56,6 +57,12 @@ The goal is not full JSON Schema coverage for every command. Instead, these cont
 - `schema_version`
 - `generated_at`
 - `root_dir`
+
+### command-registry
+- `schema_name`
+- `schema_version`
+- `entries[]`
+- each entry may include `recommended` to mark recommended command surface membership
 
 ## Enforcement
 
