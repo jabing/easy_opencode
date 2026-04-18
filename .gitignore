@@ -1,6 +1,9 @@
 node_modules/
 dist/
 build/
+!src/core/build/
+src/core/build/*
+!src/core/build/pipeline.js
 coverage/
 *.log
 .DS_Store
