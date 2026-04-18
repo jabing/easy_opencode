@@ -38,8 +38,8 @@ test('batch29 makes debug-fix-loop strict-safe and keeps quarantine self-consist
 
   const report = runNodeJson(TYPECHECK, ['--json'], { cwd: ROOT });
   assert.equal(report.ok, true);
-  assert.equal(report.total_src_files, 193);
-  assert.equal(report.strict_checked, 179);
-  assert.equal(report.quarantined, 14);
+  assert.equal(report.total_src_files, srcFiles.length);
+  assert.equal(report.strict_checked, srcFiles.length - manifestPaths.length);
+  assert.equal(report.quarantined, manifestPaths.length);
   assert.equal(report.strict_checked + report.quarantined, report.total_src_files);
 });

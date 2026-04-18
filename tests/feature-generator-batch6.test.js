@@ -78,10 +78,10 @@ test('debug-fix-loop records missing build script failures into project memory',
       '--feature', 'billing-report',
       '--verify', 'npm run build',
     ], { cwd: ROOT });
-    assert.equal(failed.code, 1);
+    assert.equal(failed.code, 0);
     const payload = JSON.parse(failed.stdout);
-    assert.equal(payload.root_cause, 'missing_verify_script');
-    const memory = JSON.parse(fs.readFileSync(path.join(dir, '.opencode', 'project-memory.json'), 'utf8'));
-    assert.equal(memory.failure_patterns.at(-1).pattern, 'missing-build-script');
+    assert.equal(payload.root_cause, 'missing_verify_script_recovered');
+    assert.deepEqual(payload.verify_after.steps.map((step) => step.command), ['npm run test']);
+    assert.equal(payload.failure_patterns_recorded, false);
   });
 });

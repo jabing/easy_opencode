@@ -31,12 +31,12 @@ test('batch22 makes eoc bridge/start strict-safe and restores quarantine manifes
     assert.ok(!manifestPaths.includes(file), `${file} should be strict-safe in batch22`);
   }
 
-  assert.ok(manifestPaths.includes('src/core/release/evidence.js'), 'release evidence should remain quarantined after batch22');
+  assert.ok(manifestPaths.includes('src/core/release/check.js'), 'release check should remain quarantined after batch22');
 
 
   const report = runNodeJson(TYPECHECK, ['--json'], { cwd: ROOT });
   assert.equal(report.ok, true);
-  assert.equal(report.total_src_files, 193);
+  assert.equal(report.total_src_files, srcFiles.length);
   assert.ok(report.strict_checked >= 160, `expected strict_checked >= 160, got ${report.strict_checked}`);
   assert.ok(report.quarantined <= 33, `expected quarantined <= 33, got ${report.quarantined}`);
   assert.equal(report.strict_checked + report.quarantined, report.total_src_files);

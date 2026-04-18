@@ -100,7 +100,7 @@ test('main eoc CLI executes black-box test and plan flows against an external pr
   withTempDir((dir) => seedProject(dir), (dir) => {
     const testResult = runNodeResult(EOC_BIN, ['test', '--target', 'tests/smoke.test.js'], { cwd: dir });
     assert.equal(testResult.code, 0, testResult.stderr || testResult.stdout);
-    assert.match(testResult.stdout, /PASS tests\/smoke.test.js/);
+    assert.match(testResult.stdout, /PASS tests[\\/]+smoke.test.js/);
     assert.match(testResult.stdout, /Summary: pass=1 fail=0/);
 
     const planResult = runNodeResult(EOC_BIN, ['plan'], { cwd: dir });

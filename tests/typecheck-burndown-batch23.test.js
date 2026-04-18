@@ -35,7 +35,7 @@ test('batch23 makes executor/orchestrator memory strict-safe and repairs install
 
   const report = runNodeJson(TYPECHECK, ['--json'], { cwd: ROOT });
   assert.equal(report.ok, true);
-  assert.equal(report.total_src_files, 193);
+  assert.equal(report.total_src_files, srcFiles.length);
   assert.ok(report.strict_checked >= 162, `expected strict_checked >= 162, got ${report.strict_checked}`);
   assert.ok(report.quarantined <= 31, `expected quarantined <= 31, got ${report.quarantined}`);
   assert.equal(report.strict_checked + report.quarantined, report.total_src_files);

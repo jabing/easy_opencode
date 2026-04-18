@@ -120,10 +120,9 @@ test('go LSP path returns edit preview and budget metadata on success', () => {
     });
     writeBudgetAwareLspServer(path.join(dir, 'fake-budget-lsp.js'));
   }, (dir) => {
-    const command = path.join(dir, 'fake-budget-lsp.js');
     const result = withEnv({
-      EOC_GO_LSP_COMMAND: command,
-      EOC_GO_LSP_ARGS: JSON.stringify([]),
+      EOC_GO_LSP_COMMAND: process.execPath,
+      EOC_GO_LSP_ARGS: JSON.stringify([path.join(dir, 'fake-budget-lsp.js')]),
       FAKE_LSP_EXT: '.go',
       FAKE_LSP_FROM: 'legacyRoute',
     }, () => runRefactorOperation('rename-symbol', {
@@ -156,8 +155,8 @@ test('go lsp-required mode fails safely when edit budget is exceeded', () => {
     writeBudgetAwareLspServer(path.join(dir, 'fake-budget-lsp.js'));
   }, (dir) => {
     assert.throws(() => withEnv({
-      EOC_GO_LSP_COMMAND: path.join(dir, 'fake-budget-lsp.js'),
-      EOC_GO_LSP_ARGS: JSON.stringify([]),
+      EOC_GO_LSP_COMMAND: process.execPath,
+      EOC_GO_LSP_ARGS: JSON.stringify([path.join(dir, 'fake-budget-lsp.js')]),
       FAKE_LSP_EXT: '.go',
       FAKE_LSP_FROM: 'legacyRoute',
     }, () => runRefactorOperation('rename-symbol', {
@@ -188,8 +187,8 @@ test('java LSP resource rename exposes preview summary for workspace resource op
   }, (dir) => {
     const file = path.join(dir, 'src/main/java/com/example/demo/LegacyBillingService.java');
     const result = withEnv({
-      EOC_JAVA_LSP_COMMAND: path.join(dir, 'fake-budget-lsp.js'),
-      EOC_JAVA_LSP_ARGS: JSON.stringify([]),
+      EOC_JAVA_LSP_COMMAND: process.execPath,
+      EOC_JAVA_LSP_ARGS: JSON.stringify([path.join(dir, 'fake-budget-lsp.js')]),
       FAKE_LSP_EXT: '.java',
       FAKE_LSP_FROM: 'LegacyBillingService',
       RETURN_RESOURCE_RENAME: '1',

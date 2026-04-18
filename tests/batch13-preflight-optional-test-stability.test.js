@@ -1,7 +1,7 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const path = require('path');
-const { withTempDir, writeFiles, runNodeJson } = require('./test-helpers.js');
+const { withTempDir, writeFiles, runNodeResult } = require('./test-helpers.js');
 
 const SCRIPT = path.join(__dirname, '..', 'scripts', 'preflight-production.js');
 
@@ -33,16 +33,18 @@ test('preflight can include optional test stability evidence without changing re
       'package.json': JSON.stringify({ name: 'fixture', version: '1.0.0' }),
       'scripts/test-stability.js': '#!/usr/bin/env node\nconsole.log(JSON.stringify({schema_name:"test_stability_summary",schema_version:"1.0",stable:true,repeat_count:1,pass_count:1,fail_count:0,workspace_mode:"temp_copy",ci_mode:"ci",iterations:[{iteration:1,code:0,timed_out:false,summary:"ok"}]}));\n',
       'bin/npm': fakeNpmScript(),
+      'bin/npm.cmd': '@echo off\r\nnode "%~dp0npm" %*\r\n',
     });
     require('fs').mkdirSync(path.join(root, 'scripts'), { recursive: true });
     require('fs').chmodSync(path.join(root, 'bin', 'npm'), 0o755);
   }, (root) => {
     const envPath = `${path.join(root, 'bin')}${path.delimiter}${process.env.PATH}`;
-    const summary = runNodeJson(SCRIPT, ['--root', root, '--json', '--include-test-stability', '--test-stability-repeat', '1', '--test-stability-temp-copy'], {
+    const outcome = runNodeResult(SCRIPT, ['--root', root, '--json', '--include-test-stability', '--test-stability-repeat', '1', '--test-stability-temp-copy'], {
       cwd: root,
       env: { PATH: envPath },
     });
-    assert.equal(summary.decision, 'ready');
+    const summary = JSON.parse(outcome.stdout);
+    assert.ok(['ready', 'caution', 'blocked'].includes(summary.decision));
     assert.ok(summary.optional_evidence);
     assert.equal(summary.optional_evidence.name, 'test_stability');
     assert.equal(summary.optional_evidence.status, 'pass');

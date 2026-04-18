@@ -32,7 +32,7 @@ test('batch19 repairs quarantine drift and makes support-tier/capability registr
 
   const report = runNodeJson(TYPECHECK, ['--json'], { cwd: ROOT });
   assert.equal(report.ok, true);
-  assert.equal(report.total_src_files, 193);
+  assert.equal(report.total_src_files, srcFiles.length);
   assert.ok(report.strict_checked >= 153, `expected strict_checked >= 153, got ${report.strict_checked}`);
   assert.ok(report.quarantined <= 40, `expected quarantined <= 40, got ${report.quarantined}`);
   assert.equal(report.strict_checked + report.quarantined, report.total_src_files);

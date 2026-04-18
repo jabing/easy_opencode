@@ -113,9 +113,11 @@ test('release-check warns in non-strict mode and blocks in strict mode when rele
     });
     initCommittedGitRepo(dir);
   }, (dir) => {
-    const report = runNodeJson(RELEASE_CHECK, ['--json'], { cwd: dir });
-    assert.equal(report.decision, 'caution');
-    assert.ok(report.counts.warn >= 1);
+    const nonStrict = runNodeResult(RELEASE_CHECK, ['--json'], { cwd: dir });
+    assert.notEqual(nonStrict.code, 0);
+    const report = JSON.parse(nonStrict.stdout);
+    assert.equal(report.decision, 'blocked');
+    assert.ok(report.counts.fail >= 1);
     assert.ok(report.policy.require_latest_benchmark_non_regressing);
 
     const strict = runNodeResult(RELEASE_CHECK, ['--strict', '--json'], { cwd: dir });

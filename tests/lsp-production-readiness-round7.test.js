@@ -103,10 +103,10 @@ test('lsp-production-readiness proves the harness but refuses the production cla
     const report = runNodeJson(SCRIPT, ['--root', ROOT, '--json'], {
       cwd: ROOT,
       env: {
-        EOC_GO_LSP_COMMAND: path.join(dir, 'fake-go-lsp.js'),
-        EOC_GO_LSP_ARGS: JSON.stringify([]),
-        EOC_JAVA_LSP_COMMAND: path.join(dir, 'fake-java-lsp.js'),
-        EOC_JAVA_LSP_ARGS: JSON.stringify([]),
+        EOC_GO_LSP_COMMAND: process.execPath,
+      EOC_GO_LSP_ARGS: JSON.stringify([path.join(dir, 'fake-go-lsp.js')]),
+        EOC_JAVA_LSP_COMMAND: process.execPath,
+      EOC_JAVA_LSP_ARGS: JSON.stringify([path.join(dir, 'fake-java-lsp.js')]),
       },
     });
     assert.equal(report.production_claim_ready, false);

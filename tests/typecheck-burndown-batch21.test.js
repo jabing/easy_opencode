@@ -32,15 +32,15 @@ test('batch21 makes implementation intelligence context strict-safe and repairs 
   }
 
   for (const file of [
-    'src/control-plane/kernel/orchestrator-kernel.js',
-    'src/control-plane/orchestrator/memory.js',
+    'src/cli/review-gate-cli.js',
+    'src/core/release/check.js',
   ]) {
     assert.ok(manifestPaths.includes(file), `${file} should remain quarantined in batch21`);
   }
 
   const report = runNodeJson(TYPECHECK, ['--json'], { cwd: ROOT });
   assert.equal(report.ok, true);
-  assert.equal(report.total_src_files, 193);
+  assert.equal(report.total_src_files, srcFiles.length);
   assert.ok(report.strict_checked >= 158, `expected strict_checked >= 158, got ${report.strict_checked}`);
   assert.ok(report.quarantined <= 35, `expected quarantined <= 35, got ${report.quarantined}`);
   assert.equal(report.strict_checked + report.quarantined, report.total_src_files);

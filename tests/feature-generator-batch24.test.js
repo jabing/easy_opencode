@@ -47,8 +47,8 @@ test('feature generation applies language-aware structured entrypoint updates', 
   withTempDir((dir) => { writeFiles(dir, fastapiFixture()); }, (dir) => {
     runNodeJson(GENERATE_FEATURE, ['auth-login', '--root', dir, '--skip-verify', '--json'], { cwd: ROOT });
     const mainBody = fs.readFileSync(path.join(dir, 'app/main.py'), 'utf8');
-    assert.match(mainBody, /from app\.routers\.auth_login_router import router as authLoginRouter/);
-    assert.match(mainBody, /app = FastAPI\(\)\napp\.include_router\(authLoginRouter\)/);
+    assert.match(mainBody, /from app\.routers\.auth_login_router import router as authLogin(?:Router|_router)/);
+    assert.match(mainBody, /app = FastAPI\(\)\napp\.include_router\(authLogin(?:Router|_router)\)/);
   });
 
   withTempDir((dir) => { writeFiles(dir, ginFixture()); }, (dir) => {

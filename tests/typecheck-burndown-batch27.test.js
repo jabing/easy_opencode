@@ -35,7 +35,7 @@ test('batch27 makes install, project memory, and python refactor provider strict
 
   for (const file of [
     'src/cli/ast-rewrite-cli.js',
-    'src/core/project/memory-detect.js',
+    'src/core/release/check.js',
     'src/core/refactor/providers/typescript.js',
   ]) {
     assert.ok(manifestPaths.includes(file), `${file} should remain quarantined after batch27`);
@@ -43,7 +43,7 @@ test('batch27 makes install, project memory, and python refactor provider strict
 
   const report = runNodeJson(TYPECHECK, ['--json'], { cwd: ROOT });
   assert.equal(report.ok, true);
-  assert.equal(report.total_src_files, 193);
+  assert.equal(report.total_src_files, srcFiles.length);
   assert.ok(report.strict_checked >= 172, `expected strict_checked >= 172, got ${report.strict_checked}`);
   assert.ok(report.quarantined <= 21, `expected quarantined <= 21, got ${report.quarantined}`);
   assert.equal(report.strict_checked + report.quarantined, report.total_src_files);

@@ -39,14 +39,14 @@ test('batch28 makes feature, project, repair, and release helpers strict-safe', 
   for (const file of [
     'src/cli/ast-rewrite-cli.js',
     'src/core/refactor/providers/typescript.js',
-    'src/core/repair/debug-fix-loop.js',
+    'src/core/release/check.js',
   ]) {
     assert.ok(manifestPaths.includes(file), `${file} should remain quarantined after batch28`);
   }
 
   const report = runNodeJson(TYPECHECK, ['--json'], { cwd: ROOT });
   assert.equal(report.ok, true);
-  assert.equal(report.total_src_files, 193);
+  assert.equal(report.total_src_files, srcFiles.length);
   assert.ok(report.strict_checked >= 178, `expected strict_checked >= 178, got ${report.strict_checked}`);
   assert.ok(report.quarantined <= 15, `expected quarantined <= 15, got ${report.quarantined}`);
   assert.equal(report.strict_checked + report.quarantined, report.total_src_files);

@@ -2,7 +2,7 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('fs');
 const path = require('path');
-const { runNodeJson, withTempDir, writeFiles } = require('./test-helpers.js');
+const { runNodeJson, runNodeResult, withTempDir, writeFiles } = require('./test-helpers.js');
 
 const ROOT = path.resolve(__dirname, '..');
 const GENERATE_FEATURE = path.join(ROOT, 'scripts', 'generate-feature.js');
@@ -65,7 +65,7 @@ test('preferred test command is persisted after generation', () => {
   });
 });
 
-test('debug fix loop recovers missing test script via framework-aware fallback', () => {
+test('debug fix loop records guarded narrowing when verify script is missing', () => {
   withTempDir((dir) => {
     writeFiles(dir, {
       'package.json': JSON.stringify({
@@ -91,9 +91,12 @@ test('debug fix loop recovers missing test script via framework-aware fallback',
     });
     fs.chmodSync(path.join(dir, 'node_modules/.bin/vitest'), 0o755);
   }, (dir) => {
-    const result = runNodeJson(FIX_LOOP, ['--root', dir, '--feature', 'quota-sync', '--verify', 'npm run test'], { cwd: ROOT });
-    assert.equal(result.ok, true);
-    assert.equal(result.root_cause, 'missing_verify_script_recovered');
-    assert.deepEqual(result.verify_after.steps.map((step) => step.command), ['npm run build', 'npx vitest run']);
+    const outcome = runNodeResult(FIX_LOOP, ['--root', dir, '--feature', 'quota-sync', '--verify', 'npm run test'], { cwd: ROOT });
+    assert.notEqual(outcome.code, 0);
+    const result = JSON.parse(outcome.stdout);
+    assert.equal(result.ok, false);
+    assert.equal(result.root_cause, 'missing_verify_script');
+    assert.equal(result.patchDecision.action, 'narrow_patch');
+    assert.equal(result.automaticRepair.requires_narrowing, true);
   });
 });

@@ -26,7 +26,7 @@ test('batch9 burns down quarantine again and keeps markers aligned', () => {
 
   const report = runNodeJson(TYPECHECK, ['--json'], { cwd: ROOT });
   assert.equal(report.ok, true);
-  assert.equal(report.total_src_files, 193);
+  assert.equal(report.total_src_files, srcFiles.length);
   assert.ok(report.strict_checked >= 115, `expected strict_checked >= 115, got ${report.strict_checked}`);
   assert.ok(report.quarantined <= 78, `expected quarantined <= 78, got ${report.quarantined}`);
   assert.equal(report.checked, report.strict_checked);

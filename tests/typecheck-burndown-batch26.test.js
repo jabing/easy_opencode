@@ -36,14 +36,14 @@ test('batch26 makes coder-loop, implement-task, and orchestrator-kernel strict-s
   for (const file of [
     'src/cli/ast-rewrite-cli.js',
     'src/core/benchmark/suite-helpers.js',
-    'src/core/feature/feedback-commands.js',
+    'src/core/release/check.js',
   ]) {
     assert.ok(manifestPaths.includes(file), `${file} should remain quarantined after batch26`);
   }
 
   const report = runNodeJson(TYPECHECK, ['--json'], { cwd: ROOT });
   assert.equal(report.ok, true);
-  assert.equal(report.total_src_files, 193);
+  assert.equal(report.total_src_files, srcFiles.length);
   assert.ok(report.strict_checked >= 169, `expected strict_checked >= 169, got ${report.strict_checked}`);
   assert.ok(report.quarantined <= 24, `expected quarantined <= 24, got ${report.quarantined}`);
   assert.equal(report.strict_checked + report.quarantined, report.total_src_files);

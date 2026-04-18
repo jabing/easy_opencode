@@ -1,12 +1,13 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { execFileSync } = require('child_process');
+const { execSync } = require('child_process');
 const path = require('path');
 
 const ROOT = path.resolve(__dirname, '..');
 
 test('npm pack dry-run file list excludes runtime .opencode state and keeps static assets', () => {
-  const stdout = execFileSync('npm', ['pack', '--dry-run', '--json'], {
+  const npmCommand = process.platform === 'win32' ? 'npm.cmd' : 'npm';
+  const stdout = execSync(`${npmCommand} pack --dry-run --json`, {
     cwd: ROOT,
     encoding: 'utf8',
   });

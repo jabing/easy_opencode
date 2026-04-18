@@ -26,7 +26,7 @@ test('batch13 converts another utility wave to strict-safe and keeps quarantine 
 
   const report = runNodeJson(TYPECHECK, ['--json'], { cwd: ROOT });
   assert.equal(report.ok, true);
-  assert.equal(report.total_src_files, 193);
+  assert.equal(report.total_src_files, srcFiles.length);
   assert.ok(report.strict_checked >= 134, `expected strict_checked >= 134, got ${report.strict_checked}`);
   assert.ok(report.quarantined <= 59, `expected quarantined <= 59, got ${report.quarantined}`);
   assert.equal(report.checked, report.strict_checked);

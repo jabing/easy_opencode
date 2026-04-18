@@ -33,7 +33,7 @@ test('batch18 burns down benchmark/failure-strategy quarantine and keeps manifes
 
   const report = runNodeJson(TYPECHECK, ['--json'], { cwd: ROOT });
   assert.equal(report.ok, true);
-  assert.equal(report.total_src_files, 193);
+  assert.equal(report.total_src_files, srcFiles.length);
   assert.ok(report.strict_checked >= 151, `expected strict_checked >= 151, got ${report.strict_checked}`);
   assert.ok(report.quarantined <= 42, `expected quarantined <= 42, got ${report.quarantined}`);
   assert.equal(report.strict_checked + report.quarantined, report.total_src_files);

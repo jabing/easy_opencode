@@ -33,7 +33,7 @@ test('batch17 restores green typecheck baseline and removes stale quarantine ent
 
   const report = runNodeJson(TYPECHECK, ['--json'], { cwd: ROOT });
   assert.equal(report.ok, true);
-  assert.equal(report.total_src_files, 193);
+  assert.equal(report.total_src_files, srcFiles.length);
   assert.ok(report.strict_checked >= 148, `expected strict_checked >= 148, got ${report.strict_checked}`);
   assert.ok(report.quarantined <= 45, `expected quarantined <= 45, got ${report.quarantined}`);
   assert.equal(report.strict_checked + report.quarantined, report.total_src_files);

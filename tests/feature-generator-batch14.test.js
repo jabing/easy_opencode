@@ -2,7 +2,7 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('fs');
 const path = require('path');
-const { runNodeJson, withTempDir, writeFiles } = require('./test-helpers.js');
+const { runNodeJson, runNodeResult, withTempDir, writeFiles } = require('./test-helpers.js');
 
 const ROOT = path.resolve(__dirname, '..');
 const GENERATE_FEATURE = path.join(ROOT, 'scripts', 'generate-feature.js');
@@ -70,7 +70,7 @@ test('persists runner profile details after generation', () => {
   });
 });
 
-test('debug fix loop recovers missing coverage script with framework coverage fallback', () => {
+test('debug fix loop records guarded narrowing for missing coverage verify script', () => {
   withTempDir((dir) => {
     writeFiles(dir, {
       'package.json': JSON.stringify({
@@ -96,10 +96,13 @@ test('debug fix loop recovers missing coverage script with framework coverage fa
     });
     fs.chmodSync(path.join(dir, 'node_modules/.bin/vitest'), 0o755);
   }, (dir) => {
-    const result = runNodeJson(FIX_LOOP, ['--root', dir, '--feature', 'quota-sync', '--verify', 'npm run test:coverage'], { cwd: ROOT });
-    assert.equal(result.ok, true);
-    assert.equal(result.root_cause, 'missing_verify_script_recovered');
-    assert.deepEqual(result.verify_after.steps.map((step) => step.command), ['npm run build', 'npx vitest run --coverage']);
+    const outcome = runNodeResult(FIX_LOOP, ['--root', dir, '--feature', 'quota-sync', '--verify', 'npm run test:coverage'], { cwd: ROOT });
+    assert.notEqual(outcome.code, 0);
+    const result = JSON.parse(outcome.stdout);
+    assert.equal(result.ok, false);
+    assert.equal(result.root_cause, 'missing_verify_script');
+    assert.equal(result.patchDecision.action, 'narrow_patch');
+    assert.equal(result.automaticRepair.requires_narrowing, true);
   });
 });
 

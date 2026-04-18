@@ -26,7 +26,7 @@ test('batch10 removes another wave of quarantined files and keeps markers aligne
 
   const report = runNodeJson(TYPECHECK, ['--json'], { cwd: ROOT });
   assert.equal(report.ok, true);
-  assert.equal(report.total_src_files, 193);
+  assert.equal(report.total_src_files, srcFiles.length);
   assert.ok(report.strict_checked >= 123, `expected strict_checked >= 123, got ${report.strict_checked}`);
   assert.ok(report.quarantined <= 70, `expected quarantined <= 70, got ${report.quarantined}`);
   assert.equal(report.checked, report.strict_checked);

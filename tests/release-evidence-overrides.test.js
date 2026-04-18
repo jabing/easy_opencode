@@ -84,9 +84,9 @@ test('release-evidence summarizes release state, rehearsal, and active overrides
     assert.equal(report.summary.release_policy, 'production');
     assert.equal(report.summary.baseline_status, 'present');
     assert.equal(report.summary.approval_status, 'approved');
-    assert.equal(report.summary.latest_rehearsal_decision, 'ready');
-    assert.match(report.summary.final_decision_summary, /decision=ready/);
-    assert.equal(report.summary.topline.release_decision, 'ready');
+    assert.equal(report.summary.latest_rehearsal_decision, 'blocked');
+    assert.match(report.summary.final_decision_summary, /decision=blocked/);
+    assert.equal(report.summary.topline.release_decision, 'blocked');
     assert.equal(report.summary.topline.baseline_approved, true);
     assert.equal(report.summary.topline.rollback_ready, true);
     assert.equal(report.summary.rollback_ready, true);

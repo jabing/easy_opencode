@@ -125,8 +125,8 @@ test('go lsp-required mode rejects out-of-workspace text edits from the language
     writeScopeGuardLspServer(path.join(dir, 'fake-scope-lsp.js'));
   }, (dir) => {
     assert.throws(() => withEnv({
-      EOC_GO_LSP_COMMAND: path.join(dir, 'fake-scope-lsp.js'),
-      EOC_GO_LSP_ARGS: JSON.stringify([]),
+      EOC_GO_LSP_COMMAND: process.execPath,
+      EOC_GO_LSP_ARGS: JSON.stringify([path.join(dir, 'fake-scope-lsp.js')]),
       FAKE_LSP_EXT: '.go',
       FAKE_LSP_FROM: 'legacyRoute',
       OUTSIDE_TEXT_EDIT: '1',
@@ -157,8 +157,8 @@ test('java lsp-required mode rejects out-of-workspace resource renames from the 
   }, (dir) => {
     const file = path.join(dir, 'src/main/java/com/example/demo/LegacyBillingService.java');
     assert.throws(() => withEnv({
-      EOC_JAVA_LSP_COMMAND: path.join(dir, 'fake-scope-lsp.js'),
-      EOC_JAVA_LSP_ARGS: JSON.stringify([]),
+      EOC_JAVA_LSP_COMMAND: process.execPath,
+      EOC_JAVA_LSP_ARGS: JSON.stringify([path.join(dir, 'fake-scope-lsp.js')]),
       FAKE_LSP_EXT: '.java',
       FAKE_LSP_FROM: 'LegacyBillingService',
       FAKE_LSP_PRIMARY_FILE: 'LegacyBillingService.java',
@@ -186,8 +186,8 @@ test('successful LSP renames expose workspace scope roots and guard metadata', (
     writeScopeGuardLspServer(path.join(dir, 'fake-scope-lsp.js'));
   }, (dir) => {
     const result = withEnv({
-      EOC_GO_LSP_COMMAND: path.join(dir, 'fake-scope-lsp.js'),
-      EOC_GO_LSP_ARGS: JSON.stringify([]),
+      EOC_GO_LSP_COMMAND: process.execPath,
+      EOC_GO_LSP_ARGS: JSON.stringify([path.join(dir, 'fake-scope-lsp.js')]),
       FAKE_LSP_EXT: '.go',
       FAKE_LSP_FROM: 'legacyRoute',
     }, () => runRefactorOperation('rename-symbol', {

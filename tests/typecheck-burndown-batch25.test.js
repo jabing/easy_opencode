@@ -32,16 +32,16 @@ test('batch25 makes feature bundle and plan-shared strict-safe while keeping qua
   }
 
   for (const file of [
-    'src/core/feature/feedback-commands.js',
-    'src/core/feature/plan-runtime.js',
-    'src/core/project/memory-detect.js',
+    'src/cli/ast-rewrite-cli.js',
+    'src/core/refactor/providers/typescript.js',
+    'src/core/release/check.js',
   ]) {
     assert.ok(manifestPaths.includes(file), `${file} should remain explicitly quarantined in batch25`);
   }
 
   const report = runNodeJson(TYPECHECK, ['--json'], { cwd: ROOT });
   assert.equal(report.ok, true);
-  assert.equal(report.total_src_files, 193);
+  assert.equal(report.total_src_files, srcFiles.length);
   assert.ok(report.strict_checked >= 166, `expected strict_checked >= 166, got ${report.strict_checked}`);
   assert.ok(report.quarantined <= 27, `expected quarantined <= 27, got ${report.quarantined}`);
   assert.equal(report.strict_checked + report.quarantined, report.total_src_files);

@@ -26,7 +26,7 @@ test('batch8 baseline remains improved and manifest stays aligned', () => {
 
   const report = runNodeJson(TYPECHECK, ['--json'], { cwd: ROOT });
   assert.equal(report.ok, true);
-  assert.equal(report.total_src_files, 193);
+  assert.equal(report.total_src_files, srcFiles.length);
   assert.ok(report.strict_checked >= 104, `expected strict_checked >= 104, got ${report.strict_checked}`);
   assert.ok(report.quarantined <= 89, `expected quarantined <= 89, got ${report.quarantined}`);
   assert.equal(report.checked, report.strict_checked);

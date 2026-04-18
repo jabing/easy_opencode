@@ -5,7 +5,22 @@ const path = require('path');
 
 function readTsconfigFiles() {
   const config = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'tsconfig.json'), 'utf8'));
-  return new Set(config.files || []);
+  const files = new Set(config.files || []);
+  if (files.size) return files;
+  const includes = new Set(config.include || []);
+  if (includes.has('src/**/*.js')) {
+    const srcRoot = path.join(__dirname, '..', 'src');
+    const stack = [srcRoot];
+    while (stack.length) {
+      const current = stack.pop();
+      for (const entry of fs.readdirSync(current, { withFileTypes: true })) {
+        const full = path.join(current, entry.name);
+        if (entry.isDirectory()) stack.push(full);
+        else if (entry.isFile() && full.endsWith('.js')) files.add(path.relative(path.join(__dirname, '..'), full).replace(/\\/g, '/'));
+      }
+    }
+  }
+  return files;
 }
 
 test('batch3 typecheck covers kernel observability and workflow support modules', () => {

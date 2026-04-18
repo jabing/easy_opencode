@@ -38,7 +38,7 @@ test('batch16 converts scheduler/quality/feedback helpers to strict-safe and kee
 
   const report = runNodeJson(TYPECHECK, ['--json'], { cwd: ROOT });
   assert.equal(report.ok, true);
-  assert.equal(report.total_src_files, 193);
+  assert.equal(report.total_src_files, srcFiles.length);
   assert.ok(report.strict_checked >= 145, `expected strict_checked >= 145, got ${report.strict_checked}`);
   assert.ok(report.quarantined <= 48, `expected quarantined <= 48, got ${report.quarantined}`);
   assert.equal(report.checked, report.strict_checked);
