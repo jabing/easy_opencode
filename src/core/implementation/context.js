@@ -13,6 +13,7 @@ const {
   findRelatedTests,
   normalizeTarget,
   splitCsv,
+  summarizeGenericFile,
   summarizeJsTsFile,
   unique,
 } = require('../project-profile.js');
@@ -21,6 +22,11 @@ const { chooseEditStrategy } = require('./edit-engine.js');
 const { recommendTaskRoute } = require('./task-routing.js');
 const { readOrInferProjectMemory } = require('../project/memory.js');
 const { buildSemanticIndex, summarizeSemanticNeighborhood } = require('./semantic-index.js');
+const { createRegistry } = require('../languages/registry.js');
+const { createNodeProvider } = require('../languages/providers/node.js');
+const { createPythonProvider } = require('../languages/providers/python.js');
+const { createGoProvider } = require('../languages/providers/go.js');
+const { createJavaProvider } = require('../languages/providers/java.js');
 
 /** @param {string} root @returns {any[]} */
 function readLatestLoopFailures(root) {
@@ -62,12 +68,72 @@ function ensureExistingTargets(root, targets) {
  * @typedef {{ target_budget?: number, related_test_budget?: number, strategy_bias?: string, context_scope?: string, ast_edit_mode?: string }} ContextPolicy
  */
 
+function createDefaultLanguageRegistry() {
+  return createRegistry([
+    createNodeProvider(),
+    createPythonProvider(),
+    createGoProvider(),
+    createJavaProvider(),
+  ]);
+}
+
+/** @param {string} root @param {string} target */
+function summarizeFallbackTarget(root, target) {
+  const summary = /\.([cm]?[jt]sx?)$/i.test(target) ? summarizeJsTsFile(root, target, ts) : summarizeGenericFile(root, target);
+  return {
+    provider_id: 'generic',
+    ...summary,
+    related_tests: findRelatedTests(root, [target]),
+  };
+}
+
+/** @param {{ registry?: ReturnType<typeof createRegistry> | null, providers?: any[] | null }} [options] */
+function resolveLanguageRegistry(options = {}) {
+  if (options.registry) return options.registry;
+  if (Array.isArray(options.providers) && options.providers.length > 0) return createRegistry(options.providers);
+  return createDefaultLanguageRegistry();
+}
+
+/** @param {ReturnType<typeof createRegistry>} registry @param {any} profile @param {string[]} targets */
+function resolveProviderGroups(registry, profile, targets) {
+  const providerLookup = new Map(Array.isArray(registry.providers) ? registry.providers.map((provider) => [provider.id, provider]) : []);
+  if (typeof registry.resolveTargetGroups === 'function') {
+    try {
+      return registry.resolveTargetGroups(profile, targets).map((group) => ({
+        provider_id: group.provider_id,
+        provider: providerLookup.get(group.provider_id) || null,
+        targets: Array.isArray(group.targets) ? group.targets.slice() : [],
+      }));
+    } catch {
+      // Fall back to per-target resolution when the registry cannot group all targets.
+    }
+  }
+  /** @type {Map<string, { provider_id: string, provider: any | null, targets: string[] }>} */
+  const groups = new Map();
+  for (const target of targets) {
+    let providerId = 'generic';
+    /** @type {any | null} */
+    let provider = null;
+    try {
+      provider = registry.resolveTarget(profile, target);
+      providerId = provider && provider.id ? provider.id : 'generic';
+    } catch {
+      provider = null;
+    }
+    const existing = groups.get(providerId) || { provider_id: providerId, provider, targets: [] };
+    existing.targets.push(target);
+    groups.set(providerId, existing);
+  }
+  return Array.from(groups.values());
+}
+
 /**
- * @param {{ rootDir?: string, objective?: string, targets?: string[] | string, mode?: string, policy?: ContextPolicy | null }} [options]
+ * @param {{ rootDir?: string, objective?: string, targets?: string[] | string, mode?: string, policy?: ContextPolicy | null, registry?: ReturnType<typeof createRegistry> | null, providers?: any[] | null }} [options]
  */
-function buildImplementationContext({ rootDir = process.cwd(), objective = '', targets = [], mode = 'auto', policy = null } = {}) {
+function buildImplementationContext({ rootDir = process.cwd(), objective = '', targets = [], mode = 'auto', policy = null, registry = null, providers = null } = {}) {
   const root = path.resolve(rootDir);
   const profile = detectProjectProfile(root);
+  const languageRegistry = resolveLanguageRegistry({ registry, providers });
   /** @type {ContextPolicy | null} */
   const effectivePolicy = policy && typeof policy === 'object' ? policy : null;
   const initialTargets = ensureExistingTargets(root, targets);
@@ -98,15 +164,63 @@ function buildImplementationContext({ rootDir = process.cwd(), objective = '', t
     policy: effectivePolicy || {},
     latestFailures: readLatestLoopFailures(root),
   });
-  const targetSummaries = normalizedTargets.map((target) => ({
-    ...summarizeJsTsFile(root, target, ts),
-    related_tests: relatedTests.filter((testFile) => {
+  const providerGroups = resolveProviderGroups(languageRegistry, profile, normalizedTargets);
+  const providerAnalyses = new Map();
+  for (const group of providerGroups) {
+    if (!group.provider || typeof group.provider.analyzeProject !== 'function') continue;
+    providerAnalyses.set(
+      group.provider_id,
+      group.provider.analyzeProject({
+        rootDir: root,
+        objective,
+        targets: group.targets,
+      })
+    );
+  }
+  const targetProviderByPath = new Map();
+  for (const group of providerGroups) {
+    for (const target of group.targets) targetProviderByPath.set(target, group);
+  }
+  const targetSummaries = normalizedTargets.map((target) => {
+    const group = targetProviderByPath.get(target) || null;
+    const relatedTestsForTarget = relatedTests.filter((testFile) => {
       const base = path.basename(target).replace(/\.[A-Za-z0-9]+$/, '');
       return testFile.includes(base) || path.dirname(testFile) === path.dirname(target);
-    }),
-    intelligence: summarizeTargetNeighborhood(intelligence, target),
-    semantic: summarizeSemanticNeighborhood(semanticIndex, target),
+    });
+    const baseSummary = summarizeFallbackTarget(root, target);
+    let providerSummary = baseSummary;
+    if (group && group.provider && typeof group.provider.summarizeTarget === 'function') {
+      providerSummary = group.provider.summarizeTarget({
+        rootDir: root,
+        target,
+        analysis: providerAnalyses.get(group.provider_id) || null,
+        objective,
+        targets: group.targets,
+      });
+    }
+    return {
+      ...baseSummary,
+      ...providerSummary,
+      provider_id: providerSummary.provider_id || (group ? group.provider_id : 'generic'),
+      related_tests: relatedTestsForTarget,
+      intelligence: summarizeTargetNeighborhood(intelligence, target),
+      semantic: summarizeSemanticNeighborhood(semanticIndex, target),
+    };
+  });
+  const summarizedProviderGroups = providerGroups.map((group) => ({
+    provider_id: group.provider_id,
+    targets: [...group.targets],
+    target_count: group.targets.length,
+    related_tests: findRelatedTests(root, group.targets),
   }));
+  const compositeRouting = {
+    enabled: providerGroups.length > 1,
+    provider_count: providerGroups.length,
+    target_count: normalizedTargets.length,
+    provider_ids: providerGroups.map((group) => group.provider_id),
+    default_provider_id: providerGroups[0] ? providerGroups[0].provider_id : null,
+    provider_groups: summarizedProviderGroups,
+  };
 
   const styleContract = projectMemory && projectMemory.style_profile ? {
     controller_pattern: projectMemory.style_profile.controller_pattern || null,
@@ -145,6 +259,8 @@ function buildImplementationContext({ rootDir = process.cwd(), objective = '', t
     },
     task_route: inferredRoute,
     edit_strategy: editStrategy,
+    provider_groups: summarizedProviderGroups,
+    composite: compositeRouting,
     context_buckets: {
       primary_symbols: changeSurface.primary_symbols,
       direct_neighbors: changeSurface.direct_neighbors,

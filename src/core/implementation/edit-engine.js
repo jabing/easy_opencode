@@ -4,8 +4,8 @@
  * @typedef {{ kind?: string, category?: string, rule?: string }} FailureLike
  * @typedef {{ preferred_edit_mode?: string, max_patch_files?: number, patch_guard?: { preferred_files?: string[] } }} PatchRecipe
  * @typedef {{ allowed_files?: number }} PatchRoute
- * @typedef {{ touched_files?: string[], allowed_files?: number }} PatchFootprint
- * @typedef {{ verdict?: string, unrelated_edit_ratio?: number, file_budget_exceeded?: boolean, protected_file_violations?: string[] }} PatchAssessment
+ * @typedef {{ touched_files?: string[], unstaged_files?: string[], staged_files?: string[], untracked_files?: string[], deleted_files?: string[], all_touched_files?: string[], allowed_files?: number }} PatchFootprint
+ * @typedef {{ verdict?: string, unrelated_edit_ratio?: number, file_budget_exceeded?: boolean, protected_file_violations?: string[], patch_surface?: { unstaged_files?: string[], staged_files?: string[], untracked_files?: string[], deleted_files?: string[], all_touched_files?: string[] } | null }} PatchAssessment
  */
 
 /** @param {{ objective?: string, taskKind?: string, changeSurface?: ChangeSurface, policy?: EditPolicy, latestFailures?: FailureLike[] }} [input] */
@@ -44,9 +44,48 @@ function summarizePatchFootprint(files = [], symbols = []) {
   };
 }
 
+/** @param {PatchFootprint} footprint */
+function collectFootprintFiles(footprint = {}) {
+  /** @type {string[]} */
+  const files = [];
+  /** @param {string[] | undefined} values */
+  const push = (values) => {
+    for (const value of values || []) {
+      const normalized = String(value || '').trim();
+      if (normalized) files.push(normalized);
+    }
+  };
+  push(footprint.touched_files);
+  push(footprint.all_touched_files);
+  push(footprint.unstaged_files);
+  push(footprint.staged_files);
+  push(footprint.untracked_files);
+  push(footprint.deleted_files);
+  return Array.from(new Set(files));
+}
+
+/** @param {PatchFootprint} footprint */
+function normalizePatchSurface(footprint = {}) {
+  return {
+    unstaged_files: Array.from(new Set((footprint.unstaged_files || []).filter(Boolean))),
+    staged_files: Array.from(new Set((footprint.staged_files || []).filter(Boolean))),
+    untracked_files: Array.from(new Set((footprint.untracked_files || []).filter(Boolean))),
+    deleted_files: Array.from(new Set((footprint.deleted_files || []).filter(Boolean))),
+    all_touched_files: Array.from(new Set([
+      ...(footprint.all_touched_files || []),
+      ...(footprint.touched_files || []),
+      ...(footprint.unstaged_files || []),
+      ...(footprint.staged_files || []),
+      ...(footprint.untracked_files || []),
+      ...(footprint.deleted_files || []),
+    ].filter(Boolean))).sort(),
+  };
+}
+
 /** @param {{ footprint?: PatchFootprint, changeSurface?: ChangeSurface, route?: PatchRoute, recipe?: PatchRecipe }} [input] */
 function evaluatePatchFootprint({ footprint = {}, changeSurface = {}, route = {}, recipe = {} } = {}) {
-  const touchedFiles = Array.from(new Set(footprint.touched_files || []));
+  const patchSurface = normalizePatchSurface(footprint);
+  const touchedFiles = collectFootprintFiles(footprint);
   const allowedFiles = Number(route.allowed_files || recipe.max_patch_files || footprint.allowed_files || 0) || null;
   const candidateFiles = new Set((changeSurface.candidate_edit_files || []).map((item) => item.path || '').filter(Boolean));
   const directNeighbors = new Set(changeSurface.direct_neighbors || []);
@@ -74,6 +113,7 @@ function evaluatePatchFootprint({ footprint = {}, changeSurface = {}, route = {}
     file_budget_exceeded: fileBudgetExceeded,
     protected_file_violations: protectedViolations,
     verdict,
+    patch_surface: patchSurface,
   };
 }
 
@@ -115,4 +155,5 @@ module.exports = {
   summarizePatchFootprint,
   evaluatePatchFootprint,
   derivePatchDecision,
+  normalizePatchSurface,
 };

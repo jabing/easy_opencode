@@ -13,7 +13,7 @@ const { deriveCoderPolicy, derivePolicyInput } = require('../core/implementation
 const { executeCommandSync } = require('../control-plane/kernel/executor.js');
 const { evaluatePatchFootprint, derivePatchDecision } = require('../core/implementation/edit-engine.js');
 const { buildAutomaticRepairPlan } = require('../core/repair/executor.js');
-const { spawnSync } = require('child_process');
+const { collectPatchSurface } = require('../core/git/patch-surface.js');
 const { parseCliArgs } = require('../shared/cli/args.js');
 
 /** @typedef {import('../shared/cli/args.js').ParsedCliOptions} ParsedCliOptions */
@@ -24,11 +24,11 @@ const { parseCliArgs } = require('../shared/cli/args.js');
 /** @typedef {{ context_scope?: string | null, ast_edit_mode?: string | null, strategy_bias?: string | null, target_budget?: number | null, related_test_budget?: number | null, max_failure_items?: number | null }} CoderPolicyLite */
 /** @typedef {{ path: string }} CandidateEditFile */
 /** @typedef {{ candidate_edit_files?: CandidateEditFile[] }} ChangeSurfaceLite */
-/** @typedef {{ profile: ContextProfile, targets: TargetSummary[], related_tests: string[], omitted_targets?: string[], omitted_related_tests?: string[], change_surface?: ChangeSurfaceLite | null, edit_strategy?: Record<string, unknown> | null, task_route?: Record<string, unknown> | null, context_policy?: CoderPolicyLite | null }} ImplementationContextLite */
+/** @typedef {{ profile: ContextProfile, targets: TargetSummary[], related_tests: string[], omitted_targets?: string[], omitted_related_tests?: string[], change_surface?: ChangeSurfaceLite | null, edit_strategy?: Record<string, unknown> | null, task_route?: Record<string, unknown> | null, context_policy?: CoderPolicyLite | null, composite?: { default_provider_id?: string | null } | null }} ImplementationContextLite */
 /** @typedef {{ kind: string, command: string, code: number, failures: FailureItem[], output_excerpt: string[] }} CheckResult */
 /** @typedef {{ round: number, at: string, checks: CheckResult[] }} CoderRound */
 /** @typedef {{ action?: string | null, confidence?: string | number | null, benchmark_feedback?: { risk_level?: string | null } | null, strategy_bias?: string | null, reasons?: string[], suggested_commands?: string[] }} FailureStrategyLite */
-/** @typedef {{ verdict?: string | null, touched_files: string[], file_budget?: number | null, unrelated_edit_ratio?: number | string | null, protected_file_violations?: string[] }} PatchEvaluationLite */
+/** @typedef {{ verdict?: string | null, touched_files: string[], file_budget?: number | null, unrelated_edit_ratio?: number | string | null, protected_file_violations?: string[], patch_surface?: { unstaged_files?: string[], staged_files?: string[], untracked_files?: string[], deleted_files?: string[], all_touched_files?: string[] } | null }} PatchEvaluationLite */
 /** @typedef {{ run_id: string, root_dir: string, objective: string, targets: string[], checks: ValidationCheck[], context: ImplementationContextLite, rounds: CoderRound[], latest_failures: FailureItem[], status: string, context_policy?: CoderPolicyLite | null, created_at: string, updated_at: string, failure_strategy?: FailureStrategyLite | null, current_patch_evaluation?: PatchEvaluationLite | null, repair_recipe?: Record<string, unknown> | null }} CoderRunLite */
 
 
@@ -66,31 +66,20 @@ function shellSplit(command) {
   return parts;
 }
 
-
-/** @param {string} rootDir @returns {string[]} */
-function collectTouchedFiles(rootDir) {
-  const result = spawnSync('git', ['diff', '--name-only'], {
-    cwd: rootDir,
-    shell: false,
-    windowsHide: true,
-    encoding: 'utf8',
-  });
-  if (typeof result.status !== 'number' || result.status !== 0) return [];
-  return String(result.stdout || '').split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
-}
-
 /** @param {CoderRunLite | null | undefined} run @returns {PatchEvaluationLite | null} */
 function buildCurrentPatchEvaluation(run) {
-  if (!run || !run.context || !run.context.change_surface) return null;
-  const touchedFiles = collectTouchedFiles(run.root_dir);
+  if (!run || !run.root_dir) return null;
+  const patchSurface = collectPatchSurface(run.root_dir);
+  const touchedFiles = patchSurface.all_touched_files || [];
   const route = run.context.edit_strategy || run.context.task_route || {};
+  const changeSurface = run.context && run.context.change_surface ? run.context.change_surface : {};
   const evaluation = evaluatePatchFootprint({
-    footprint: { touched_files: touchedFiles },
-    changeSurface: run.context.change_surface,
+    footprint: patchSurface,
+    changeSurface,
     route,
     recipe: run.repair_recipe || {},
   });
-  return { ...evaluation, touched_files: touchedFiles };
+  return { ...evaluation, touched_files: touchedFiles, patch_surface: patchSurface };
 }
 
 function nowIso() {
@@ -249,11 +238,19 @@ function executeRound(run) {
   for (const check of run.checks) {
     const result = runCommand(check.command, run.root_dir, run);
     const text = `${result.stdout || ''}\n${result.stderr || ''}`.trim();
+    /** @type {{ runtime: string, language: string, text: string, tool: string, provider?: string }} */
+    const failureInput = {
+      runtime: run.context.profile.runtime,
+      language: run.context.profile.language,
+      text,
+      tool: check.kind,
+    };
+    if (run.context.composite && run.context.composite.default_provider_id) failureInput.provider = run.context.composite.default_provider_id;
     round.checks.push({
       kind: check.kind,
       command: check.command,
       code: result.code,
-      failures: result.code === 0 ? [] : normalizeFailures({ runtime: run.context.profile.runtime, language: run.context.profile.language, text, tool: check.kind }),
+      failures: result.code === 0 ? [] : normalizeFailures(failureInput),
       output_excerpt: text.split(/\r?\n/).slice(0, 40),
     });
   }
@@ -311,7 +308,8 @@ function printStatus(run) {
     printLine(`Failure strategy: ${run.failure_strategy.action} (confidence=${run.failure_strategy.confidence})`);
   }
   if (run.current_patch_evaluation) {
-    printLine(`Patch discipline: ${run.current_patch_evaluation.verdict} files=${run.current_patch_evaluation.touched_files.length}/${run.current_patch_evaluation.file_budget || 'n/a'} unrelated=${run.current_patch_evaluation.unrelated_edit_ratio}`);
+    const patchSurface = run.current_patch_evaluation.patch_surface || {};
+    printLine(`Patch discipline: ${run.current_patch_evaluation.verdict} files=${run.current_patch_evaluation.touched_files.length}/${run.current_patch_evaluation.file_budget || 'n/a'} unrelated=${run.current_patch_evaluation.unrelated_edit_ratio} staged=${(patchSurface.staged_files || []).length} unstaged=${(patchSurface.unstaged_files || []).length} untracked=${(patchSurface.untracked_files || []).length}`);
   }
   if (run.rounds.length === 0) {
     printLine('Rounds: 0');
@@ -382,6 +380,9 @@ function buildNextPromptText(run) {
   if (patch) {
     lines.push(`- Current patch verdict: ${patch.verdict}`);
     lines.push(`- Touched files: ${patch.touched_files.join(', ') || '(none)'}`);
+    if (patch.patch_surface) {
+      lines.push(`- Patch surface: staged=${(patch.patch_surface.staged_files || []).length} unstaged=${(patch.patch_surface.unstaged_files || []).length} untracked=${(patch.patch_surface.untracked_files || []).length} deleted=${(patch.patch_surface.deleted_files || []).length}`);
+    }
     lines.push(`- File budget: ${patch.file_budget || 'n/a'}`);
     lines.push(`- Unrelated edit ratio: ${patch.unrelated_edit_ratio}`);
     const protectedViolations = patch.protected_file_violations || [];

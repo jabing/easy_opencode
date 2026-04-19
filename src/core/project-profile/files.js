@@ -3,6 +3,7 @@ const path = require('path');
 
 const CODE_EXT = new Set(['.ts', '.tsx', '.js', '.jsx', '.mts', '.cts', '.mjs', '.cjs', '.py', '.go', '.java']);
 const TEST_RE = /(?:^|\.)(test|spec)\.[A-Za-z0-9]+$/i;
+const PYTHON_TEST_RE = /(?:^|\/)(?:test_[^/]+|[^/]+_test)\.py$/i;
 const SKIP_DIRS = new Set(['.git', 'node_modules', 'dist', 'build', 'coverage', '.next', '.turbo', '.venv', 'venv', 'target', 'bin', 'out']);
 
 /** @param {string} filePath */
@@ -45,10 +46,12 @@ function isTestFile(rel) {
   const base = path.basename(normalized);
   return (
     TEST_RE.test(base) ||
+    PYTHON_TEST_RE.test(normalized) ||
     normalized.includes('/__tests__/') ||
     normalized.startsWith('test/') ||
     normalized.startsWith('tests/') ||
     normalized.endsWith('_test.go') ||
+    normalized.startsWith('src/test/') ||
     normalized.includes('/src/test/') ||
     normalized.startsWith('spec/')
   );
@@ -111,6 +114,7 @@ function findRelatedTests(root, targetFiles, maxCount = 12) {
 module.exports = {
   CODE_EXT,
   TEST_RE,
+  PYTHON_TEST_RE,
   SKIP_DIRS,
   findRelatedTests,
   isTestFile,

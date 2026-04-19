@@ -105,6 +105,40 @@ test('automatic repair executor narrows patch and synthesizes focused verify com
   assert.ok(plan.verify_commands.some((item) => item.includes('tests/auth.test.js')));
 });
 
+test('automatic repair executor emits provider-aware verify commands and operations', () => {
+  const pythonPlan = buildAutomaticRepairPlan({
+    patchDecision: { action: 'apply', preferred_files: ['app/service.py'] },
+    currentPatch: { touched_files: ['app/service.py'] },
+    repairRecipe: { failure_kinds: ['import_resolve'], patch_guard: { preferred_files: ['app/service.py'] } },
+    context: {
+      profile: { runtime: 'node' },
+      composite: { default_provider_id: 'python' },
+      targets: [{ path: 'app/service.py', provider_id: 'python' }],
+      related_tests: ['tests/test_service.py'],
+    },
+    checks: [{ kind: 'test', command: 'python -m pytest -q' }],
+    latestFailures: [{ category: 'import_resolve', file: 'app/service.py', message: 'missing module' }],
+  });
+  assert.ok(pythonPlan.verify_commands.some((item) => item.includes('python -m pytest -q tests/test_service.py')));
+  assert.ok(pythonPlan.operations.includes('repair_python_module_path'));
+
+  const javaPlan = buildAutomaticRepairPlan({
+    patchDecision: { action: 'apply', preferred_files: ['src/main/java/com/example/App.java'] },
+    currentPatch: { touched_files: ['src/main/java/com/example/App.java'] },
+    repairRecipe: { failure_kinds: ['compile_error'], patch_guard: { preferred_files: ['src/main/java/com/example/App.java'] } },
+    context: {
+      profile: { runtime: 'node' },
+      composite: { default_provider_id: 'java' },
+      targets: [{ path: 'src/main/java/com/example/App.java', provider_id: 'java' }],
+      related_tests: ['src/test/java/com/example/AppTest.java'],
+    },
+    checks: [{ kind: 'build', command: './gradlew compileJava' }, { kind: 'test', command: './gradlew test' }],
+    latestFailures: [{ category: 'compile_error', file: 'src/main/java/com/example/App.java', message: 'cannot find symbol' }],
+  });
+  assert.ok(javaPlan.verify_commands.includes('./gradlew test'));
+  assert.ok(javaPlan.operations.includes('repair_java_package_or_symbol_resolution'));
+});
+
 test('safe-apply status includes automatic repair plan for guarded patches', () => {
   withTempDir((dir) => {
     writeFiles(dir, fixtureFiles());

@@ -3,23 +3,35 @@ function unique(items = []) {
   return Array.from(new Set((items || []).filter(Boolean)));
 }
 
-/** @param {{ checks?: any[], relatedTests?: string[], profile?: any, failureKinds?: string[] }} [input] */
-function deriveMinimalVerifyCommands({ checks = [], relatedTests = [], profile = {}, failureKinds = [] } = {}) {
+/** @param {{ checks?: any[], relatedTests?: string[], profile?: any, failureKinds?: string[], provider?: string | null }} [input] */
+function deriveMinimalVerifyCommands({ checks = [], relatedTests = [], profile = {}, failureKinds = [], provider = null } = {}) {
   /** @type {string[]} */
   const commands = [];
   const runtime = String(profile.runtime || 'unknown');
+  const providerId = String(provider || '').toLowerCase();
   const related = unique(relatedTests).slice(0, 4);
-  if (runtime === 'node' && related.length > 0) commands.push(`node --test ${related.join(' ')}`);
-  if (runtime === 'python' && related.length > 0) commands.push(`pytest ${related.join(' ')}`);
+  if ((providerId === 'node' || runtime === 'node') && related.length > 0) commands.push(`node --test ${related.join(' ')}`);
+  if ((providerId === 'python' || runtime === 'python') && related.length > 0) commands.push(`python -m pytest -q ${related.join(' ')}`);
   if (runtime === 'go' && related.length > 0) {
     const dirs = unique(related.map((file) => String(file).split('/').slice(0, -1).join('/') || '.'));
     commands.push(...dirs.map((dir) => `go test ./${dir}`));
+  }
+  if ((providerId === 'go') && related.length > 0) {
+    const dirs = unique(related.map((file) => String(file).split('/').slice(0, -1).join('/') || '.'));
+    commands.push(...dirs.map((dir) => `go test ./${dir}`));
+  }
+  if ((providerId === 'java' || runtime === 'java') && related.length > 0) {
+    const buildCommand = (checks || []).find((check) => check && /gradle|mvn|compileJava|compile/.test(String(check.command || '')));
+    const testCommand = (checks || []).find((check) => check && /gradle|mvn| test\b/.test(String(check.command || '')));
+    if (testCommand && testCommand.command) commands.push(String(testCommand.command));
+    else if (buildCommand && /gradle/.test(String(buildCommand.command || ''))) commands.push('./gradlew test');
+    else if (buildCommand && /mvn/.test(String(buildCommand.command || ''))) commands.push('mvn -q test');
   }
   for (const check of checks || []) {
     if (check && check.command) commands.push(String(check.command));
   }
   if ((failureKinds || []).includes('lint_or_format')) {
-    const lint = commands.find((command) => /\blint\b|eslint|prettier|biome/.test(command));
+    const lint = commands.find((command) => /\blint\b|eslint|prettier|biome|ruff|flake8|pylint|golangci|checkstyle|spotless/.test(command));
     if (lint) return unique([lint, ...commands]).slice(0, 4);
   }
   return unique(commands).slice(0, 4);
@@ -44,11 +56,13 @@ function deriveFileActions({ patchDecision = {}, currentPatch = {}, repairRecipe
 /** @param {{ patchDecision?: any, currentPatch?: any, repairRecipe?: any, context?: any, checks?: any[], latestFailures?: any[] }} [input] */
 function buildAutomaticRepairPlan({ patchDecision = {}, currentPatch = {}, repairRecipe = {}, context = {}, checks = [], latestFailures = [] } = {}) {
   const failureKinds = unique((repairRecipe.failure_kinds || []).concat((latestFailures || []).map((item) => item.kind || item.category)));
+  const provider = context && context.composite ? context.composite.default_provider_id : (context && context.targets && context.targets[0] ? context.targets[0].provider_id : null);
   const verifyCommands = deriveMinimalVerifyCommands({
     checks,
     relatedTests: context.related_tests || [],
     profile: context.profile || {},
     failureKinds,
+    provider,
   });
   const fileActions = deriveFileActions({ patchDecision, currentPatch, repairRecipe, context, latestFailures });
   /** @type {string[]} */
@@ -65,6 +79,9 @@ function buildAutomaticRepairPlan({ patchDecision = {}, currentPatch = {}, repai
   if (failureKinds.includes('typecheck')) operations.push('align_types_before_rewrite');
   if (failureKinds.includes('test_assertion')) operations.push('recheck_expectations_before_behavior_change');
   if (failureKinds.includes('module_format')) operations.push('repair_module_boundary');
+  if (provider === 'python' && failureKinds.includes('import_resolve')) operations.push('repair_python_module_path');
+  if (provider === 'go' && (failureKinds.includes('import_resolve') || failureKinds.includes('compile_error'))) operations.push('repair_go_package_and_symbol_wiring');
+  if (provider === 'java' && (failureKinds.includes('import_resolve') || failureKinds.includes('compile_error'))) operations.push('repair_java_package_or_symbol_resolution');
   return {
     mode: patchDecision.action === 'apply' ? 'assisted_apply' : 'guarded_repair',
     verify_commands: verifyCommands,

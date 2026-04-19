@@ -10,8 +10,9 @@
  *   symbol?: string | undefined,
  *   message?: string | undefined
  * }} FailureItem
- * @typedef {{ runtime?: string, language?: string, text?: string, tool?: string }} NormalizeFailuresInput
+ * @typedef {{ runtime?: string, language?: string, provider?: string, text?: string, tool?: string }} NormalizeFailuresInput
  */
+const { normalizePythonFailures } = require('./python.js');
 
 /** @param {FailureItem[] | null | undefined} items @param {number} [max] @returns {FailureItem[]} */
 function uniqueFailures(items, max = 40) {
@@ -41,6 +42,28 @@ function uniqueFailures(items, max = 40) {
 function normalizePath(file) {
   if (!file) return null;
   return String(file).replace(/\\/g, '/');
+}
+
+/** @param {string | null | undefined} provider */
+function normalizeProviderLanguage(provider) {
+  const normalized = String(provider || '').toLowerCase();
+  if (!normalized) return '';
+  if (normalized.includes('python')) return 'python';
+  if (normalized.includes('typescript') || normalized.includes('javascript') || normalized === 'node') return 'node';
+  if (normalized.includes('go')) return 'go';
+  if (normalized.includes('java')) return 'java';
+  return '';
+}
+
+/** @param {string} text */
+function looksLikeGoFailure(text) {
+  return (
+    /(?:^|\n).+\.go:\d+:\d+:\s+.+/.test(text) ||
+    /(?:^|\n)--- FAIL:\s+/.test(text) ||
+    /\bundefined:\s+[A-Za-z_][A-Za-z0-9_]*\b/.test(text) ||
+    /\bimport cycle not allowed\b/.test(text) ||
+    /\bno required module provides package\b/.test(text)
+  );
 }
 
 /** @param {string | null | undefined} text @param {string | undefined} tool @returns {FailureItem[]} */
@@ -96,52 +119,6 @@ function normalizeNode(text, tool) {
 }
 
 /** @param {string | null | undefined} text @param {string | undefined} tool @returns {FailureItem[]} */
-function normalizePython(text, tool) {
-  /** @type {FailureItem[]} */
-  const out = [];
-  const source = String(text || '');
-  /** @type {RegExpExecArray | null} */
-  let match;
-  const pyRe = /^(.+\.py):(\d+):(\d+):\s*([A-Za-z]\d+)?\s*(.+)$/gm;
-  while ((match = pyRe.exec(source)) !== null) {
-    out.push({
-      tool,
-      category: tool === 'lint' ? 'lint_error' : tool === 'typecheck' ? 'type_error' : 'runtime_error',
-      file: normalizePath(match[1] || ''),
-      line: Number(match[2] || 0),
-      col: Number(match[3] || 0),
-      code: match[4] || '',
-      message: String(match[5] || '').trim(),
-    });
-  }
-  const pytestRe = /^(?:FAILED|ERROR)\s+(.+?\.py)(?:::(.+?))?\s+-\s+(.+)$/gm;
-  while ((match = pytestRe.exec(source)) !== null) {
-    out.push({
-      tool,
-      category: 'test_failure',
-      file: normalizePath(match[1] || ''),
-      line: null,
-      col: null,
-      symbol: match[2] || '',
-      message: String(match[3] || '').trim(),
-    });
-  }
-  const tracebackRe = /File "(.+\.py)", line (\d+)(?:, in ([^\n]+))?/gm;
-  while ((match = tracebackRe.exec(source)) !== null) {
-    out.push({
-      tool,
-      category: 'runtime_error',
-      file: normalizePath(match[1] || ''),
-      line: Number(match[2] || 0),
-      col: null,
-      symbol: match[3] || '',
-      message: 'Traceback frame',
-    });
-  }
-  return uniqueFailures(out.length ? out : normalizeGeneric(source, tool));
-}
-
-/** @param {string | null | undefined} text @param {string | undefined} tool @returns {FailureItem[]} */
 function normalizeGo(text, tool) {
   /** @type {FailureItem[]} */
   const out = [];
@@ -162,6 +139,29 @@ function normalizeGo(text, tool) {
   const pkgFailRe = /^--- FAIL: (.+?) /gm;
   while ((match = pkgFailRe.exec(source)) !== null) {
     out.push({ tool, category: 'test_failure', file: null, line: null, col: null, symbol: match[1] || '', message: 'Go test failed' });
+  }
+  const importResolveRe = /^(package .+ is not in GOROOT.*)$/gm;
+  while ((match = importResolveRe.exec(source)) !== null) {
+    out.push({
+      tool,
+      category: 'import_resolve',
+      file: null,
+      line: null,
+      col: null,
+      message: String(match[1] || '').trim(),
+    });
+  }
+  const buildFailRe = /^(?:# .+|.+):?\s*(undefined: .+|cannot use .+|cannot assign .+|not enough arguments in call to .+|too many arguments in call to .+|package .+ is not in GOROOT.*)$/gm;
+  while ((match = buildFailRe.exec(source)) !== null) {
+    if (/\.go:\d+:\d+:/.test(String(match[0] || ''))) continue;
+    out.push({
+      tool,
+      category: /package .+ is not in GOROOT|undefined: /.test(String(match[1] || '')) ? 'import_resolve' : 'compile_error',
+      file: null,
+      line: null,
+      col: null,
+      message: String(match[1] || '').trim(),
+    });
   }
   return uniqueFailures(out.length ? out : normalizeGeneric(source, tool));
 }
@@ -195,6 +195,29 @@ function normalizeJava(text, tool) {
       message: String(match[3] || '').trim(),
     });
   }
+  const packageMissingRe = /^(?:error:\s+)?package\s+([A-Za-z0-9_.]+)\s+does not exist$/gm;
+  while ((match = packageMissingRe.exec(source)) !== null) {
+    out.push({
+      tool,
+      category: 'import_resolve',
+      file: null,
+      line: null,
+      col: null,
+      symbol: match[1] || '',
+      message: `package ${String(match[1] || '').trim()} does not exist`,
+    });
+  }
+  const symbolMissingRe = /^(?:error:\s+)?cannot find symbol$/gm;
+  while ((match = symbolMissingRe.exec(source)) !== null) {
+    out.push({
+      tool,
+      category: 'compile_error',
+      file: null,
+      line: null,
+      col: null,
+      message: 'cannot find symbol',
+    });
+  }
   const surefireRe = /^\[ERROR\]\s+(.+?)\s+Time elapsed:.*<<< FAILURE!\s*$/gm;
   while ((match = surefireRe.exec(source)) !== null) {
     out.push({ tool, category: 'test_failure', file: null, line: null, col: null, symbol: match[1] || '', message: 'JUnit/Surefire test failed' });
@@ -203,13 +226,19 @@ function normalizeJava(text, tool) {
 }
 
 /** @param {NormalizeFailuresInput} param0 @returns {FailureItem[]} */
-function normalizeFailures({ runtime, language, text, tool }) {
+function normalizeFailures({ runtime, language, provider, text, tool }) {
   const source = String(text || '').trim();
   if (!source) return [];
+  const providerLanguage = normalizeProviderLanguage(provider);
   const normalizedLanguage = String(language || '').toLowerCase();
   const rt = String(runtime || language || 'unknown').toLowerCase();
+  if (providerLanguage === 'node') return normalizeNode(source, tool);
+  if (providerLanguage === 'python') return normalizePythonFailures(source, tool);
+  if (providerLanguage === 'go') return normalizeGo(source, tool);
+  if (providerLanguage === 'java') return normalizeJava(source, tool);
+  if (looksLikeGoFailure(source)) return normalizeGo(source, tool);
   if (rt === 'node' || normalizedLanguage === 'typescript' || normalizedLanguage === 'javascript') return normalizeNode(source, tool);
-  if (rt === 'python' || normalizedLanguage === 'python') return normalizePython(source, tool);
+  if (rt === 'python' || normalizedLanguage === 'python') return normalizePythonFailures(source, tool);
   if (rt === 'go' || normalizedLanguage === 'go') return normalizeGo(source, tool);
   if (rt === 'java' || normalizedLanguage === 'java') return normalizeJava(source, tool);
   return uniqueFailures(normalizeGeneric(source, tool));
@@ -219,4 +248,5 @@ module.exports = {
   normalizeFailures,
   uniqueFailures,
   normalizeGeneric,
+  normalizeProviderLanguage,
 };
